@@ -1,0 +1,1 @@
+pub const MIN_RECTANGLE_WIDTH: u16 = 100;

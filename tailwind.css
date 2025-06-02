@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@source "./safelist.txt";
+
+@variant dark (&:is(.dark *));
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+html,
+body {
+  height: 100%;
+}

@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "tw": "npx @tailwindcss/cli -i ./tailwind.css -o ./assets/css/lib/tailwind.css --watch",
+    "minify:css": "npx @tailwindcss/cli -i ./assets/css/lib/taiwind.css -o ./assets/css/lib/tailwind.css --minify",
+    "minify:js": "node minify.js"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.1.8",
+    "@tailwindcss/postcss": "4.1.8",
+    "postcss": "8.5.4",
+    "tailwindcss": "4.1.8",
+    "uglify-js": "^3.19.3"
+  }
+}
