@@ -106,8 +106,8 @@ pub fn render_screen_grid_3(height: u16, width: u16) -> impl Renderable {
         @for row in 0..rows {
             @for col in 0..cols {
                 div class = "flex justify-center items-center relative"
-                    style = (format!("width: {}px", rectangle_width))
-                    id = (format!("item-{}-{}", row, col)) {}
+                    style={ "width:" (rectangle_width) "px;" }
+                    id={ "item-" (row) "-" (col) } {}
             }
         }
     }
