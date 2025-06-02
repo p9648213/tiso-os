@@ -14,6 +14,4 @@ pub struct EnvConfig {
     pub port: String,
     #[clap(long, env)]
     pub allow_origin: String,
-    #[clap(long, env)]
-    pub redis_url: String,
 }

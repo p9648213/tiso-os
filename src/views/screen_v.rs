@@ -1,3 +1,4 @@
+use hypertext::{GlobalAttributes, Renderable, html_elements, maud_move, rsx_move};
 use vy::prelude::*;
 
 use crate::contanst::MIN_RECTANGLE_WIDTH;
@@ -72,6 +73,64 @@ pub fn render_screen_grid(height: u16, width: u16) -> impl IntoHtml {
             })
         }),
     )
+}
+
+pub fn render_screen_grid_2(height: u16, width: u16) -> maud::Markup {
+    let rows = height / MIN_RECTANGLE_WIDTH;
+    let cols = width / MIN_RECTANGLE_WIDTH;
+    let rectangle_width = width as f32 / cols as f32 - 0.1;
+
+    maud::html! {
+        input id="screen_rows" type="hidden" value=(rows);
+        input id="screen_cols" type="hidden" value=(cols);
+
+        @for row in 0..rows {
+            @for col in 0..cols {
+                div class="flex justify-center items-center relative"
+                     style={ "width:" (rectangle_width) "px;" }
+                     id={ "item-" (row) "-" (col) } {}
+            }
+        }
+    }
+}
+
+pub fn render_screen_grid_3(height: u16, width: u16) -> impl Renderable {
+    let rows = height / MIN_RECTANGLE_WIDTH;
+    let cols = width / MIN_RECTANGLE_WIDTH;
+    let rectangle_width = width as f32 / cols as f32 - 0.1;
+
+    maud_move! {
+        input id="screen_rows" type="hidden" value=(rows);
+        input id="screen_cols" type="hidden" value=(cols);
+
+        @for row in 0..rows {
+            @for col in 0..cols {
+                div class = "flex justify-center items-center relative"
+                    style = (format!("width: {}px", rectangle_width))
+                    id = (format!("item-{}-{}", row, col)) {}
+            }
+        }
+    }
+}
+
+pub fn render_screen_grid_4(height: u16, width: u16) -> impl Renderable {
+    let rows = height / MIN_RECTANGLE_WIDTH;
+    let cols = width / MIN_RECTANGLE_WIDTH;
+    let rectangle_width = width as f32 / cols as f32 - 0.1; 
+
+    rsx_move! {
+        <input id="screen_rows" type="hidden" value={rows}>
+        <input id="screen_cols" type="hidden" value={cols}>
+        @for row in 0..rows {
+            @for col in 0..cols {
+                <div
+                    class="flex justify-center items-center relative"
+                    style={format!("width: {}px", rectangle_width)}
+                    id={format!("item-{}-{}", row, col)}>
+                </div>
+            }
+        }
+    }
 }
 
 pub fn render_screen_item(item_type: ItemType) -> impl IntoHtml {
