@@ -3,4 +3,5 @@
 /.vscode
 /assets/css/lib/tailwind.css
 .env
+config.toml
 notes

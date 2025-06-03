@@ -13,7 +13,7 @@ use axum::{
     response::{IntoResponse, Response},
     routing::{get, post},
 };
-use memory_serve::{MemoryServe, load_assets};
+use memory_serve::MemoryServe;
 use tower_http::{
     compression::CompressionLayer, set_header::SetResponseHeaderLayer, trace::TraceLayer,
 };
@@ -29,7 +29,7 @@ fn response_log(response: &Response<Body>, latency: Duration, _: &Span) {
 
 pub async fn create_router() -> Router {
     let memory_router =
-        MemoryServe::new(load_assets!("/home/p9648213/code/tiso-os/assets")).into_router();
+        MemoryServe::from_env().into_router();
 
     let cache_control_layer = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
