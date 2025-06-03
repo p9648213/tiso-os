@@ -4,7 +4,6 @@ use crate::{
     controllers::screen_c::{create_folder, create_screen_grid, create_txt, get_screen},
     middlewares::{csrf_mw::csrf_middleware, log_mw::request_log},
     models::state::AppState,
-    utilities::config::EnvConfig,
 };
 use axum::{
     Router,
@@ -14,8 +13,10 @@ use axum::{
     response::{IntoResponse, Response},
     routing::{get, post},
 };
-use deadpool_postgres::Pool;
-use tower_http::{set_header::SetResponseHeaderLayer, trace::TraceLayer};
+use memory_serve::{MemoryServe, load_assets};
+use tower_http::{
+    compression::CompressionLayer, set_header::SetResponseHeaderLayer, trace::TraceLayer,
+};
 use tracing::Span;
 
 async fn fallback() -> impl IntoResponse {
@@ -26,13 +27,16 @@ fn response_log(response: &Response<Body>, latency: Duration, _: &Span) {
     tracing::info!("<- Response: status {} in {:?}", response.status(), latency)
 }
 
-pub async fn create_router(pg_pool: Pool, config: EnvConfig) -> Router {
+pub async fn create_router() -> Router {
+    let memory_router =
+        MemoryServe::new(load_assets!("/home/p9648213/code/tiso-os/assets")).into_router();
+
     let cache_control_layer = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
         HeaderValue::from_static("no-cache, no-store, must-revalidate"),
     );
 
-    let app_state = AppState { pg_pool, config };
+    let app_state = AppState {};
 
     let action_routes = Router::new().nest(
         "/action",
@@ -47,6 +51,8 @@ pub async fn create_router(pg_pool: Pool, config: EnvConfig) -> Router {
         .merge(action_routes)
         .layer(from_fn_with_state(app_state.clone(), csrf_middleware))
         .with_state(app_state.clone())
+        .layer(CompressionLayer::new())
+        .nest("/assets", memory_router)
         .layer(cache_control_layer)
         .fallback(fallback)
         .layer(TraceLayer::new_for_http().on_response(response_log))

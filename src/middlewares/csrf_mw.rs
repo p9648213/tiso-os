@@ -1,13 +1,12 @@
-use crate::{models::error::AppError, utilities::config::EnvConfig};
+use crate::{contanst::ALLOW_ORIGIN, models::error::AppError};
 use axum::{
-    extract::{Request, State},
+    extract::Request,
     http::{Method, StatusCode},
     middleware::Next,
     response::IntoResponse,
 };
 
 pub async fn csrf_middleware(
-    State(config): State<EnvConfig>,
     method: Method,
     request: Request,
     next: Next,
@@ -32,7 +31,7 @@ pub async fn csrf_middleware(
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
             })?;
 
-            if origin != config.allow_origin.as_str() {
+            if origin != ALLOW_ORIGIN {
                 tracing::error!("Origin header is not allowed");
                 return Err(AppError::new(StatusCode::FORBIDDEN, "Forbidden"));
             }

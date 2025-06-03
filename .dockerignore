@@ -1,7 +1,0 @@
-target/
-.git/
-node_modules/
-*.md
-*.log
-*.env
-.env
