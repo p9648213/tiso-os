@@ -1,15 +1,13 @@
-use std::time::Duration;
-
 use crate::{
     controllers::screen_c::{create_folder, create_screen_grid, create_txt, get_screen},
-    middlewares::{csrf_mw::csrf_middleware, log_mw::request_log},
+    middlewares::{auth_mw::auth_middleware, csrf_mw::csrf_middleware, log_mw::request_log},
     models::state::AppState,
 };
 use axum::{
     Router,
     body::Body,
     http::{HeaderValue, StatusCode, header},
-    middleware::{from_fn, from_fn_with_state},
+    middleware::from_fn,
     response::{IntoResponse, Response},
     routing::{get, post},
 };
@@ -17,19 +15,24 @@ use memory_serve::MemoryServe;
 use tower_http::{
     compression::CompressionLayer, set_header::SetResponseHeaderLayer, trace::TraceLayer,
 };
+use tower_sessions::{Expiry, MemoryStore, SessionManagerLayer, cookie::time::Duration};
 use tracing::Span;
 
 async fn fallback() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, "Not Found")
 }
 
-fn response_log(response: &Response<Body>, latency: Duration, _: &Span) {
+fn response_log(response: &Response<Body>, latency: std::time::Duration, _: &Span) {
     tracing::info!("<- Response: status {} in {:?}", response.status(), latency)
 }
 
 pub async fn create_router() -> Router {
-    let memory_router =
-        MemoryServe::from_env().into_router();
+    let memory_router = MemoryServe::from_env().into_router();
+
+    let session_store = MemoryStore::default();
+    let session_layer = SessionManagerLayer::new(session_store)
+        .with_secure(false)
+        .with_expiry(Expiry::OnInactivity(Duration::hours(1)));
 
     let cache_control_layer = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
@@ -49,7 +52,9 @@ pub async fn create_router() -> Router {
     Router::new()
         .route("/", get(get_screen))
         .merge(action_routes)
-        .layer(from_fn_with_state(app_state.clone(), csrf_middleware))
+        .layer(from_fn(csrf_middleware))
+        .layer(from_fn(auth_middleware))
+        .layer(session_layer)
         .with_state(app_state.clone())
         .layer(CompressionLayer::new())
         .nest("/assets", memory_router)
