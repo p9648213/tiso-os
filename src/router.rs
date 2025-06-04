@@ -1,6 +1,7 @@
 use crate::{
+    contanst::MIN_COMPRESS_SIZE,
     controllers::screen_c::{create_folder, create_screen_grid, create_txt, get_screen},
-    middlewares::{auth_mw::auth_middleware, csrf_mw::csrf_middleware, log_mw::request_log},
+    middlewares::{csrf_mw::csrf_middleware, log_mw::request_log},
     models::state::AppState,
 };
 use axum::{
@@ -13,9 +14,11 @@ use axum::{
 };
 use memory_serve::MemoryServe;
 use tower_http::{
-    compression::CompressionLayer, set_header::SetResponseHeaderLayer, trace::TraceLayer,
+    CompressionLevel,
+    compression::{CompressionLayer, DefaultPredicate, Predicate, predicate::SizeAbove},
+    set_header::SetResponseHeaderLayer,
+    trace::TraceLayer,
 };
-use tower_sessions::{Expiry, MemoryStore, SessionManagerLayer, cookie::time::Duration};
 use tracing::Span;
 
 async fn fallback() -> impl IntoResponse {
@@ -29,10 +32,9 @@ fn response_log(response: &Response<Body>, latency: std::time::Duration, _: &Spa
 pub async fn create_router() -> Router {
     let memory_router = MemoryServe::from_env().into_router();
 
-    let session_store = MemoryStore::default();
-    let session_layer = SessionManagerLayer::new(session_store)
-        .with_secure(false)
-        .with_expiry(Expiry::OnInactivity(Duration::hours(1)));
+    let compression_layer = CompressionLayer::new()
+        .quality(CompressionLevel::Fastest)
+        .compress_when(DefaultPredicate::new().and(SizeAbove::new(MIN_COMPRESS_SIZE)));
 
     let cache_control_layer = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
@@ -46,17 +48,15 @@ pub async fn create_router() -> Router {
         Router::new()
             .route("/create-txt", post(create_txt))
             .route("/create-folder", post(create_folder))
-            .route("/create-grid", post(create_screen_grid)),
+            .route("/create-grid", post(create_screen_grid))
+            .layer(from_fn(csrf_middleware)),
     );
 
     Router::new()
         .route("/", get(get_screen))
         .merge(action_routes)
-        .layer(from_fn(csrf_middleware))
-        .layer(from_fn(auth_middleware))
-        .layer(session_layer)
         .with_state(app_state.clone())
-        .layer(CompressionLayer::new())
+        .layer(compression_layer)
         .nest("/assets", memory_router)
         .layer(cache_control_layer)
         .fallback(fallback)

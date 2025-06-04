@@ -18,7 +18,7 @@ pub fn render_screen() -> impl Renderable {
                 script src="/assets/js/main.js" type="module" defer {}
             }
             title { "TisoOS" }
-            body class="relative bg-zinc-900" {
+            body class="relative bg-zinc-900 overflow-hidden" {
                 (Raw(r#"
                     <script type="module">
                         import {setupRightClickContextMenu} from "/assets/js/right_click.js";
