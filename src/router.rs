@@ -1,18 +1,22 @@
+use std::sync::Arc;
+
 use crate::{
     contanst::MIN_COMPRESS_SIZE,
     controllers::screen_c::{create_folder, create_screen_grid, create_txt, get_screen},
-    middlewares::{csrf_mw::csrf_middleware, log_mw::request_log},
+    middlewares::{csrf_mw::csrf_middleware, log_mw::request_log, session_mw::session_middleware},
     models::state::AppState,
 };
 use axum::{
     Router,
     body::Body,
     http::{HeaderValue, StatusCode, header},
-    middleware::from_fn,
+    middleware::{from_fn, from_fn_with_state},
     response::{IntoResponse, Response},
     routing::{get, post},
 };
+
 use memory_serve::MemoryServe;
+use papaya::HashMap;
 use tower_http::{
     CompressionLevel,
     compression::{CompressionLayer, DefaultPredicate, Predicate, predicate::SizeAbove},
@@ -41,7 +45,9 @@ pub async fn create_router() -> Router {
         HeaderValue::from_static("no-cache, no-store, must-revalidate"),
     );
 
-    let app_state = AppState {};
+    let app_state = AppState {
+        session: Arc::new(HashMap::new()),
+    };
 
     let action_routes = Router::new().nest(
         "/action",
@@ -55,6 +61,7 @@ pub async fn create_router() -> Router {
     Router::new()
         .route("/", get(get_screen))
         .merge(action_routes)
+        .layer(from_fn_with_state(app_state.clone(), session_middleware))
         .with_state(app_state.clone())
         .layer(compression_layer)
         .nest("/assets", memory_router)
