@@ -46,7 +46,7 @@ pub async fn create_router() -> Router {
     );
 
     let app_state = AppState {
-        session: Arc::new(HashMap::new()),
+        session_map: Arc::new(HashMap::new()),
     };
 
     let action_routes = Router::new().nest(

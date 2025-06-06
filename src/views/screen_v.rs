@@ -6,6 +6,54 @@ use crate::contanst::MIN_RECTANGLE_WIDTH;
 
 use super::ItemType;
 
+pub fn render_welcome_screen() -> impl Renderable {
+    maud!(
+        html {
+            head {
+                meta charset="UTF-8";
+                meta name="viewport" content="width=device-width,initial-scale=1";
+                link rel="stylesheet" href="/assets/css/lib/tailwind.css";
+                link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico";
+                script src="/assets/js/lib/htmx.js" defer {}
+            }
+            title { "TisoOS - Welcome" }
+            body style="background: radial-gradient(ellipse at top left, #070f2b, #1b1a55, #535c91);" class="relative overflow-hidden" {
+                main class="relative flex flex-col justify-center items-center min-h-screen text-white text-center" {
+                    div class="mb-16" {
+                        div class="flex justify-center items-center bg-white bg-opacity-20 backdrop-blur-sm mx-auto mb-6 rounded-2xl w-24 h-24" {
+                            div class="flex justify-center items-center bg-white rounded-lg w-12 h-12" {
+                                div class="bg-blue-600 rounded-sm w-6 h-6" {}
+                            }
+                        }
+                        h1 class="mb-2 font-light text-4xl" { "TisoOS" }
+                        p class="font-light text-lg" { "Your gateway to productivity" }
+                    }
+                    div class="mb-16 max-w-md" {
+                        h2 class="mb-4 font-light text-3xl" { "Welcome" }
+                        p class="text-lg leading-relaxed" {
+                            "Let's get you set up and ready to go. This will only take a few minutes."
+                        }
+                    }
+                    div class="flex sm:flex-row flex-col gap-4 mb-16" {
+                        button  {
+                            "Get started"
+                        }
+                        button  {
+                            "Learn more"
+                        }
+                    }
+                    div class="flex items-center gap-2" {
+                        div class="bg-white rounded-full w-2 h-2" {}
+                        div class="bg-white bg-opacity-30 rounded-full w-2 h-2" {}
+                        div class="bg-white bg-opacity-30 rounded-full w-2 h-2" {}
+                        div class="bg-white bg-opacity-30 rounded-full w-2 h-2" {}
+                    }
+                }
+            }
+        }
+    )
+}
+
 pub fn render_screen() -> impl Renderable {
     maud! {
         html {
@@ -18,7 +66,7 @@ pub fn render_screen() -> impl Renderable {
                 script src="/assets/js/main.js" type="module" defer {}
             }
             title { "TisoOS" }
-            body class="relative bg-zinc-900 overflow-hidden" {
+            body style="background: radial-gradient(ellipse at top left, #070f2b, #1b1a55, #535c91);" class="relative overflow-hidden" {
                 (Raw(r#"
                     <script type="module">
                         import {setupRightClickContextMenu} from "/assets/js/right_click.js";

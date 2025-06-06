@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 axum = { version = "0.8.4", features = ["macros"] }
+axum-extra = { version = "0.10.1", features = ["cookie"] }
 hypertext = { version = "0.8.0", features = ["axum", "htmx"] }
 memory-serve = { version = "1.2.1", features = ["force-embed"] }
 papaya = "0.2.1"

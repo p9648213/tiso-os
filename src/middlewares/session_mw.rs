@@ -4,14 +4,31 @@ use axum::{
     middleware::Next,
     response::IntoResponse,
 };
+use axum_extra::extract::CookieJar;
+
+#[derive(Clone)]
+pub struct UserId(pub Option<String>);
 
 pub async fn session_middleware(
-    State(session): State<SessionMap>,
-    request: Request,
+    State(session_map): State<SessionMap>,
+    mut request: Request,
     next: Next,
 ) -> Result<impl IntoResponse, AppError> {
-    session.pin().get("1");
-    // session.pin().insert("1".to_string(), "".to_string());
+    let session_map = session_map.pin_owned();
+
+    let jar = CookieJar::from_headers(request.headers());
+
+    let session = jar
+        .get("session")
+        .map(|cookie| cookie.value())
+        .unwrap_or_default();
+
+    let id = session_map.get(session);
+
+    match id {
+        Some(id) => request.extensions_mut().insert(UserId(Some(id.to_owned()))),
+        None => request.extensions_mut().insert(UserId(None)),
+    };
 
     Ok(next.run(request).await)
 }

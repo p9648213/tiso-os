@@ -7,5 +7,5 @@ pub type SessionMap = Arc<HashMap<String, String>>;
 
 #[derive(Clone, FromRef)]
 pub struct AppState {
-    pub session: SessionMap,
+    pub session_map: SessionMap,
 }
