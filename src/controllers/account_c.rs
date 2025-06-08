@@ -33,10 +33,17 @@ pub async fn create_account(
     State(session_map): State<SessionMap>,
     Form(account_form): Form<AccountForm>,
 ) -> Result<impl IntoResponse, AppError> {
-    let hx_trigger = header.get("HX-Trigger").unwrap().to_str().map_err(|err| {
-        tracing::error!("Failed to get HX-Trigger header: {:?}", err);
-        AppError::new(StatusCode::BAD_REQUEST, "Bad Request")
-    })?;
+    let hx_trigger = header
+        .get("HX-Trigger")
+        .ok_or_else(|| {
+            tracing::error!("Failed to get HX-Trigger header");
+            AppError::new(StatusCode::BAD_REQUEST, "Bad Request")
+        })?
+        .to_str()
+        .map_err(|err| {
+            tracing::error!("Failed to convert HX-Trigger header to str: {:?}", err);
+            AppError::new(StatusCode::BAD_REQUEST, "Bad Request")
+        })?;
 
     match hx_trigger {
         "account_username" => {
@@ -67,6 +74,19 @@ pub async fn create_account(
             }
         }
         "account_form" => {
+            if account_form.username.is_empty() || account_form.password.is_empty() {
+                let response = Response::builder()
+                    .status(StatusCode::OK)
+                    .header("HX-Retarget", "#account_error")
+                    .body(Body::new("Input fields cannot be empty".to_string()))
+                    .map_err(|err| {
+                        tracing::error!("Failed to build response: {:?}", err);
+                        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                    })?;
+
+                return Ok(response);
+            }
+
             let row =
                 User::get_user_by_username(&account_form.username, &pool, vec!["id", "password"])
                     .await?;
@@ -103,10 +123,13 @@ pub async fn create_account(
                     Ok((cookie_jar, render_screen_section().render()).into_response())
                 } else {
                     let response = Response::builder()
-                        .status(StatusCode::BAD_REQUEST)
+                        .status(StatusCode::OK)
                         .header("HX-Retarget", "#account_error")
                         .body(Body::new("Invalid password".to_string()))
-                        .unwrap();
+                        .map_err(|err| {
+                            tracing::error!("Failed to build response: {:?}", err);
+                            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                        })?;
 
                     Ok(response)
                 }
@@ -147,10 +170,13 @@ pub async fn create_account(
                     Ok((cookie_jar, render_screen_section().render()).into_response())
                 } else {
                     let response = Response::builder()
-                        .status(StatusCode::BAD_REQUEST)
+                        .status(StatusCode::OK)
                         .header("HX-Retarget", "#account_error")
                         .body(Body::new("Passwords do not match".to_string()))
-                        .unwrap();
+                        .map_err(|err| {
+                            tracing::error!("Failed to build response: {:?}", err);
+                            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                        })?;
 
                     Ok(response)
                 }

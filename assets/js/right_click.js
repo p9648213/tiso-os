@@ -32,6 +32,10 @@ export function setupRightClickContextMenu() {
 
     let contextMenu = document.createElement("div");
 
+    contextMenu.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
+
     contextMenu.setAttribute("id", "context_menu");
     contextMenu.classList.add(
       "w-50",

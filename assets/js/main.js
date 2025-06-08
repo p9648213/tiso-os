@@ -9,7 +9,7 @@ window.addEventListener("htmx:beforeRequest", function () {
 });
 
 window.addEventListener("htmx:afterRequest", function (event) {
-  document.body.style.cursor = "default";
+  document.body.style.cursor = "auto";
 
   if (event?.detail?.failed && event?.detail?.xhr?.responseText) {
     // handler error

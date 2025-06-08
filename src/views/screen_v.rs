@@ -56,9 +56,8 @@ pub fn render_account_form(account_form: &AccountForm, register_mode: bool) -> i
         form
             id="account_form"
             hx-post="/action/create-account"
-            hx-target="body"
             hx-trigger="submit"
-            hx-indicator="#account_button"
+            hx-target="body"
             class="relative flex flex-col space-y-2 text-black"
         {
 
@@ -68,19 +67,20 @@ pub fn render_account_form(account_form: &AccountForm, register_mode: bool) -> i
                 name="username"
                 placeholder="Username"
                 value=(account_form.username)
+                autofocus="true"
+                autocomplete="off"
                 hx-post="/action/create-account"
                 hx-swap=(if register_mode { "outerHTML" } else { "none" })
                 hx-target=(if register_mode { "#account_confirm_password" } else { "" })
-                hx-trigger="input delay:300ms"
-                hx-indicator="#account_button";
+                hx-trigger="input delay:300ms";
             input
                 class="bg-white px-3 rounded-sm h-8"
                 name="password" placeholder="Password"
                 type="password"
                 value=(account_form.password);
             (render_comfirm_password(&account_form.confirm_password, register_mode))
-            button id="account_button" type="submit" class="bg-white hover:opacity-90 rounded-sm h-8 cursor-pointer" { "Sign in" }
-            div id="account_error" class="-bottom-5 absolute text-red-400" {}
+            div id="account_error" class="-bottom-6.5 absolute text-red-400" {}
+            button type="submit" class="hidden" {}
         }
     }
 }
@@ -96,8 +96,7 @@ pub fn render_comfirm_password(value: &Option<String>, register_mode: bool) -> i
             value=(value)
             hx-post="/action/create-account"
             hx-target=(if register_mode { "#account_error" } else { "" })
-            hx-trigger="input delay:300ms"
-            hx-indicator="#account_button";
+            hx-trigger="input delay:300ms";
     }
 }
 
