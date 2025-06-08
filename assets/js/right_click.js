@@ -20,6 +20,10 @@ export function setupRightClickContextMenu() {
   main.addEventListener("contextmenu", (event) => {
     event.preventDefault();
 
+    if (document.body.style.cursor == "wait") {
+      return;
+    }
+
     let contextMenuEl = document.getElementById("context_menu");
 
     if (contextMenuEl) {
@@ -62,7 +66,6 @@ export function setupRightClickContextMenu() {
           if (targetId) {
             htmx.ajax("POST", `/action/create-txt`, {
               target: `#${targetId}`,
-              source: `#${id}`,
             });
           }
         });
@@ -72,7 +75,6 @@ export function setupRightClickContextMenu() {
           if (targetId) {
             htmx.ajax("POST", `/action/create-folder`, {
               target: `#${targetId}`,
-              source: `#${id}`,
             });
           }
         });

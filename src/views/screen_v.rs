@@ -78,27 +78,24 @@ pub fn render_account_form(account_form: &AccountForm, register_mode: bool) -> i
                 name="password" placeholder="Password"
                 type="password"
                 value=(account_form.password);
-            @if register_mode {
-                (render_comfirm_password(&account_form.confirm_password))
-            }
-
+            (render_comfirm_password(&account_form.confirm_password, register_mode))
             button id="account_button" type="submit" class="bg-white hover:opacity-90 rounded-sm h-8 cursor-pointer" { "Sign in" }
             div id="account_error" class="-bottom-5 absolute text-red-400" {}
         }
     }
 }
 
-pub fn render_comfirm_password(value: &Option<String>) -> impl Renderable {
+pub fn render_comfirm_password(value: &Option<String>, register_mode: bool) -> impl Renderable {
     maud_move! {
         input
             class="bg-white px-3 rounded-sm h-8"
             name="confirm_password"
             id="account_confirm_password"
             placeholder="Confirm Password"
-            type="password"
+            type=(if register_mode { "password" } else { "hidden" })
             value=(value)
             hx-post="/action/create-account"
-            hx-target="#account_error"
+            hx-target=(if register_mode { "#account_error" } else { "" })
             hx-trigger="input delay:300ms"
             hx-indicator="#account_button";
     }

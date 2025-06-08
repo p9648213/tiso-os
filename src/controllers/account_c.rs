@@ -43,11 +43,17 @@ pub async fn create_account(
             let row = User::get_user_by_username(&account_form.username, &pool, vec!["id"]).await?;
 
             if row.is_some() {
-                Ok(().into_response())
+                Ok(
+                    render_comfirm_password(&account_form.confirm_password, false)
+                        .render()
+                        .into_response(),
+                )
             } else {
-                Ok(render_comfirm_password(&account_form.confirm_password)
-                    .render()
-                    .into_response())
+                Ok(
+                    render_comfirm_password(&account_form.confirm_password, true)
+                        .render()
+                        .into_response(),
+                )
             }
         }
         "account_confirm_password" => {

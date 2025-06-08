@@ -4,7 +4,13 @@ htmx.config.selfRequestsOnly = true;
 htmx.config.historyCacheSize = 0;
 htmx.config.refreshOnHistoryMiss = true;
 
+window.addEventListener("htmx:beforeRequest", function () {
+  document.body.style.cursor = "wait";
+});
+
 window.addEventListener("htmx:afterRequest", function (event) {
+  document.body.style.cursor = "default";
+
   if (event?.detail?.failed && event?.detail?.xhr?.responseText) {
     // handler error
   }
