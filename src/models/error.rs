@@ -1,4 +1,6 @@
 use axum::{http::StatusCode, response::IntoResponse};
+
+#[derive(Debug)]
 pub struct AppError(StatusCode, String);
 
 impl AppError {

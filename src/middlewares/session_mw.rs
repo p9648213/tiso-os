@@ -23,10 +23,12 @@ pub async fn session_middleware(
         .map(|cookie| cookie.value())
         .unwrap_or_default();
 
-    let id = session_map.get(session);
+    let user_id = session_map.get(session);
 
-    match id {
-        Some(id) => request.extensions_mut().insert(UserId(Some(id.to_owned()))),
+    match user_id {
+        Some(user_id) => request
+            .extensions_mut()
+            .insert(UserId(Some(user_id.to_owned()))),
         None => request.extensions_mut().insert(UserId(None)),
     };
 

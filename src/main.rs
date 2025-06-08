@@ -1,4 +1,8 @@
-use tiso_os::{contanst::PORT, router::create_router, utilities::tracing::init_tracing};
+use tiso_os::{
+    contanst::PORT,
+    router::create_router,
+    utilities::{migration::init_database, postgres::create_pool, tracing::init_tracing},
+};
 
 #[tokio::main]
 async fn main() {
@@ -8,7 +12,11 @@ async fn main() {
         .await
         .unwrap();
 
-    let app = create_router();
+    let pool = create_pool();
+
+    init_database(&pool).await;
+
+    let app = create_router(pool);
 
     tracing::info!("Listening on {}", listener.local_addr().unwrap());
 

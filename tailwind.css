@@ -17,3 +17,7 @@ html,
 body {
   height: 100%;
 }
+
+button.htmx-request {
+  pointer-events: none;
+}

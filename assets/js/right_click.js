@@ -1,13 +1,8 @@
 const CONTEXT_SCREEN_MENU = ["Create document", "Create folder"];
 
-const main = document.querySelector("main");
-const mainHeight = document.getElementById("main_height");
-const mainWidth = document.getElementById("main_width");
-
-mainHeight.value = main.clientHeight;
-mainWidth.value = main.clientWidth;
-
 export function setupRightClickContextMenu() {
+  const main = document.querySelector("main");
+
   document.addEventListener("mouseup", (event) => {
     let contextMenuEl = document.getElementById("context_menu");
 

@@ -1,4 +1,8 @@
 pub const PORT: u16 = 8080;
 pub const ALLOW_ORIGIN: &str = "http://localhost:8080";
+pub const PG_SOCKET_DIR: &str = "/var/run/postgresql";
+pub const PG_DBNAME: &str = "tiso";
+pub const PG_USER: &str = "postgres";
+pub const PG_PASSWORD: &str = "Ad12345#";
 pub const MIN_COMPRESS_SIZE: u16 = 10240;
 pub const MIN_RECTANGLE_WIDTH: u16 = 100;

@@ -4,13 +4,19 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+argon2 = { version = "0.5.3", features = ["std"] }
 axum = { version = "0.8.4", features = ["macros"] }
 axum-extra = { version = "0.10.1", features = ["cookie"] }
+deadpool-postgres = "0.14.1"
 hypertext = { version = "0.8.0", features = ["axum", "htmx"] }
-memory-serve = { version = "1.2.1", features = ["force-embed"] }
+memory-serve = { version = "1.2.1" }
 papaya = "0.2.1"
+postgres-types = "0.2.9"
+rand = { version = "0.9.1", features = ["thread_rng"] }
 serde = { version = "1.0.219", features = ["derive"] }
+time = "0.3.41"
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
+tokio-postgres = "0.7.13"
 tower-http = { version = "0.6.6", features = [
   "compression-zstd",
   "fs",

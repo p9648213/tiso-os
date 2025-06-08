@@ -1,9 +1,4 @@
-use serde::Deserialize;
-
+pub mod account_c;
+pub mod folder_c;
 pub mod screen_c;
-
-#[derive(Deserialize)]
-pub struct GridForm {
-    pub height: u16,
-    pub width: u16,
-}
+pub mod txt_c;

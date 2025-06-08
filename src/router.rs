@@ -2,7 +2,12 @@ use std::sync::Arc;
 
 use crate::{
     contanst::MIN_COMPRESS_SIZE,
-    controllers::screen_c::{create_folder, create_screen_grid, create_txt, get_screen},
+    controllers::{
+        account_c::create_account,
+        folder_c::create_folder,
+        screen_c::{create_screen_grid, get_screen},
+        txt_c::create_txt,
+    },
     middlewares::{csrf_mw::csrf_middleware, log_mw::request_log, session_mw::session_middleware},
     models::state::AppState,
 };
@@ -15,6 +20,7 @@ use axum::{
     routing::{get, post},
 };
 
+use deadpool_postgres::Pool;
 use memory_serve::MemoryServe;
 use papaya::HashMap;
 use tower_http::{
@@ -33,7 +39,7 @@ fn response_log(response: &Response<Body>, latency: std::time::Duration, _: &Spa
     tracing::info!("<- Response: status {} in {:?}", response.status(), latency)
 }
 
-pub async fn create_router() -> Router {
+pub async fn create_router(pool: Pool) -> Router {
     let memory_router = MemoryServe::from_env().into_router();
 
     let compression_layer = CompressionLayer::new()
@@ -47,6 +53,7 @@ pub async fn create_router() -> Router {
 
     let app_state = AppState {
         session_map: Arc::new(HashMap::new()),
+        pool,
     };
 
     let action_routes = Router::new().nest(
@@ -55,6 +62,7 @@ pub async fn create_router() -> Router {
             .route("/create-txt", post(create_txt))
             .route("/create-folder", post(create_folder))
             .route("/create-grid", post(create_screen_grid))
+            .route("/create-account", post(create_account))
             .layer(from_fn(csrf_middleware)),
     );
 
