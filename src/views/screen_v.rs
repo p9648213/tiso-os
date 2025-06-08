@@ -17,7 +17,8 @@ pub fn render_welcome_screen() -> impl Renderable {
     };
 
     maud_move!(
-        html {
+        (Raw(r#"<!DOCTYPE html>"#))
+        html lang="en" {
             head {
                 meta charset="UTF-8";
                 meta name="viewport" content="width=device-width,initial-scale=1";
@@ -102,7 +103,8 @@ pub fn render_comfirm_password(value: &Option<String>, register_mode: bool) -> i
 
 pub fn render_screen() -> impl Renderable {
     maud! {
-        html {
+        (Raw(r#"<!DOCTYPE html>"#))
+        html lang="en" {
             head {
                 meta charset="UTF-8";
                 meta name="viewport" content="width=device-width,initial-scale=1";
