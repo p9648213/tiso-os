@@ -164,13 +164,13 @@ pub fn render_screen_item(item_type: ItemType) -> impl Renderable {
                 @match item_type {
                     ItemType::Text => {
                         img class="w-9 h-9" src="/assets/images/text-editor.svg";
-                        div class="max-w-20 overflow-ellipsis overflow-hidden text-white text-sm whitespace-nowrap select-none" {
-                            "New Text.txt"
+                        div class="max-w-[75px] overflow-ellipsis overflow-hidden text-white text-sm text-center select-none" {
+                            "New Text"
                         }
                     }
                     ItemType::Folder => {
                         img class="w-9 h-9" src="/assets/images/folder.svg";
-                        div class="max-w-20 overflow-ellipsis overflow-hidden text-white text-sm whitespace-nowrap select-none" {
+                        div class="max-w-[75px] overflow-ellipsis overflow-hidden text-white text-sm text-center select-none" {
                             "New Folder"
                         }
                     }

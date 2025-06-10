@@ -3,6 +3,7 @@ use crate::utilities::postgres::{query_one, query_optional};
 use super::error::AppError;
 
 use deadpool_postgres::Pool;
+use time::OffsetDateTime;
 use tokio_postgres::Row;
 
 #[derive(Debug, Clone)]
@@ -10,6 +11,7 @@ pub struct User {
     pub id: Option<i32>,
     pub username: Option<String>,
     pub password: Option<String>,
+    pub created_at: Option<OffsetDateTime>
 }
 
 impl User {
@@ -25,11 +27,15 @@ impl User {
         let password: Option<String> = row
             .try_get(format!("{}password", prefix).as_str())
             .unwrap_or(None);
+        let created_at: Option<OffsetDateTime> = row
+            .try_get(format!("{}created_at", prefix).as_str())
+            .unwrap_or(None);
 
         Self {
             id,
             username,
             password,
+            created_at
         }
     }
 

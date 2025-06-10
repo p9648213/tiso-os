@@ -8,7 +8,18 @@ pub async fn init_database(pool: &Pool) {
       username VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW()
-    )";
+    );";
+
+    excute(query, &[], pool).await.unwrap();
+
+    let query = 
+    "DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'foldertype') THEN
+          CREATE TYPE FolderType AS ENUM ('Normal', 'Root', 'Desktop');
+        END IF;
+      END
+    $$;";
 
     excute(query, &[], pool).await.unwrap();
 
@@ -16,6 +27,7 @@ pub async fn init_database(pool: &Pool) {
       id SERIAL PRIMARY KEY,
       user_id INT NOT NULL,
       folder_name VARCHAR(255) NOT NULL,
+      folder_type FolderType NOT NULL,
       parent_folder_id INT,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -29,7 +41,7 @@ pub async fn init_database(pool: &Pool) {
       user_id INT NOT NULL,
       folder_id INT,
       file_name VARCHAR(255) NOT NULL,
-      file_type VARCHAR(255) NOT NULL,
+      execute_path VARCHAR(255) NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE

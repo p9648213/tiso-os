@@ -4,13 +4,20 @@ use postgres_types::ToSql;
 use tokio_postgres::{NoTls, Row};
 
 use crate::{
-    contanst::{PG_DBNAME, PG_PASSWORD, PG_SOCKET_DIR, PG_USER},
+    contanst::{
+        PG_DBNAME, PG_HOST, PG_PASSWORD, PG_PORT, PG_SOCKET_DIR, PG_USER, POSTGRE_UNIX_SOCKET,
+    },
     models::error::AppError,
 };
 
 fn create_config() -> tokio_postgres::Config {
     let mut cfg = tokio_postgres::Config::new();
-    cfg.host(PG_SOCKET_DIR);
+    if POSTGRE_UNIX_SOCKET {
+        cfg.host(PG_SOCKET_DIR);
+    } else {
+        cfg.host(PG_HOST);
+        cfg.port(PG_PORT);
+    }
     cfg.dbname(PG_DBNAME);
     cfg.user(PG_USER);
     cfg.password(PG_PASSWORD);

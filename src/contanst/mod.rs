@@ -1,6 +1,9 @@
 pub const PORT: u16 = 8080;
 pub const ALLOW_ORIGIN: &str = "http://localhost:8080";
+pub const POSTGRE_UNIX_SOCKET: bool = false;
 pub const PG_SOCKET_DIR: &str = "/var/run/postgresql";
+pub const PG_HOST: &str = "localhost";
+pub const PG_PORT: u16 = 5432;
 pub const PG_DBNAME: &str = "tiso";
 pub const PG_USER: &str = "postgres";
 pub const PG_PASSWORD: &str = "Ad12345#";
