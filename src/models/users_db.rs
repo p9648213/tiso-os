@@ -2,7 +2,8 @@ use crate::utilities::postgres::{query_one, query_optional};
 
 use super::error::AppError;
 
-use deadpool_postgres::Pool;
+use axum::http::StatusCode;
+use deadpool_postgres::{GenericClient, Pool};
 use time::OffsetDateTime;
 use tokio_postgres::Row;
 
@@ -44,14 +45,17 @@ impl User {
         pool: &Pool,
         columns: Vec<&str>,
     ) -> Result<Option<Row>, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
         let columns = columns.join(",");
 
-        query_optional(
+        client.query_opt(
             &format!("SELECT {} FROM users WHERE username = $1", columns),
             &[&username],
-            pool,
         )
-        .await
     }
 
     pub async fn create_user(username: &str, password: &str, pool: &Pool) -> Result<Row, AppError> {

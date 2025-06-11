@@ -15,7 +15,12 @@ use rand::Rng;
 use serde::Deserialize;
 
 use crate::{
-    models::{error::AppError, state::SessionMap, users_db::User},
+    models::{
+        error::AppError,
+        folders_db::{Folder, FolderType},
+        state::SessionMap,
+        users_db::User,
+    },
     utilities::argon::{compare_password, hash_password},
     views::screen_v::{render_comfirm_password, render_screen_section},
 };
@@ -151,6 +156,9 @@ pub async fn create_account(
                         tracing::error!("No id column or value is null");
                         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
                     })?;
+
+                    Folder::create_folder(user_id, "Desktop", FolderType::Desktop, None, &pool)
+                        .await?;
 
                     let session: i128 = rand::rng().random();
 

@@ -1,3 +1,5 @@
+use std::fmt;
+
 use time::OffsetDateTime;
 use tokio_postgres::{
     Row,
@@ -11,6 +13,12 @@ pub enum FolderType {
     Normal,
     Root,
     Desktop,
+}
+
+impl fmt::Display for FolderType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 pub struct Folder {
@@ -64,7 +72,7 @@ impl Folder {
     ) -> Result<Row, AppError> {
         query_one(
             "INSERT INTO folders (user_id, folder_name, folder_type, parent_folder_id) VALUES ($1, $2, $3, $4) RETURNING id",
-            &[&user_id, &folder_name, &folder_type, &parent_folder_id],
+            &[&user_id, &folder_name, &folder_type.to_string(), &parent_folder_id],
             pool,
         )
         .await

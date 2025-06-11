@@ -1,5 +1,5 @@
 use axum::http::StatusCode;
-use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
+use deadpool_postgres::{GenericClient, Manager, ManagerConfig, Pool, RecyclingMethod};
 use postgres_types::ToSql;
 use tokio_postgres::{NoTls, Row};
 
@@ -9,6 +9,64 @@ use crate::{
     },
     models::error::AppError,
 };
+
+#[async_trait::async_trait]
+pub trait DbExecutor {
+    async fn db_query(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Vec<Row>, AppError>;
+    async fn db_query_one(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Row, AppError>;
+    async fn db_query_optional(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Option<Row>, AppError>;
+    async fn db_execute(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<u64, AppError>;
+}
+
+#[async_trait::async_trait]
+impl<T> DbExecutor for T
+where
+    T: GenericClient + Sync,
+{
+    async fn db_query(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Vec<Row>, AppError> {
+        let stmt = self.prepare(query).await.map_err(|e| {
+            tracing::error!("Prepare Error: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+        self.query(&stmt, params).await.map_err(|e| {
+            tracing::error!("query error: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })
+    }
+
+    async fn db_query_one(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Row, AppError> {
+        let stmt = self.prepare(query).await.map_err(|e| {
+            tracing::error!("Prepare Error: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+        self.query_one(&stmt, params).await.map_err(|e| {
+            tracing::error!("query_one error: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })
+    }
+
+    async fn db_query_optional(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Option<Row>, AppError> {
+        let stmt = self.prepare(query).await.map_err(|e| {
+            tracing::error!("Prepare Error: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+        self.query_opt(&stmt, params).await.map_err(|e| {
+            tracing::error!("query_opt error: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })
+    }
+
+    async fn db_execute(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<u64, AppError> {
+        let stmt = self.prepare(query).await.map_err(|e| {
+            tracing::error!("Prepare Error: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+        self.execute(&stmt, params).await.map_err(|e| {
+            tracing::error!("Execute Error: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })
+    }
+}
 
 fn create_config() -> tokio_postgres::Config {
     let mut cfg = tokio_postgres::Config::new();
@@ -34,96 +92,4 @@ pub fn create_pool() -> Pool {
     let manager = Manager::from_config(pg_config, NoTls, manager_config);
 
     Pool::builder(manager).max_size(16).build().unwrap()
-}
-
-pub async fn query(
-    query: &str,
-    params: &[&(dyn ToSql + Sync)],
-    pool: &Pool,
-) -> Result<Vec<Row>, AppError> {
-    let client = pool.get().await.map_err(|error| {
-        tracing::error!("Couldn't get postgres client: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let stmt = client.prepare(query).await.map_err(|error| {
-        tracing::error!("Couldn't prepare statement: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let row = client.query(&stmt, params).await.map_err(|error| {
-        tracing::error!("Couldn't query statement: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    Ok(row)
-}
-
-pub async fn query_optional(
-    query: &str,
-    params: &[&(dyn ToSql + Sync)],
-    pool: &Pool,
-) -> Result<Option<Row>, AppError> {
-    let client = pool.get().await.map_err(|error| {
-        tracing::error!("Couldn't get postgres client: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let stmt = client.prepare(query).await.map_err(|error| {
-        tracing::error!("Couldn't prepare statement: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let row = client.query_opt(&stmt, params).await.map_err(|error| {
-        tracing::error!("Couldn't query statement: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    Ok(row)
-}
-
-pub async fn query_one(
-    query: &str,
-    params: &[&(dyn ToSql + Sync)],
-    pool: &Pool,
-) -> Result<Row, AppError> {
-    let client = pool.get().await.map_err(|error| {
-        tracing::error!("Couldn't get postgres client: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let stmt = client.prepare(query).await.map_err(|error| {
-        tracing::error!("Couldn't prepare statement: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let row = client.query_one(&stmt, params).await.map_err(|error| {
-        tracing::error!("Couldn't query statement: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    Ok(row)
-}
-
-pub async fn excute(
-    query: &str,
-    params: &[&(dyn ToSql + Sync)],
-    pool: &Pool,
-) -> Result<u64, AppError> {
-    let client = pool.get().await.map_err(|error| {
-        tracing::error!("Couldn't get postgres client: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let stmt = client.prepare(query).await.map_err(|error| {
-        tracing::error!("Couldn't prepare statement: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let row = client.execute(&stmt, params).await.map_err(|error| {
-        tracing::error!("Couldn't execute statement: {:?}", error);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    Ok(row)
 }
