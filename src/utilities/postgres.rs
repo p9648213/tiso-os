@@ -12,10 +12,19 @@ use crate::{
 
 #[async_trait::async_trait]
 pub trait DbExecutor {
-    async fn db_query(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Vec<Row>, AppError>;
-    async fn db_query_one(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Row, AppError>;
-    async fn db_query_optional(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Option<Row>, AppError>;
-    async fn db_execute(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<u64, AppError>;
+    async fn query(
+        &self,
+        query: &str,
+        params: &[&(dyn ToSql + Sync)],
+    ) -> Result<Vec<Row>, AppError>;
+    async fn query_one(&self, query: &str, params: &[&(dyn ToSql + Sync)])
+    -> Result<Row, AppError>;
+    async fn query_optional(
+        &self,
+        query: &str,
+        params: &[&(dyn ToSql + Sync)],
+    ) -> Result<Option<Row>, AppError>;
+    async fn execute(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<u64, AppError>;
 }
 
 #[async_trait::async_trait]
@@ -23,7 +32,11 @@ impl<T> DbExecutor for T
 where
     T: GenericClient + Sync,
 {
-    async fn db_query(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Vec<Row>, AppError> {
+    async fn query(
+        &self,
+        query: &str,
+        params: &[&(dyn ToSql + Sync)],
+    ) -> Result<Vec<Row>, AppError> {
         let stmt = self.prepare(query).await.map_err(|e| {
             tracing::error!("Prepare Error: {:?}", e);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
@@ -34,7 +47,11 @@ where
         })
     }
 
-    async fn db_query_one(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Row, AppError> {
+    async fn query_one(
+        &self,
+        query: &str,
+        params: &[&(dyn ToSql + Sync)],
+    ) -> Result<Row, AppError> {
         let stmt = self.prepare(query).await.map_err(|e| {
             tracing::error!("Prepare Error: {:?}", e);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
@@ -45,7 +62,11 @@ where
         })
     }
 
-    async fn db_query_optional(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<Option<Row>, AppError> {
+    async fn query_optional(
+        &self,
+        query: &str,
+        params: &[&(dyn ToSql + Sync)],
+    ) -> Result<Option<Row>, AppError> {
         let stmt = self.prepare(query).await.map_err(|e| {
             tracing::error!("Prepare Error: {:?}", e);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
@@ -56,7 +77,7 @@ where
         })
     }
 
-    async fn db_execute(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<u64, AppError> {
+    async fn execute(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<u64, AppError> {
         let stmt = self.prepare(query).await.map_err(|e| {
             tracing::error!("Prepare Error: {:?}", e);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")

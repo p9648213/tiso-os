@@ -1,9 +1,9 @@
-use crate::utilities::postgres::{query_one, query_optional};
+use crate::{models::folders_db::FolderType, utilities::postgres::DbExecutor};
 
 use super::error::AppError;
 
 use axum::http::StatusCode;
-use deadpool_postgres::{GenericClient, Pool};
+use deadpool_postgres::Pool;
 use time::OffsetDateTime;
 use tokio_postgres::Row;
 
@@ -12,7 +12,7 @@ pub struct User {
     pub id: Option<i32>,
     pub username: Option<String>,
     pub password: Option<String>,
-    pub created_at: Option<OffsetDateTime>
+    pub created_at: Option<OffsetDateTime>,
 }
 
 impl User {
@@ -36,14 +36,14 @@ impl User {
             id,
             username,
             password,
-            created_at
+            created_at,
         }
     }
 
     pub async fn get_user_by_username(
         username: &str,
-        pool: &Pool,
         columns: Vec<&str>,
+        pool: &Pool,
     ) -> Result<Option<Row>, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
@@ -52,18 +52,50 @@ impl User {
 
         let columns = columns.join(",");
 
-        client.query_opt(
-            &format!("SELECT {} FROM users WHERE username = $1", columns),
-            &[&username],
-        )
+        client
+            .query_optional(
+                &format!("SELECT {} FROM users WHERE username = $1", columns),
+                &[&username],
+            )
+            .await
     }
 
-    pub async fn create_user(username: &str, password: &str, pool: &Pool) -> Result<Row, AppError> {
-        query_one(
-            "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
-            &[&username, &password],
-            pool,
+    pub async fn create_user(username: &str, password: &str, pool: &Pool) -> Result<i32, AppError> {
+        let mut client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let txn = client.transaction().await.map_err(|err| {
+            tracing::error!("Couldn't start transaction: {:?}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let row = txn
+            .query_one(
+                "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
+                &[&username, &password],
+            )
+            .await?;
+
+        let user = User::try_from(&row, None);
+
+        let user_id = user.id.ok_or_else(|| {
+            tracing::error!("No id column or value is null");
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        txn.execute(
+            "INSERT INTO folders (user_id, folder_name, folder_type) VALUES ($1, $2, $3)",
+            &[&user_id, &"Desktop", &FolderType::Desktop],
         )
-        .await
+        .await?;
+
+        txn.commit().await.map_err(|err| {
+            tracing::error!("Couldn't commit transaction: {:?}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        Ok(user_id)
     }
 }

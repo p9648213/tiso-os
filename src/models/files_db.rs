@@ -1,7 +1,9 @@
+use axum::http::StatusCode;
+use deadpool_postgres::Pool;
 use time::OffsetDateTime;
 use tokio_postgres::Row;
 
-use crate::{models::error::AppError, utilities::postgres::query_one};
+use crate::{models::error::AppError, utilities::postgres::DbExecutor};
 
 pub struct File {
     pub id: Option<i32>,
@@ -50,12 +52,16 @@ impl File {
         folder_id: i32,
         file_name: &str,
         execute_path: &str,
-        pool: &deadpool_postgres::Pool,
+        pool: &Pool,
     ) -> Result<Row, AppError> {
-        query_one(
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        client.query_one(
             "INSERT INTO files (user_id, folder_id, file_name, execute_path) VALUES ($1, $2, $3, $4) RETURNING id",
             &[&user_id, &folder_id, &file_name, &execute_path],
-            pool,
         )
         .await
     }

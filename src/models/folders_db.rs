@@ -1,24 +1,19 @@
-use std::fmt;
-
+use axum::http::StatusCode;
+use deadpool_postgres::Pool;
 use time::OffsetDateTime;
 use tokio_postgres::{
     Row,
     types::{FromSql, ToSql},
 };
 
-use crate::{models::error::AppError, utilities::postgres::query_one};
+use crate::{models::error::AppError, utilities::postgres::DbExecutor};
 
 #[derive(Debug, ToSql, FromSql, Clone)]
+#[postgres(name = "foldertype")]
 pub enum FolderType {
     Normal,
     Root,
     Desktop,
-}
-
-impl fmt::Display for FolderType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
-    }
 }
 
 pub struct Folder {
@@ -68,12 +63,16 @@ impl Folder {
         folder_name: &str,
         folder_type: FolderType,
         parent_folder_id: Option<i32>,
-        pool: &deadpool_postgres::Pool,
+        pool: &Pool,
     ) -> Result<Row, AppError> {
-        query_one(
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        client.query_one(
             "INSERT INTO folders (user_id, folder_name, folder_type, parent_folder_id) VALUES ($1, $2, $3, $4) RETURNING id",
-            &[&user_id, &folder_name, &folder_type.to_string(), &parent_folder_id],
-            pool,
+            &[&user_id, &folder_name, &folder_type, &parent_folder_id],
         )
         .await
     }

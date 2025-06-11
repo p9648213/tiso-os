@@ -1,8 +1,10 @@
 use deadpool_postgres::Pool;
 
-use crate::utilities::postgres::{excute, query_one};
+use crate::utilities::postgres::DbExecutor;
 
 pub async fn init_database(pool: &Pool) {
+    let client = pool.get().await.unwrap();
+
     let sql = "CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       username VARCHAR(255) UNIQUE NOT NULL,
@@ -10,7 +12,7 @@ pub async fn init_database(pool: &Pool) {
       created_at TIMESTAMPTZ DEFAULT NOW()
     );";
 
-    excute(sql, &[], pool).await.unwrap();
+    client.execute(sql, &[]).await.unwrap();
 
     let sql = "DO $$
       BEGIN
@@ -20,7 +22,7 @@ pub async fn init_database(pool: &Pool) {
       END
     $$;";
 
-    excute(sql, &[], pool).await.unwrap();
+    client.execute(sql, &[]).await.unwrap();
 
     let sql = "CREATE TABLE IF NOT EXISTS folders (
       id SERIAL PRIMARY KEY,
@@ -33,7 +35,7 @@ pub async fn init_database(pool: &Pool) {
       FOREIGN KEY (parent_folder_id) REFERENCES folders(id) ON DELETE CASCADE
     );";
 
-    excute(sql, &[], pool).await.unwrap();
+    client.execute(sql, &[]).await.unwrap();
 
     let sql = "CREATE TABLE IF NOT EXISTS files (
       id SERIAL PRIMARY KEY,
@@ -46,12 +48,12 @@ pub async fn init_database(pool: &Pool) {
       FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE
     );";
 
-    excute(sql, &[], pool).await.unwrap();
+    client.execute(sql, &[]).await.unwrap();
 
     let sql = "SELECT * from files WHERE file_name = 'Calculator'";
 
-    if query_one(sql, &[], pool).await.is_err() {
+    if client.query(sql, &[]).await.unwrap().is_empty() {
         let sql = "INSERT INTO files (file_name, execute_path) VALUES ('Calculator', '/execute/calculator');";
-        excute(sql, &[], pool).await.unwrap();
+        client.execute(sql, &[]).await.unwrap();
     }
 }

@@ -15,12 +15,7 @@ use rand::Rng;
 use serde::Deserialize;
 
 use crate::{
-    models::{
-        error::AppError,
-        folders_db::{Folder, FolderType},
-        state::SessionMap,
-        users_db::User,
-    },
+    models::{error::AppError, state::SessionMap, users_db::User},
     utilities::argon::{compare_password, hash_password},
     views::screen_v::{render_comfirm_password, render_screen_section},
 };
@@ -52,7 +47,7 @@ pub async fn create_account(
 
     match hx_trigger {
         "account_username" => {
-            let row = User::get_user_by_username(&account_form.username, &pool, vec!["id"]).await?;
+            let row = User::get_user_by_username(&account_form.username, vec!["id"], &pool).await?;
 
             if row.is_some() {
                 Ok(
@@ -93,7 +88,7 @@ pub async fn create_account(
             }
 
             let row =
-                User::get_user_by_username(&account_form.username, &pool, vec!["id", "password"])
+                User::get_user_by_username(&account_form.username, vec!["id", "password"], &pool)
                     .await?;
 
             if let Some(row) = row {
@@ -143,22 +138,12 @@ pub async fn create_account(
                 let confirm_password = account_form.confirm_password.unwrap_or_default();
 
                 if password == confirm_password {
-                    let row = User::create_user(
+                    let user_id = User::create_user(
                         &account_form.username,
                         &hash_password(&password)?,
                         &pool,
                     )
                     .await?;
-
-                    let user = User::try_from(&row, None);
-
-                    let user_id = user.id.ok_or_else(|| {
-                        tracing::error!("No id column or value is null");
-                        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-                    })?;
-
-                    Folder::create_folder(user_id, "Desktop", FolderType::Desktop, None, &pool)
-                        .await?;
 
                     let session: i128 = rand::rng().random();
 
