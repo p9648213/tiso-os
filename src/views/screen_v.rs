@@ -2,7 +2,9 @@ use hypertext::{
     GlobalAttributes, HtmxAttributes, Raw, Renderable, html_elements, maud, maud_move,
 };
 
-use crate::{contanst::MIN_RECTANGLE_WIDTH, controllers::account_c::AccountForm};
+use crate::{
+    contanst::MIN_RECTANGLE_WIDTH, controllers::account_c::AccountForm, models::folders_db::Folder,
+};
 
 pub enum ItemType {
     Text,
@@ -138,7 +140,7 @@ pub fn render_screen_section() -> impl Renderable {
     }
 }
 
-pub fn render_screen_grid(height: u16, width: u16) -> impl Renderable {
+pub fn render_screen_grid(height: u16, width: u16, desktop_folder: Folder) -> impl Renderable {
     let rows = height / MIN_RECTANGLE_WIDTH;
     let cols = width / MIN_RECTANGLE_WIDTH;
     let rectangle_width = width as f32 / cols as f32 - 0.1;

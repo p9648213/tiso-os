@@ -58,6 +58,29 @@ impl Folder {
         }
     }
 
+    pub async fn get_desktop_folders(
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Row, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let columns = columns.join(",");
+
+        client
+            .query_one(
+                &format!(
+                    "SELECT {} FROM folders WHERE user_id = $1 AND folder_type = $2",
+                    columns
+                ),
+                &[&user_id, &FolderType::Desktop],
+            )
+            .await
+    }
+
     pub async fn create_folder(
         user_id: i32,
         folder_name: &str,
