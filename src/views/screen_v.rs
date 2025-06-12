@@ -148,6 +148,7 @@ pub fn render_screen_grid(height: u16, width: u16, desktop_folder: Folder) -> im
     maud_move! {
         input id="screen_rows" type="hidden" value=(rows);
         input id="screen_cols" type="hidden" value=(cols);
+        input id="desktop_id" type="hidden" value=(desktop_folder.id);
 
         @for row in 0..rows {
             @for col in 0..cols {

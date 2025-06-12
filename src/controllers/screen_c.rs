@@ -1,4 +1,4 @@
-use axum::{Extension, Form, extract::State, http::StatusCode, response::IntoResponse};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, Extension, Form};
 use deadpool_postgres::Pool;
 use hypertext::Renderable;
 use serde::Deserialize;
@@ -23,9 +23,9 @@ pub async fn get_screen(Extension(user_id): Extension<UserId>) -> impl IntoRespo
 }
 
 pub async fn create_screen_grid(
-    Form(form): Form<GridForm>,
-    Extension(user_id): Extension<UserId>,
     State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+    Form(form): Form<GridForm>,
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = user_id
         .0
@@ -37,7 +37,8 @@ pub async fn create_screen_grid(
         })?;
 
     let rows =
-        Folder::get_desktop_folders(user_id, vec!["folder_name", "folder_type"], &pool).await?;
+        Folder::get_desktop_folders(user_id, vec!["id", "folder_name", "folder_type"], &pool)
+            .await?;
 
     let desktop_folders = Folder::try_from(&rows, None);
 

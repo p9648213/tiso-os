@@ -25,6 +25,7 @@ export function setupRightClickContextMenu() {
     }
 
     let contextMenuEl = document.getElementById("context_menu");
+    let desktopId = document.getElementById("desktop_id").value;
 
     if (contextMenuEl) {
       document.body.removeChild(contextMenuEl);

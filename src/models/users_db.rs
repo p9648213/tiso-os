@@ -86,8 +86,16 @@ impl User {
         })?;
 
         txn.execute(
-            "INSERT INTO folders (user_id, folder_name, folder_type) VALUES ($1, $2, $3)",
-            &[&user_id, &"Desktop", &FolderType::Desktop],
+            "INSERT INTO folders (user_id, folder_name, folder_type) VALUES 
+                ($1, $2, $3), 
+                ($1, $4, $5)",
+            &[
+                &user_id,
+                &"Desktop",
+                &FolderType::Desktop,
+                &"Root",
+                &FolderType::Root,
+            ],
         )
         .await?;
 
