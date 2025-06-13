@@ -47,6 +47,36 @@ impl File {
         }
     }
 
+    pub fn try_from_vec(rows: Vec<Row>, prefix: Option<&str>) -> Vec<Self> {
+        rows.into_iter()
+            .map(|row| Self::try_from(&row, prefix))
+            .collect()
+    }
+
+    pub async fn get_files_by_folder_id(
+        folder_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Vec<Row>, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let columns = columns.join(",");
+
+        client
+            .query(
+                &format!("SELECT {} FROM files WHERE folder_id = $1", columns),
+                &[&folder_id],
+            )
+            .await
+            .map_err(|error| {
+                tracing::error!("Couldn't query postgres: {:?}", error);
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            })
+    }
+
     pub async fn create_file(
         user_id: i32,
         folder_id: i32,

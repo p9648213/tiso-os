@@ -1,11 +1,11 @@
-use axum::{extract::State, http::StatusCode, response::IntoResponse, Extension, Form};
+use axum::{Extension, Form, extract::State, http::StatusCode, response::IntoResponse};
 use deadpool_postgres::Pool;
 use hypertext::Renderable;
 use serde::Deserialize;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{error::AppError, folders_db::Folder},
+    models::{error::AppError, files_db::File, folders_db::Folder},
     views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
 };
 
@@ -36,11 +36,26 @@ pub async fn create_screen_grid(
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
+    let rows = Folder::get_desktop_folders(user_id, vec!["id"], &pool).await?;
+
+    let desktop_folder = Folder::try_from(&rows, None);
+
+    let desktop_id = desktop_folder.id.ok_or_else(|| {
+        tracing::error!("No id column or value is null");
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+    })?;
+
     let rows =
-        Folder::get_desktop_folders(user_id, vec!["id", "folder_name", "folder_type"], &pool)
+        File::get_files_by_folder_id(desktop_id, vec!["id", "file_name", "execute_path"], &pool)
             .await?;
 
-    let desktop_folders = Folder::try_from(&rows, None);
+    let files = File::try_from_vec(rows, None);
 
-    Ok(render_screen_grid(form.height, form.width, desktop_folders).render())
+    let rows =
+        Folder::get_children_folders(desktop_id, vec!["id", "folder_name", "folder_type"], &pool)
+            .await?;
+
+    let folders = Folder::try_from_vec(rows, None);
+
+    Ok(render_screen_grid(form.height, form.width, desktop_id, files, folders).render())
 }

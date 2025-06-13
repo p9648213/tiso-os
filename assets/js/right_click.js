@@ -69,7 +69,7 @@ export function setupRightClickContextMenu() {
         menuItems.addEventListener("mouseup", () => {
           let targetId = checkEmptySpace();
           if (targetId) {
-            htmx.ajax("POST", `/action/create-txt`, {
+            htmx.ajax("POST", `/action/create-txt/${desktopId}`, {
               target: `#${targetId}`,
             });
           }
@@ -78,7 +78,7 @@ export function setupRightClickContextMenu() {
         menuItems.addEventListener("mouseup", () => {
           let targetId = checkEmptySpace();
           if (targetId) {
-            htmx.ajax("POST", `/action/create-folder`, {
+            htmx.ajax("POST", `/action/create-folder/${desktopId}`, {
               target: `#${targetId}`,
             });
           }

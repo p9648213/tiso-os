@@ -3,13 +3,10 @@ use hypertext::{
 };
 
 use crate::{
-    contanst::MIN_RECTANGLE_WIDTH, controllers::account_c::AccountForm, models::folders_db::Folder,
+    contanst::MIN_RECTANGLE_WIDTH,
+    controllers::account_c::AccountForm,
+    models::{files_db::File, folders_db::Folder},
 };
-
-pub enum ItemType {
-    Text,
-    Folder,
-}
 
 pub fn render_welcome_screen() -> impl Renderable {
     let account_form = AccountForm {
@@ -140,7 +137,13 @@ pub fn render_screen_section() -> impl Renderable {
     }
 }
 
-pub fn render_screen_grid(height: u16, width: u16, desktop_folder: Folder) -> impl Renderable {
+pub fn render_screen_grid(
+    height: u16,
+    width: u16,
+    desktop_id: i32,
+    files: Vec<File>,
+    folders: Vec<Folder>,
+) -> impl Renderable {
     let rows = height / MIN_RECTANGLE_WIDTH;
     let cols = width / MIN_RECTANGLE_WIDTH;
     let rectangle_width = width as f32 / cols as f32 - 0.1;
@@ -148,36 +151,13 @@ pub fn render_screen_grid(height: u16, width: u16, desktop_folder: Folder) -> im
     maud_move! {
         input id="screen_rows" type="hidden" value=(rows);
         input id="screen_cols" type="hidden" value=(cols);
-        input id="desktop_id" type="hidden" value=(desktop_folder.id);
+        input id="desktop_id" type="hidden" value=(desktop_id);
 
         @for row in 0..rows {
             @for col in 0..cols {
                 div class = "flex justify-center items-center relative"
                     style={ "width:" (rectangle_width) "px;" }
                     id={ "item-" (row) "-" (col) } {}
-            }
-        }
-    }
-}
-
-pub fn render_screen_item(item_type: ItemType) -> impl Renderable {
-    maud_move! {
-        div class="absolute inset-0 flex justify-center items-center" {
-            div class="flex flex-col justify-center items-center gap-1 hover:bg-blue-900 p-1.5 rounded-xs w-fit" {
-                @match item_type {
-                    ItemType::Text => {
-                        img class="w-9 h-9" src="/assets/images/text-editor.svg";
-                        div class="max-w-[75px] overflow-ellipsis overflow-hidden text-white text-sm text-center select-none" {
-                            "New Text"
-                        }
-                    }
-                    ItemType::Folder => {
-                        img class="w-9 h-9" src="/assets/images/folder.svg";
-                        div class="max-w-[75px] overflow-ellipsis overflow-hidden text-white text-sm text-center select-none" {
-                            "New Folder"
-                        }
-                    }
-                }
             }
         }
     }

@@ -59,8 +59,8 @@ pub async fn create_router(pool: Pool) -> Router {
     let action_routes = Router::new().nest(
         "/action",
         Router::new()
-            .route("/create-txt", post(create_txt))
-            .route("/create-folder", post(create_folder))
+            .route("/create-txt/{folder_id}", post(create_txt))
+            .route("/create-folder/{folder_id}", post(create_folder))
             .route("/create-grid", post(create_screen_grid))
             .route("/create-account", post(create_account))
             .layer(from_fn(csrf_middleware)),

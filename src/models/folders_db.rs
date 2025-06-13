@@ -58,6 +58,12 @@ impl Folder {
         }
     }
 
+    pub fn try_from_vec(rows: Vec<Row>, prefix: Option<&str>) -> Vec<Self> {
+        rows.into_iter()
+            .map(|row| Self::try_from(&row, prefix))
+            .collect()
+    }
+
     pub async fn get_desktop_folders(
         user_id: i32,
         columns: Vec<&str>,
@@ -77,6 +83,29 @@ impl Folder {
                     columns
                 ),
                 &[&user_id, &FolderType::Desktop],
+            )
+            .await
+    }
+
+    pub async fn get_children_folders(
+        parent_folder_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Vec<Row>, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let columns = columns.join(",");
+
+        client
+            .query(
+                &format!(
+                    "SELECT {} FROM folders WHERE parent_folder_id = $2",
+                    columns
+                ),
+                &[&parent_folder_id],
             )
             .await
     }
