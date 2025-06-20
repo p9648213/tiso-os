@@ -5,7 +5,11 @@ use hypertext::{
 use crate::{
     contanst::MIN_RECTANGLE_WIDTH,
     controllers::account_c::AccountForm,
-    models::{files_db::File, folders_db::Folder},
+    models::{
+        desktop::{DesktopItem, ItemType},
+        folders_db::FolderSortType,
+    },
+    views::{folder_v::render_new_folder, txt_v::render_new_txt},
 };
 
 pub fn render_welcome_screen() -> impl Renderable {
@@ -141,8 +145,8 @@ pub fn render_screen_grid(
     height: u16,
     width: u16,
     desktop_id: i32,
-    files: Vec<File>,
-    folders: Vec<Folder>,
+    sort_type: &FolderSortType,
+    items: Vec<DesktopItem>,
 ) -> impl Renderable {
     let rows = height / MIN_RECTANGLE_WIDTH;
     let cols = width / MIN_RECTANGLE_WIDTH;
@@ -153,11 +157,26 @@ pub fn render_screen_grid(
         input id="screen_cols" type="hidden" value=(cols);
         input id="desktop_id" type="hidden" value=(desktop_id);
 
-        @for row in 0..rows {
-            @for col in 0..cols {
-                div class = "flex justify-center items-center relative"
-                    style={ "width:" (rectangle_width) "px;" }
-                    id={ "item-" (row) "-" (col) } {}
+        @if *sort_type != FolderSortType::Custom {
+            @for row in 0..rows {
+                @for col in 0..cols {
+                    div
+                        class = "flex justify-center items-center relative"
+                        style={ "width:" (rectangle_width) "px;" }
+                        id={ "item-" (row) "-" (col) }
+                    {
+                        @if let Some(item) = items.get((col * rows + row) as usize) {
+                            @match item.item_type.as_ref().expect("No item_type column or value is null") {
+                                ItemType::File => {
+                                    (render_new_txt(item.id.expect("No id column or value is null")))
+                                }
+                                ItemType::Folder => {
+                                    (render_new_folder(item.id.expect("No id column or value is null")))
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

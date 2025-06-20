@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{error::AppError, files_db::File, folders_db::Folder},
+    models::{desktop::DesktopItem, error::AppError, folders_db::Folder},
     views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
 };
 
@@ -36,7 +36,7 @@ pub async fn create_screen_grid(
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
-    let rows = Folder::get_desktop_folders(user_id, vec!["id"], &pool).await?;
+    let rows = Folder::get_desktop_folders(user_id, vec!["id", "sort_type"], &pool).await?;
 
     let desktop_folder = Folder::try_from(&rows, None);
 
@@ -45,17 +45,14 @@ pub async fn create_screen_grid(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    let rows =
-        File::get_files_by_folder_id(desktop_id, vec!["id", "file_name", "execute_path"], &pool)
-            .await?;
+    let sort_type = desktop_folder.sort_type.ok_or_else(|| {
+        tracing::error!("No sort_type column or value is null");
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+    })?;
 
-    let files = File::try_from_vec(rows, None);
+    let rows = DesktopItem::get_desktop_items(desktop_id, &sort_type, &pool).await?;
 
-    let rows =
-        Folder::get_children_folders(desktop_id, vec!["id", "folder_name", "folder_type"], &pool)
-            .await?;
+    let items = DesktopItem::try_from_vec(rows, None);
 
-    let folders = Folder::try_from_vec(rows, None);
-
-    Ok(render_screen_grid(form.height, form.width, desktop_id, files, folders).render())
+    Ok(render_screen_grid(form.height, form.width, desktop_id, &sort_type, items).render())
 }

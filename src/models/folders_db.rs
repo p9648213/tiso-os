@@ -16,11 +16,20 @@ pub enum FolderType {
     Desktop,
 }
 
+#[derive(Debug, ToSql, FromSql, Clone, PartialEq, Eq)]
+#[postgres(name = "foldersorttype")]
+pub enum FolderSortType {
+    Custom,
+    DateCreated,
+}
+
 pub struct Folder {
     pub id: Option<i32>,
     pub user_id: Option<i32>,
     pub folder_name: Option<String>,
     pub folder_type: Option<FolderType>,
+    pub sort_type: Option<FolderSortType>,
+    pub desktop_position: Option<String>,
     pub parent_folder_id: Option<i32>,
     pub created_at: Option<OffsetDateTime>,
 }
@@ -41,6 +50,12 @@ impl Folder {
         let folder_type: Option<FolderType> = row
             .try_get(format!("{}folder_type", prefix).as_str())
             .unwrap_or(None);
+        let sort_type: Option<FolderSortType> = row
+            .try_get(format!("{}sort_type", prefix).as_str())
+            .unwrap_or(None);
+        let desktop_position: Option<String> = row
+            .try_get(format!("{}desktop_position", prefix).as_str())
+            .unwrap_or(None);
         let parent_folder_id: Option<i32> = row
             .try_get(format!("{}parent_folder_id", prefix).as_str())
             .unwrap_or(None);
@@ -53,6 +68,8 @@ impl Folder {
             user_id,
             folder_name,
             folder_type,
+            sort_type,
+            desktop_position,
             parent_folder_id,
             created_at,
         }
@@ -102,7 +119,7 @@ impl Folder {
         client
             .query(
                 &format!(
-                    "SELECT {} FROM folders WHERE parent_folder_id = $2",
+                    "SELECT {} FROM folders WHERE parent_folder_id = $1",
                     columns
                 ),
                 &[&parent_folder_id],
@@ -115,6 +132,7 @@ impl Folder {
         folder_name: &str,
         folder_type: FolderType,
         parent_folder_id: Option<i32>,
+        desktop_position: Option<String>,
         pool: &Pool,
     ) -> Result<Row, AppError> {
         let client = pool.get().await.map_err(|error| {
@@ -123,8 +141,9 @@ impl Folder {
         })?;
 
         client.query_one(
-            "INSERT INTO folders (user_id, folder_name, folder_type, parent_folder_id) VALUES ($1, $2, $3, $4) RETURNING id",
-            &[&user_id, &folder_name, &folder_type, &parent_folder_id],
+            "INSERT INTO folders (user_id, folder_name, folder_type, parent_folder_id, desktop_position) 
+                    VALUES ($1, $2, $3, $4, $5) RETURNING id",
+            &[&user_id, &folder_name, &folder_type, &parent_folder_id, &desktop_position],
         )
         .await
     }

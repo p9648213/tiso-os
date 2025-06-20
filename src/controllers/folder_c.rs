@@ -17,7 +17,7 @@ use crate::{
 };
 
 pub async fn create_folder(
-    Path(folder_id): Path<i32>,
+    Path((folder_id, position_id)): Path<(i32, String)>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -30,11 +30,18 @@ pub async fn create_folder(
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
+    let desktop_position = if position_id == "-1" {
+        None
+    } else {
+        Some(position_id)
+    };
+
     let row = Folder::create_folder(
         user_id,
         "New Folder",
         FolderType::Normal,
         Some(folder_id),
+        desktop_position,
         &pool,
     )
     .await?;

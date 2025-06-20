@@ -11,6 +11,7 @@ pub struct File {
     pub folder_id: Option<i32>,
     pub file_name: Option<String>,
     pub execute_path: Option<String>,
+    pub desktop_position: Option<String>,
     pub created_at: Option<OffsetDateTime>,
 }
 
@@ -33,6 +34,9 @@ impl File {
         let execute_path: Option<String> = row
             .try_get(format!("{}execute_path", prefix).as_str())
             .unwrap_or(None);
+        let desktop_position: Option<String> = row
+            .try_get(format!("{}desktop_position", prefix).as_str())
+            .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
             .try_get(format!("{}created_at", prefix).as_str())
             .unwrap_or(None);
@@ -43,6 +47,7 @@ impl File {
             folder_id,
             file_name,
             execute_path,
+            desktop_position,
             created_at,
         }
     }
@@ -82,6 +87,7 @@ impl File {
         folder_id: i32,
         file_name: &str,
         execute_path: &str,
+        desktop_position: Option<String>,
         pool: &Pool,
     ) -> Result<Row, AppError> {
         let client = pool.get().await.map_err(|error| {
@@ -89,10 +95,18 @@ impl File {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
-        client.query_one(
-            "INSERT INTO files (user_id, folder_id, file_name, execute_path) VALUES ($1, $2, $3, $4) RETURNING id",
-            &[&user_id, &folder_id, &file_name, &execute_path],
-        )
-        .await
+        client
+            .query_one(
+                "INSERT INTO files (user_id, folder_id, file_name, execute_path, desktop_position) 
+                    VALUES ($1, $2, $3, $4, $5) RETURNING id",
+                &[
+                    &user_id,
+                    &folder_id,
+                    &file_name,
+                    &execute_path,
+                    &desktop_position,
+                ],
+            )
+            .await
     }
 }
