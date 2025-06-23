@@ -1,6 +1,6 @@
 const CONTEXT_SCREEN_MENU = ["Create document", "Create folder"];
 
-export function setupRightClickContextMenu() {
+export function setupDesktopContextMenu() {
   const main = document.querySelector("main");
 
   document.addEventListener("mouseup", (event) => {

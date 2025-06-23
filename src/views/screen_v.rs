@@ -128,12 +128,12 @@ pub fn render_screen_section() -> impl Renderable {
     maud! {
         (Raw(r#"
             <script type="module">
-                import {setupRightClickContextMenu} from "/assets/js/right_click.js";
+                import {setupDesktopContextMenu} from "/assets/js/context_menu.js";
                 import {setupGridDimensions} from "/assets/js/grid.js";
                 import {setupResize} from "/assets/js/resize.js";
+                setupDesktopContextMenu();
                 setupGridDimensions();
                 setupResize();
-                setupRightClickContextMenu();
             </script>
         "#))
         main class="flex flex-wrap h-[calc(100%-theme('spacing.12'))]" {}
@@ -153,6 +153,13 @@ pub fn render_screen_grid(
     let rectangle_width = width as f32 / cols as f32 - 0.1;
 
     maud_move! {
+        (Raw(r#"
+            <script type="module">
+                import {setupDesktopDrag} from "/assets/js/drag.js";
+                setupDesktopDrag();
+            </script>
+        "#))
+
         input id="screen_rows" type="hidden" value=(rows);
         input id="screen_cols" type="hidden" value=(cols);
         input id="desktop_id" type="hidden" value=(desktop_id);
@@ -164,6 +171,7 @@ pub fn render_screen_grid(
                         class = "flex justify-center items-center relative"
                         style={ "width:" (rectangle_width) "px;" }
                         id={ "item-" (row) "-" (col) }
+                        draggable="true"
                     {
                         @if let Some(item) = items.get((col * rows + row) as usize) {
                             @match item.item_type.as_ref().expect("No item_type column or value is null") {

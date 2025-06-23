@@ -4,12 +4,12 @@ export function setupResize() {
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
 
+    const main = document.querySelector("main");
+    if (!main) return;
+
+    main.classList.add("invisible");
+
     resizeTimeout = setTimeout(() => {
-      const main = document.querySelector("main");
-      if (!main) return;
-
-      main.classList.add("invisible");
-
       htmx
         .ajax("POST", `/action/create-grid`, {
           target: "main",
