@@ -1,8 +1,7 @@
-const CONTEXT_SCREEN_MENU = ["Create document", "Create folder"];
+const CONTEXT_MENU_SCREEN = ["Create document", "Create folder"];
+const CONTEXT_MENU_ITEM = ["Rename", "Delete"];
 
 export function setupDesktopContextMenu() {
-  const main = document.querySelector("main");
-
   document.addEventListener("mouseup", (event) => {
     let contextMenuEl = document.getElementById("context_menu");
 
@@ -17,7 +16,7 @@ export function setupDesktopContextMenu() {
     }
   });
 
-  main.addEventListener("contextmenu", (event) => {
+  document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
 
     if (document.body.style.cursor == "wait") {
@@ -40,7 +39,6 @@ export function setupDesktopContextMenu() {
     contextMenu.setAttribute("id", "context_menu");
     contextMenu.classList.add(
       "w-50",
-      "h-50",
       "p-2",
       "flex",
       "flex-col",
@@ -52,44 +50,53 @@ export function setupDesktopContextMenu() {
     contextMenu.style.left = `${event.x}px`;
     contextMenu.style.top = `${event.y}px`;
 
-    for (const itemText of CONTEXT_SCREEN_MENU) {
-      let menuItems = document.createElement("form");
-      let id = itemText.replace(/\s/g, "").toLowerCase();
-      let itemsType = "txt";
+    const checkDesktopItem = event.target.closest('[id^="file-"], [id^="folder-"]');
 
-      if (itemText === "Create folder") {
-        itemsType = "folder";
+    if (checkDesktopItem) {
+      for (const itemText of CONTEXT_MENU_ITEM) {
+        let menuItems = document.createElement("form");
+
+        menuItems.textContent = itemText;
+        menuItems.style.cursor = "pointer";
+
+        contextMenu.appendChild(menuItems);
       }
+    } else {
+      for (const itemText of CONTEXT_MENU_SCREEN) {
+        let menuItems = document.createElement("form");
+        let id = itemText.replace(/\s/g, "").toLowerCase();
+        let itemsType = "txt";
 
-      menuItems.textContent = itemText;
-      menuItems.style.cursor = "pointer";
-      menuItems.setAttribute("id", id);
+        if (itemText === "Create folder") {
+          itemsType = "folder";
+        }
 
-      if (itemsType === "txt") {
-        menuItems.addEventListener("mouseup", () => {
-          let targetId = checkEmptySpace();
-          if (targetId) {
-            htmx.ajax("POST", `/create/txt/${desktopId}/${targetId}`, {
-              target: `#${targetId}`,
-            });
-          }
-        });
-      } else if (itemsType === "folder") {
-        menuItems.addEventListener("mouseup", () => {
-          let targetId = checkEmptySpace();
-          if (targetId) {
-            htmx.ajax(
-              "POST",
-              `/create/folder/${desktopId}/${targetId}`,
-              {
+        menuItems.textContent = itemText;
+        menuItems.style.cursor = "pointer";
+        menuItems.setAttribute("id", id);
+
+        if (itemsType === "txt") {
+          menuItems.addEventListener("mouseup", () => {
+            let targetId = checkEmptySpace();
+            if (targetId) {
+              htmx.ajax("POST", `/create/txt/${desktopId}/${targetId}`, {
                 target: `#${targetId}`,
-              }
-            );
-          }
-        });
-      }
+              });
+            }
+          });
+        } else if (itemsType === "folder") {
+          menuItems.addEventListener("mouseup", () => {
+            let targetId = checkEmptySpace();
+            if (targetId) {
+              htmx.ajax("POST", `/create/folder/${desktopId}/${targetId}`, {
+                target: `#${targetId}`,
+              });
+            }
+          });
+        }
 
-      contextMenu.appendChild(menuItems);
+        contextMenu.appendChild(menuItems);
+      }
     }
 
     document.body.appendChild(contextMenu);
