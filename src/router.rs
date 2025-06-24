@@ -4,7 +4,8 @@ use crate::{
     contanst::MIN_COMPRESS_SIZE,
     controllers::{
         account_c::create_account,
-        folder_c::create_folder,
+        file_c::update_file_desktop_position,
+        folder_c::{create_folder, update_folder_desktop_position},
         screen_c::{create_screen_grid, get_screen},
         txt_c::create_txt,
     },
@@ -66,6 +67,14 @@ pub async fn create_router(pool: Pool) -> Router {
             )
             .route("/create-grid", post(create_screen_grid))
             .route("/create-account", post(create_account))
+            .route(
+                "/update-file-position/{file_id}/{desktop_id}/{position}",
+                post(update_file_desktop_position),
+            )
+            .route(
+                "/update-folder-position/{folder_id}/{desktop_id}/{position}",
+                post(update_folder_desktop_position),
+            )
             .layer(from_fn(csrf_middleware)),
     );
 

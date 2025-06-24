@@ -6,7 +6,6 @@ use tokio_postgres::Row;
 use crate::models::{error::AppError, folders_db::FolderSortType};
 
 #[derive(Debug)]
-
 pub enum ItemType {
     File,
     Folder,
@@ -19,6 +18,7 @@ pub struct DesktopItem {
     pub name: Option<String>,
     pub item_type: Option<ItemType>,
     pub execute_path: Option<String>,
+    pub desktop_position: Option<String>,
     pub created_at: Option<OffsetDateTime>,
 }
 
@@ -41,6 +41,9 @@ impl DesktopItem {
         let execute_path: Option<String> = row
             .try_get(format!("{}execute_path", prefix).as_str())
             .unwrap_or(None);
+        let desktop_position: Option<String> = row
+            .try_get(format!("{}desktop_position", prefix).as_str())
+            .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
             .try_get(format!("{}created_at", prefix).as_str())
             .unwrap_or(None);
@@ -57,6 +60,7 @@ impl DesktopItem {
             name,
             item_type,
             execute_path,
+            desktop_position,
             created_at,
         }
     }
@@ -79,10 +83,10 @@ impl DesktopItem {
 
         let sql = 
             "SELECT * FROM (
-                SELECT id, user_id, file_name AS name, 'file' AS item_type, execute_path, NULL AS desktop_position, created_at
+                SELECT id, user_id, file_name AS name, 'file' AS item_type, execute_path, desktop_position, created_at
                 FROM files WHERE folder_id = $1
                 UNION
-                SELECT id, user_id, folder_name AS name, 'folder' AS item_type, NULL AS execute_path, NULL AS desktop_position, created_at
+                SELECT id, user_id, folder_name AS name, 'folder' AS item_type, NULL AS execute_path, desktop_position, created_at
                 FROM folders WHERE parent_folder_id = $1
             ) AS combined";
 

@@ -3,7 +3,10 @@ use deadpool_postgres::Pool;
 use time::OffsetDateTime;
 use tokio_postgres::Row;
 
-use crate::{models::error::AppError, utilities::postgres::DbExecutor};
+use crate::{
+    models::{error::AppError, folders_db::FolderSortType},
+    utilities::postgres::DbExecutor,
+};
 
 pub struct File {
     pub id: Option<i32>,
@@ -108,5 +111,57 @@ impl File {
                 ],
             )
             .await
+    }
+
+    pub async fn update_desktop_position(
+        id: i32,
+        desktop_id: i32,
+        desktop_position: Option<String>,
+        current_sort_type: &Option<FolderSortType>,
+        pool: &Pool,
+    ) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let rows = client
+            .execute(
+                "UPDATE files SET desktop_position = $1 WHERE id = $2",
+                &[&desktop_position, &id],
+            )
+            .await?;
+
+        if rows == 0 {
+            tracing::error!("Error updating file desktop position");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        let should_update_sort_type = current_sort_type
+            .as_ref()
+            .map(|t| *t != FolderSortType::Custom)
+            .unwrap_or(true);
+
+        if should_update_sort_type {
+            let rows = client
+                .execute(
+                    "UPDATE folders SET sort_type = $1 WHERE id = $2",
+                    &[&FolderSortType::Custom, &desktop_id],
+                )
+                .await?;
+
+            if rows == 0 {
+                tracing::error!("Error updating folder sort type");
+                return Err(AppError::new(
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "Server Error",
+                ));
+            }
+        }
+
+        Ok(())
     }
 }

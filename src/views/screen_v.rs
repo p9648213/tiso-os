@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use hypertext::{
     GlobalAttributes, HtmxAttributes, Raw, Renderable, html_elements, maud, maud_move,
 };
@@ -9,6 +11,7 @@ use crate::{
         desktop::{DesktopItem, ItemType},
         folders_db::FolderSortType,
     },
+    utilities::screen_utils::parse_position,
     views::{folder_v::render_new_folder, txt_v::render_new_txt},
 };
 
@@ -131,9 +134,11 @@ pub fn render_screen_section() -> impl Renderable {
                 import {setupDesktopContextMenu} from "/assets/js/context_menu.js";
                 import {setupGridDimensions} from "/assets/js/grid.js";
                 import {setupResize} from "/assets/js/resize.js";
+                import {setupDesktopDrag} from "/assets/js/drag.js";
                 setupDesktopContextMenu();
                 setupGridDimensions();
                 setupResize();
+                setupDesktopDrag();
             </script>
         "#))
         main class="flex flex-wrap h-[calc(100%-theme('spacing.12'))]" {}
@@ -153,33 +158,61 @@ pub fn render_screen_grid(
     let rectangle_width = width as f32 / cols as f32 - 0.1;
 
     maud_move! {
-        (Raw(r#"
-            <script type="module">
-                import {setupDesktopDrag} from "/assets/js/drag.js";
-                setupDesktopDrag();
-            </script>
-        "#))
-
         input id="screen_rows" type="hidden" value=(rows);
         input id="screen_cols" type="hidden" value=(cols);
         input id="desktop_id" type="hidden" value=(desktop_id);
 
-        @if *sort_type != FolderSortType::Custom {
-            @for row in 0..rows {
-                @for col in 0..cols {
-                    div
-                        class = "flex justify-center items-center relative"
-                        style={ "width:" (rectangle_width) "px;" }
-                        id={ "item-" (row) "-" (col) }
-                        draggable="true"
-                    {
-                        @if let Some(item) = items.get((col * rows + row) as usize) {
-                            @match item.item_type.as_ref().expect("No item_type column or value is null") {
-                                ItemType::File => {
-                                    (render_new_txt(item.id.expect("No id column or value is null")))
+        @match *sort_type {
+            FolderSortType::Custom => {
+                @let item_map: HashMap<(u16, u16), &DesktopItem> = items
+                    .iter()
+                    .filter_map(|item| {
+                        item.desktop_position
+                            .as_deref()
+                            .and_then(parse_position)
+                            .map(|pos| (pos, item))
+                    })
+                    .collect();
+
+                @for row in 0..rows {
+                    @for col in 0..cols {
+                        div
+                            class = "flex justify-center items-center relative"
+                            style={ "width:" (rectangle_width) "px;" }
+                            id={ "item-" (row) "-" (col) }
+                            draggable="true"
+                        {
+                            @if let Some(item) = item_map.get(&(row, col)) {
+                                @match item.item_type.as_ref().expect("No item_type column or value is null") {
+                                    ItemType::File => {
+                                        (render_new_txt(item.id.expect("No id column or value is null")))
+                                    }
+                                    ItemType::Folder => {
+                                        (render_new_folder(item.id.expect("No id column or value is null")))
+                                    }
                                 }
-                                ItemType::Folder => {
-                                    (render_new_folder(item.id.expect("No id column or value is null")))
+                            }
+                        }
+                    }
+                }
+            },
+            FolderSortType::DateCreated => {
+                @for row in 0..rows {
+                    @for col in 0..cols {
+                        div
+                            class = "flex justify-center items-center relative"
+                            style={ "width:" (rectangle_width) "px;" }
+                            id={ "item-" (row) "-" (col) }
+                            draggable="true"
+                        {
+                            @if let Some(item) = items.get((col * rows + row) as usize) {
+                                @match item.item_type.as_ref().expect("No item_type column or value is null") {
+                                    ItemType::File => {
+                                        (render_new_txt(item.id.expect("No id column or value is null")))
+                                    }
+                                    ItemType::Folder => {
+                                        (render_new_folder(item.id.expect("No id column or value is null")))
+                                    }
                                 }
                             }
                         }
