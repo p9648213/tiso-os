@@ -11,7 +11,7 @@ export function setupResize() {
 
     resizeTimeout = setTimeout(() => {
       htmx
-        .ajax("POST", `/action/create-grid`, {
+        .ajax("POST", `/create/grid`, {
           target: "main",
           values: {
             height: main.clientHeight,

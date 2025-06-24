@@ -69,7 +69,7 @@ export function setupDesktopContextMenu() {
         menuItems.addEventListener("mouseup", () => {
           let targetId = checkEmptySpace();
           if (targetId) {
-            htmx.ajax("POST", `/action/create-txt/${desktopId}/${targetId}`, {
+            htmx.ajax("POST", `/create/txt/${desktopId}/${targetId}`, {
               target: `#${targetId}`,
             });
           }
@@ -80,7 +80,7 @@ export function setupDesktopContextMenu() {
           if (targetId) {
             htmx.ajax(
               "POST",
-              `/action/create-folder/${desktopId}/${targetId}`,
+              `/create/folder/${desktopId}/${targetId}`,
               {
                 target: `#${targetId}`,
               }

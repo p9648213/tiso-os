@@ -62,7 +62,7 @@ pub fn render_account_form(account_form: &AccountForm, register_mode: bool) -> i
     maud_move! {
         form
             id="account_form"
-            hx-post="/action/create-account"
+            hx-post="/create/account"
             hx-trigger="submit"
             hx-target="body"
             class="relative flex flex-col space-y-2 text-black"
@@ -76,7 +76,7 @@ pub fn render_account_form(account_form: &AccountForm, register_mode: bool) -> i
                 value=(account_form.username)
                 autofocus="true"
                 autocomplete="off"
-                hx-post="/action/create-account"
+                hx-post="/create/account"
                 hx-swap=(if register_mode { "outerHTML" } else { "none" })
                 hx-target=(if register_mode { "#account_confirm_password" } else { "" })
                 hx-trigger="input delay:300ms";
@@ -101,7 +101,7 @@ pub fn render_comfirm_password(value: &Option<String>, register_mode: bool) -> i
             placeholder="Confirm Password"
             type=(if register_mode { "password" } else { "hidden" })
             value=(value)
-            hx-post="/action/create-account"
+            hx-post="/create/account"
             hx-target=(if register_mode { "#account_error" } else { "" })
             hx-trigger="input delay:300ms";
     }

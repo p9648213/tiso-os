@@ -57,22 +57,25 @@ pub async fn create_router(pool: Pool) -> Router {
         pool,
     };
 
-    let action_routes = Router::new().nest(
-        "/action",
+    let create_routes = Router::new().nest(
+        "/create",
         Router::new()
-            .route("/create-txt/{folder_id}/{position_id}", post(create_txt))
+            .route("/txt/{folder_id}/{position_id}", post(create_txt))
+            .route("/folder/{folder_id}/{position_id}", post(create_folder))
+            .route("/grid", post(create_screen_grid))
+            .route("/account", post(create_account))
+            .layer(from_fn(csrf_middleware)),
+    );
+
+    let update_routes = Router::new().nest(
+        "/update",
+        Router::new()
             .route(
-                "/create-folder/{folder_id}/{position_id}",
-                post(create_folder),
-            )
-            .route("/create-grid", post(create_screen_grid))
-            .route("/create-account", post(create_account))
-            .route(
-                "/update-file-position/{file_id}/{desktop_id}/{position}",
+                "/file-position/{file_id}/{desktop_id}/{position}",
                 post(update_file_desktop_position),
             )
             .route(
-                "/update-folder-position/{folder_id}/{desktop_id}/{position}",
+                "/folder-position/{folder_id}/{desktop_id}/{position}",
                 post(update_folder_desktop_position),
             )
             .layer(from_fn(csrf_middleware)),
@@ -80,7 +83,8 @@ pub async fn create_router(pool: Pool) -> Router {
 
     Router::new()
         .route("/", get(get_screen))
-        .merge(action_routes)
+        .merge(create_routes)
+        .merge(update_routes)
         .layer(from_fn_with_state(app_state.clone(), session_middleware))
         .with_state(app_state.clone())
         .layer(compression_layer)

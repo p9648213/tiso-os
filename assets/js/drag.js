@@ -27,7 +27,7 @@ export function setupDesktopDrag() {
         const itemId = dragItemIdSplit[1];
 
         const response = await fetch(
-          `/action/update-${itemType}-position/${itemId}/${destopId}/${dropPosition}`,
+          `/update/${itemType}-position/${itemId}/${destopId}/${dropPosition}`,
           {
             method: "POST",
             headers: {

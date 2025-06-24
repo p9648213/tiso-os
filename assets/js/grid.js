@@ -1,7 +1,7 @@
 export function setupGridDimensions() {
   const main = document.querySelector("main");
 
-  htmx.ajax("POST", "/action/create-grid", {
+  htmx.ajax("POST", "/create/grid", {
     target: "main",
     values: {
       height: main.clientHeight,
