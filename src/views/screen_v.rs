@@ -131,13 +131,15 @@ pub fn render_screen_section() -> impl Renderable {
     maud! {
         (Raw(r#"
             <script type="module">
+                import {setupGlobalVariables} from "/assets/js/global_vars.js";
                 import {setupDesktopContextMenu} from "/assets/js/context_menu.js";
-                import {setupGridDimensions} from "/assets/js/grid.js";
-                import {setupResize} from "/assets/js/resize.js";
+                import {setupGridDimensions, setupGridResize, setupGridItemSingleSelect} from "/assets/js/grid.js";
                 import {setupDesktopDrag} from "/assets/js/drag.js";
+                setupGlobalVariables();
                 setupDesktopContextMenu();
                 setupGridDimensions();
-                setupResize();
+                setupGridResize();
+                setupGridItemSingleSelect();
                 setupDesktopDrag();
             </script>
         "#))

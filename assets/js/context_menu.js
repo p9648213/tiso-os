@@ -19,6 +19,10 @@ export function setupDesktopContextMenu() {
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
 
+    if (window.selectedItem) {
+      window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
+    }
+
     if (document.body.style.cursor == "wait") {
       return;
     }
@@ -50,9 +54,14 @@ export function setupDesktopContextMenu() {
     contextMenu.style.left = `${event.x}px`;
     contextMenu.style.top = `${event.y}px`;
 
-    const checkDesktopItem = event.target.closest('[id^="file-"], [id^="folder-"]');
+    const checkDesktopItem = event.target.closest(
+      '[id^="file-"], [id^="folder-"]'
+    );
 
     if (checkDesktopItem) {
+      window.selectedItem = checkDesktopItem;
+      checkDesktopItem.childNodes[0].classList.add("bg-blue-900");
+
       for (const itemText of CONTEXT_MENU_ITEM) {
         let menuItems = document.createElement("form");
 
