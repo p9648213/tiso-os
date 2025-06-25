@@ -46,6 +46,13 @@ export function setupGridItemSingleSelect() {
     );
 
     if (checkDesktopItem) {
+      if (
+        window.selectedItem &&
+        window.selectedItem.id == checkDesktopItem.id
+      ) {
+        return;
+      }
+
       if (window.selectedItem) {
         window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
       }

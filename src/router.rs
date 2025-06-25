@@ -4,8 +4,8 @@ use crate::{
     contanst::MIN_COMPRESS_SIZE,
     controllers::{
         account_c::create_account,
-        file_c::update_file_desktop_position,
-        folder_c::{create_folder, update_folder_desktop_position},
+        file_c::{delete_file, update_file_desktop_position},
+        folder_c::{create_folder, delete_folder, update_folder_desktop_position},
         screen_c::{create_screen_grid, get_screen},
         txt_c::create_txt,
     },
@@ -81,10 +81,19 @@ pub async fn create_router(pool: Pool) -> Router {
             .layer(from_fn(csrf_middleware)),
     );
 
+    let delete_routes = Router::new().nest(
+        "/delete",
+        Router::new()
+            .route("/file/{file_id}", post(delete_file))
+            .route("/folder/{folder_id}", post(delete_folder))
+            .layer(from_fn(csrf_middleware)),
+    );
+
     Router::new()
         .route("/", get(get_screen))
         .merge(create_routes)
         .merge(update_routes)
+        .merge(delete_routes)
         .layer(from_fn_with_state(app_state.clone(), session_middleware))
         .with_state(app_state.clone())
         .layer(compression_layer)

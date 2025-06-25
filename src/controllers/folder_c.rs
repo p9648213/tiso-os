@@ -100,3 +100,20 @@ pub async fn update_folder_desktop_position(
 
     Ok(())
 }
+
+pub async fn delete_folder(
+    Path(folder_id): Path<i32>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<(), AppError> {
+    user_id
+        .0
+        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
+        .parse::<i32>()
+        .map_err(|err| {
+            tracing::error!("Couldn't parse user_id: {:?}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+    Folder::delete_folder(folder_id, &pool).await
+}

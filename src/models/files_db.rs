@@ -164,4 +164,25 @@ impl File {
 
         Ok(())
     }
+
+    pub async fn delete_file(id: i32, pool: &Pool) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let rows = client
+            .execute("DELETE FROM files WHERE id = $1", &[&id])
+            .await?;
+
+        if rows == 0 {
+            tracing::error!("Error deleting file");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
 }

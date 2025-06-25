@@ -9,6 +9,10 @@ export function setupDesktopContextMenu() {
       switch (event.button) {
         case 0:
           document.body.removeChild(contextMenuEl);
+          if (window.selectedItem) {
+            window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
+            window.selectedItem = null;
+          }
           break;
         default:
           break;
@@ -21,6 +25,7 @@ export function setupDesktopContextMenu() {
 
     if (window.selectedItem) {
       window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
+      window.selectedItem = null;
     }
 
     if (document.body.style.cursor == "wait") {
@@ -62,25 +67,38 @@ export function setupDesktopContextMenu() {
       window.selectedItem = checkDesktopItem;
       checkDesktopItem.childNodes[0].classList.add("bg-blue-900");
 
-      for (const itemText of CONTEXT_MENU_ITEM) {
+      for (const contextItem of CONTEXT_MENU_ITEM) {
         let menuItems = document.createElement("form");
 
-        menuItems.textContent = itemText;
+        menuItems.textContent = contextItem;
         menuItems.style.cursor = "pointer";
+
+        const splitId = checkDesktopItem.id.split("-");
+        const itemType = splitId[0];
+        const itemId = splitId[1];
+
+        if (contextItem === "Delete") {
+          menuItems.addEventListener("mouseup", () => {
+            htmx.ajax("POST", `/delete/${itemType}/${itemId}`, {
+              target: `#${checkDesktopItem.id}`,
+              swap: "outerHTML",
+            });
+          });
+        }
 
         contextMenu.appendChild(menuItems);
       }
     } else {
-      for (const itemText of CONTEXT_MENU_SCREEN) {
+      for (const contextItem of CONTEXT_MENU_SCREEN) {
         let menuItems = document.createElement("form");
-        let id = itemText.replace(/\s/g, "").toLowerCase();
+        let id = contextItem.replace(/\s/g, "").toLowerCase();
         let itemsType = "txt";
 
-        if (itemText === "Create folder") {
+        if (contextItem === "Create folder") {
           itemsType = "folder";
         }
 
-        menuItems.textContent = itemText;
+        menuItems.textContent = contextItem;
         menuItems.style.cursor = "pointer";
         menuItems.setAttribute("id", id);
 
