@@ -4,7 +4,12 @@ export function setupDesktopDrag() {
   let draggedItem = null;
 
   main.addEventListener("dragstart", (event) => {
-    draggedItem = event.target;
+    if (event.target.innerHTML) {
+      draggedItem = event.target;
+    } else {
+      draggedItem = null;
+      event.preventDefault();
+    }
   });
 
   main.addEventListener("dragover", (event) => {

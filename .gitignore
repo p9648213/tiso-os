@@ -5,3 +5,4 @@
 .env
 config.toml
 notes
+/src/contanst/mod.rs
