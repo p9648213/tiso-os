@@ -10,7 +10,7 @@ use hypertext::Renderable;
 use crate::{
     middlewares::session_mw::UserId,
     models::{error::AppError, files_db::File},
-    views::txt_v::render_new_txt,
+    views::txt_v::{render_txt, render_txt_input},
 };
 
 pub async fn create_txt(
@@ -50,5 +50,9 @@ pub async fn create_txt(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    Ok(render_new_txt(file_id).render())
+    Ok(render_txt(file_id).render())
+}
+
+pub async fn get_txt_input(Path((file_id, file_name)): Path<(i32, String)>) -> impl IntoResponse {
+    render_txt_input(file_id, &file_name).render()
 }

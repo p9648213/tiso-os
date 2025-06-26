@@ -7,7 +7,7 @@ use crate::{
         file_c::{delete_file, update_file_desktop_position},
         folder_c::{create_folder, delete_folder, update_folder_desktop_position},
         screen_c::{create_screen_grid, get_screen},
-        txt_c::create_txt,
+        txt_c::{create_txt, get_txt_input},
     },
     middlewares::{csrf_mw::csrf_middleware, log_mw::request_log, session_mw::session_middleware},
     models::state::AppState,
@@ -89,11 +89,17 @@ pub async fn create_router(pool: Pool) -> Router {
             .layer(from_fn(csrf_middleware)),
     );
 
+    let read_routes = Router::new().nest(
+        "/read",
+        Router::new().route("/txt/input/{file_id}/{file_name}", get(get_txt_input)),
+    );
+
     Router::new()
         .route("/", get(get_screen))
         .merge(create_routes)
         .merge(update_routes)
         .merge(delete_routes)
+        .merge(read_routes)
         .layer(from_fn_with_state(app_state.clone(), session_middleware))
         .with_state(app_state.clone())
         .layer(compression_layer)

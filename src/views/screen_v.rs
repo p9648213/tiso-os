@@ -12,7 +12,7 @@ use crate::{
         folders_db::FolderSortType,
     },
     utilities::screen_utils::parse_position,
-    views::{folder_v::render_new_folder, txt_v::render_new_txt},
+    views::{folder_v::render_folder, txt_v::render_txt},
 };
 
 pub fn render_welcome_screen() -> impl Renderable {
@@ -33,7 +33,7 @@ pub fn render_welcome_screen() -> impl Renderable {
                 script src="/assets/js/lib/htmx.js" defer {}
                 script src="/assets/js/main.js" type="module" defer {}
             }
-            title { "TisoOS - Welcome" }
+            title { "TisoOS" }
             body style="background: radial-gradient(ellipse at top left, #070f2b, #1b1a55, #535c91);" class="relative overflow-hidden" {
                 main class="relative flex flex-col justify-center items-center min-h-screen text-white text-center" {
                     div class="mb-8" {
@@ -187,10 +187,10 @@ pub fn render_screen_grid(
                             @if let Some(item) = item_map.get(&(row, col)) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
                                     ItemType::File => {
-                                        (render_new_txt(item.id.expect("No id column or value is null")))
+                                        (render_txt(item.id.expect("No id column or value is null")))
                                     }
                                     ItemType::Folder => {
-                                        (render_new_folder(item.id.expect("No id column or value is null")))
+                                        (render_folder(item.id.expect("No id column or value is null")))
                                     }
                                 }
                             }
@@ -210,10 +210,10 @@ pub fn render_screen_grid(
                             @if let Some(item) = items.get((col * rows + row) as usize) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
                                     ItemType::File => {
-                                        (render_new_txt(item.id.expect("No id column or value is null")))
+                                        (render_txt(item.id.expect("No id column or value is null")))
                                     }
                                     ItemType::Folder => {
-                                        (render_new_folder(item.id.expect("No id column or value is null")))
+                                        (render_folder(item.id.expect("No id column or value is null")))
                                     }
                                 }
                             }

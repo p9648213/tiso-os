@@ -48,49 +48,80 @@ export function setupDesktopContextMenu() {
     contextMenu.setAttribute("id", "context_menu");
     contextMenu.classList.add(
       "w-50",
-      "p-2",
+      "py-1.5",
+      "px-1.5",
       "flex",
       "flex-col",
-      "g-3",
-      "rounded-md",
-      "bg-white",
-      "absolute"
+      "rounded-sm",
+      "bg-zinc-900",
+      "text-white",
+      "absolute",
+      "border",
+      "border-zinc-700"
     );
     contextMenu.style.left = `${event.x}px`;
     contextMenu.style.top = `${event.y}px`;
 
-    const checkDesktopItem = event.target.closest(
-      '[id^="file-"], [id^="folder-"]'
-    );
+    const desktopItem = event.target.closest('[id^="file-"], [id^="folder-"]');
 
-    if (checkDesktopItem) {
-      window.selectedItem = checkDesktopItem;
-      checkDesktopItem.childNodes[0].classList.add("bg-blue-900");
+    if (desktopItem) {
+      window.selectedItem = desktopItem;
+      desktopItem.childNodes[0].classList.add("bg-blue-900");
 
       for (const contextItem of CONTEXT_MENU_ITEM) {
-        let menuItems = document.createElement("form");
+        let menuForm = document.createElement("form");
+        let menuItem = document.createElement("div");
 
-        menuItems.textContent = contextItem;
-        menuItems.style.cursor = "pointer";
+        menuItem.textContent = contextItem;
+        menuItem.classList.add(
+          "hover:bg-zinc-800",
+          "px-2",
+          "py-1",
+          "rounded-sm"
+        );
 
-        const splitId = checkDesktopItem.id.split("-");
+        menuForm.append(menuItem);
+        menuForm.style.cursor = "pointer";
+
+        const splitId = desktopItem.id.split("-");
         const itemType = splitId[0];
         const itemId = splitId[1];
 
         if (contextItem === "Delete") {
-          menuItems.addEventListener("mouseup", () => {
+          menuForm.addEventListener("mouseup", () => {
             htmx.ajax("POST", `/delete/${itemType}/${itemId}`, {
-              target: `#${checkDesktopItem.id}`,
+              target: `#${desktopItem.id}`,
               swap: "outerHTML",
             });
           });
         }
 
-        contextMenu.appendChild(menuItems);
+        if (contextItem === "Rename") {
+          const itemName = desktopItem.childNodes[0].childNodes[1].textContent;
+
+          if (itemType === "file") {
+            let fileType = desktopItem.getAttribute("data-file-type");
+
+            menuForm.addEventListener("mouseup", () => {
+              htmx.ajax(
+                "GET",
+                `/read/${fileType}/input/${itemId}/${itemName}`,
+                {
+                  target: `#${desktopItem.id}`,
+                  swap: "outerHTML",
+                }
+              );
+            });
+          }
+        }
+
+        contextMenu.appendChild(menuForm);
       }
     } else {
       for (const contextItem of CONTEXT_MENU_SCREEN) {
-        let menuItems = document.createElement("form");
+        let menuForm = document.createElement("form");
+        let menuItem = document.createElement("div");
+
         let id = contextItem.replace(/\s/g, "").toLowerCase();
         let itemsType = "txt";
 
@@ -98,12 +129,20 @@ export function setupDesktopContextMenu() {
           itemsType = "folder";
         }
 
-        menuItems.textContent = contextItem;
-        menuItems.style.cursor = "pointer";
-        menuItems.setAttribute("id", id);
+        menuItem.textContent = contextItem;
+        menuItem.classList.add(
+          "hover:bg-zinc-800",
+          "px-2",
+          "py-1",
+          "rounded-sm"
+        );
+
+        menuForm.append(menuItem);
+        menuForm.style.cursor = "pointer";
+        menuForm.setAttribute("id", id);
 
         if (itemsType === "txt") {
-          menuItems.addEventListener("mouseup", () => {
+          menuForm.addEventListener("mouseup", () => {
             let targetId = checkEmptySpace();
             if (targetId) {
               htmx.ajax("POST", `/create/txt/${desktopId}/${targetId}`, {
@@ -112,7 +151,7 @@ export function setupDesktopContextMenu() {
             }
           });
         } else if (itemsType === "folder") {
-          menuItems.addEventListener("mouseup", () => {
+          menuForm.addEventListener("mouseup", () => {
             let targetId = checkEmptySpace();
             if (targetId) {
               htmx.ajax("POST", `/create/folder/${desktopId}/${targetId}`, {
@@ -122,7 +161,7 @@ export function setupDesktopContextMenu() {
           });
         }
 
-        contextMenu.appendChild(menuItems);
+        contextMenu.appendChild(menuForm);
       }
     }
 

@@ -14,7 +14,7 @@ use crate::{
         folders_db::{Folder, FolderSortType, FolderType},
         state::SessionMap,
     },
-    views::folder_v::render_new_folder,
+    views::folder_v::render_folder,
 };
 
 pub async fn create_folder(
@@ -54,7 +54,7 @@ pub async fn create_folder(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    Ok(render_new_folder(folder_id).render())
+    Ok(render_folder(folder_id).render())
 }
 
 pub async fn update_folder_desktop_position(

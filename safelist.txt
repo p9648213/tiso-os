@@ -1,2 +1,10 @@
 invisible
 bg-blue-900
+bg-zinc-900
+hover:bg-zinc-800
+w-50
+px-4
+px-1.5
+py-1
+py-1.5
+border-zinc-700
