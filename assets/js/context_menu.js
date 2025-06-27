@@ -97,15 +97,13 @@ export function setupDesktopContextMenu() {
         }
 
         if (contextItem === "Rename") {
-          const itemName = desktopItem.childNodes[0].childNodes[1].textContent;
-
           if (itemType === "file") {
             let fileType = desktopItem.getAttribute("data-file-type");
 
             menuForm.addEventListener("mouseup", () => {
               htmx.ajax(
                 "GET",
-                `/read/${fileType}/input/${itemId}/${itemName}`,
+                `/read/${fileType}/input/${itemId}`,
                 {
                   target: `#${desktopItem.id}`,
                   swap: "outerHTML",

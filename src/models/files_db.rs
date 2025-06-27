@@ -61,6 +61,29 @@ impl File {
             .collect()
     }
 
+    pub async fn get_file(
+        id: i32,
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Row, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let columns = columns.join(",");
+
+        let row = client
+            .query_one(
+                &format!("SELECT {} FROM files WHERE id = $1 AND user_id = $2", columns),
+                &[&id, &user_id],
+            )
+            .await?;
+
+        Ok(row)
+    }
+
     pub async fn create_file(
         user_id: i32,
         folder_id: i32,
