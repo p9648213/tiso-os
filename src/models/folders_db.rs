@@ -104,29 +104,6 @@ impl Folder {
             .await
     }
 
-    pub async fn get_children_folders(
-        parent_folder_id: i32,
-        columns: Vec<&str>,
-        pool: &Pool,
-    ) -> Result<Vec<Row>, AppError> {
-        let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
-
-        let columns = columns.join(",");
-
-        client
-            .query(
-                &format!(
-                    "SELECT {} FROM folders WHERE parent_folder_id = $1",
-                    columns
-                ),
-                &[&parent_folder_id],
-            )
-            .await
-    }
-
     pub async fn create_folder(
         user_id: i32,
         folder_name: &str,
@@ -151,6 +128,7 @@ impl Folder {
     pub async fn update_desktop_position(
         id: i32,
         desktop_id: i32,
+        user_id: i32,
         desktop_position: Option<String>,
         current_sort_type: &Option<FolderSortType>,
         pool: &Pool,
@@ -162,8 +140,8 @@ impl Folder {
 
         let rows = client
             .execute(
-                "UPDATE folders SET desktop_position = $1 WHERE id = $2",
-                &[&desktop_position, &id],
+                "UPDATE folders SET desktop_position = $1 WHERE id = $2 AND user_id = $3",
+                &[&desktop_position, &id, &user_id],
             )
             .await?;
 
@@ -200,18 +178,45 @@ impl Folder {
         Ok(())
     }
 
-    pub async fn delete_folder(id: i32, pool: &Pool) -> Result<(), AppError> {
+    pub async fn delete_folder(id: i32, user_id: i32, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
         let rows = client
-            .execute("DELETE FROM folders WHERE id = $1", &[&id])
+            .execute(
+                "DELETE FROM folders WHERE id = $1 AND user_id = $2",
+                &[&id, &user_id],
+            )
             .await?;
 
         if rows == 0 {
             tracing::error!("Error deleting folder");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
+
+    pub async fn rename_folder(id: i32, user_id: i32, folder_name: &str, pool: &Pool) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let row = client
+            .execute(
+                "UPDATE folders SET folder_name = $1 WHERE id = $2 AND user_id = $3",
+                &[&folder_name, &id, &user_id],
+            )
+            .await?;
+
+        if row == 0 {
+            tracing::error!("Error updating folder name");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Server Error",

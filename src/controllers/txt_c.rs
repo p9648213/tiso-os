@@ -8,9 +8,7 @@ use deadpool_postgres::Pool;
 use hypertext::Renderable;
 
 use crate::{
-    middlewares::session_mw::UserId,
-    models::{error::AppError, files_db::File},
-    views::txt_v::{render_txt, render_txt_input},
+    middlewares::session_mw::UserId, models::{error::AppError, files_db::File}, utilities::user_utils::parse_user_id, views::txt_v::{render_txt, render_txt_input}
 };
 
 pub async fn create_txt(
@@ -18,14 +16,7 @@ pub async fn create_txt(
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
 ) -> Result<impl IntoResponse, AppError> {
-    let user_id = user_id
-        .0
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .parse::<i32>()
-        .map_err(|err| {
-            tracing::error!("Couldn't parse user_id: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
+    let user_id = parse_user_id(user_id)?;
 
     let desktop_position = if position_id == "-1" {
         None

@@ -11,7 +11,7 @@ axum-extra = { version = "0.10.1", features = ["cookie"] }
 deadpool-postgres = "0.14.1"
 hypertext = { version = "0.8.0", features = ["axum", "htmx"] }
 memory-serve = { version = "1.2.1" }
-papaya = "0.2.1"
+papaya = "0.2.2"
 postgres-types = { version = "0.2.9", features = ["derive"] }
 rand = { version = "0.9.1", features = ["thread_rng"] }
 serde = { version = "1.0.219", features = ["derive"] }

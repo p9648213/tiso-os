@@ -1,13 +1,12 @@
 use axum::{
     Extension,
     extract::{Path, State},
-    http::StatusCode,
 };
 use deadpool_postgres::Pool;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{error::AppError, files_db::File, folders_db::FolderSortType, state::SessionMap},
+    models::{error::AppError, files_db::File, folders_db::FolderSortType, state::SessionMap}, utilities::user_utils::parse_user_id,
 };
 
 pub async fn update_file_desktop_position(
@@ -16,14 +15,7 @@ pub async fn update_file_desktop_position(
     State(session_map): State<SessionMap>,
     Extension(user_id): Extension<UserId>,
 ) -> Result<(), AppError> {
-    let user_id = user_id
-        .0
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .parse::<i32>()
-        .map_err(|err| {
-            tracing::error!("Couldn't parse user_id: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
+    let user_id = parse_user_id(user_id)?;
 
     let session_map = session_map.pin_owned();
 
@@ -41,6 +33,7 @@ pub async fn update_file_desktop_position(
     File::update_desktop_position(
         file_id,
         desktop_id,
+        user_id,
         Some(position),
         &current_sort_type,
         &pool,
@@ -59,14 +52,7 @@ pub async fn delete_file(
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
 ) -> Result<(), AppError> {
-    user_id
-        .0
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .parse::<i32>()
-        .map_err(|err| {
-            tracing::error!("Couldn't parse user_id: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
+    let user_id = parse_user_id(user_id)?;
 
-    File::delete_file(file_id, &pool).await
+    File::delete_file(file_id, user_id, &pool).await
 }

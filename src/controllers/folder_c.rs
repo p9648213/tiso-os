@@ -8,13 +8,11 @@ use deadpool_postgres::Pool;
 use hypertext::Renderable;
 
 use crate::{
-    middlewares::session_mw::UserId,
-    models::{
+    middlewares::session_mw::UserId, models::{
         error::AppError,
         folders_db::{Folder, FolderSortType, FolderType},
         state::SessionMap,
-    },
-    views::folder_v::render_folder,
+    }, utilities::user_utils::parse_user_id, views::folder_v::render_folder
 };
 
 pub async fn create_folder(
@@ -22,14 +20,7 @@ pub async fn create_folder(
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
 ) -> Result<impl IntoResponse, AppError> {
-    let user_id = user_id
-        .0
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .parse::<i32>()
-        .map_err(|err| {
-            tracing::error!("Couldn't parse user_id: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
+    let user_id = parse_user_id(user_id)?;
 
     let desktop_position = if position_id == "-1" {
         None
@@ -63,14 +54,7 @@ pub async fn update_folder_desktop_position(
     State(session_map): State<SessionMap>,
     Extension(user_id): Extension<UserId>,
 ) -> Result<(), AppError> {
-    let user_id = user_id
-        .0
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .parse::<i32>()
-        .map_err(|err| {
-            tracing::error!("Couldn't parse user_id: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
+    let user_id = parse_user_id(user_id)?;
 
     let session_map = session_map.pin_owned();
 
@@ -88,6 +72,7 @@ pub async fn update_folder_desktop_position(
     Folder::update_desktop_position(
         folder_id,
         desktop_id,
+        user_id,
         Some(position),
         &current_sort_type,
         &pool,
@@ -106,14 +91,7 @@ pub async fn delete_folder(
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
 ) -> Result<(), AppError> {
-    user_id
-        .0
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .parse::<i32>()
-        .map_err(|err| {
-            tracing::error!("Couldn't parse user_id: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
+    let user_id = parse_user_id(user_id)?;
 
-    Folder::delete_folder(folder_id, &pool).await
+    Folder::delete_folder(folder_id, user_id, &pool).await
 }

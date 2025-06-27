@@ -61,30 +61,6 @@ impl File {
             .collect()
     }
 
-    pub async fn get_files_by_folder_id(
-        folder_id: i32,
-        columns: Vec<&str>,
-        pool: &Pool,
-    ) -> Result<Vec<Row>, AppError> {
-        let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
-
-        let columns = columns.join(",");
-
-        client
-            .query(
-                &format!("SELECT {} FROM files WHERE folder_id = $1", columns),
-                &[&folder_id],
-            )
-            .await
-            .map_err(|error| {
-                tracing::error!("Couldn't query postgres: {:?}", error);
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })
-    }
-
     pub async fn create_file(
         user_id: i32,
         folder_id: i32,
@@ -116,6 +92,7 @@ impl File {
     pub async fn update_desktop_position(
         id: i32,
         desktop_id: i32,
+        user_id: i32,
         desktop_position: Option<String>,
         current_sort_type: &Option<FolderSortType>,
         pool: &Pool,
@@ -127,8 +104,8 @@ impl File {
 
         let rows = client
             .execute(
-                "UPDATE files SET desktop_position = $1 WHERE id = $2",
-                &[&desktop_position, &id],
+                "UPDATE files SET desktop_position = $1 WHERE id = $2 AND user_id = $3",
+                &[&desktop_position, &id, &user_id],
             )
             .await?;
 
@@ -165,18 +142,50 @@ impl File {
         Ok(())
     }
 
-    pub async fn delete_file(id: i32, pool: &Pool) -> Result<(), AppError> {
+    pub async fn delete_file(id: i32, user_id: i32, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
         let rows = client
-            .execute("DELETE FROM files WHERE id = $1", &[&id])
+            .execute(
+                "DELETE FROM files WHERE id = $1 AND user_id = $2",
+                &[&id, &user_id],
+            )
             .await?;
 
         if rows == 0 {
             tracing::error!("Error deleting file");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
+
+    pub async fn rename_file(
+        id: i32,
+        user_id: i32,
+        file_name: &str,
+        pool: &Pool,
+    ) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let row = client
+            .execute(
+                "UPDATE files SET file_name = $1 WHERE id = $2 AND user_id = $3",
+                &[&file_name, &id, &user_id],
+            )
+            .await?;
+
+        if row == 0 {
+            tracing::error!("Error updating file name");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Server Error",

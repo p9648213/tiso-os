@@ -71,11 +71,11 @@ pub async fn create_router(pool: Pool) -> Router {
         "/update",
         Router::new()
             .route(
-                "/file-position/{file_id}/{desktop_id}/{position}",
+                "/file/position/{file_id}/{desktop_id}/{position}",
                 post(update_file_desktop_position),
             )
             .route(
-                "/folder-position/{folder_id}/{desktop_id}/{position}",
+                "/folder/position/{folder_id}/{desktop_id}/{position}",
                 post(update_folder_desktop_position),
             )
             .layer(from_fn(csrf_middleware)),

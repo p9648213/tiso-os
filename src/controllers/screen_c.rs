@@ -4,9 +4,7 @@ use hypertext::Renderable;
 use serde::Deserialize;
 
 use crate::{
-    middlewares::session_mw::UserId,
-    models::{desktop::DesktopItem, error::AppError, folders_db::Folder},
-    views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
+    middlewares::session_mw::UserId, models::{desktop::DesktopItem, error::AppError, folders_db::Folder}, utilities::user_utils::parse_user_id, views::screen_v::{render_screen, render_screen_grid, render_welcome_screen}
 };
 
 #[derive(Deserialize)]
@@ -27,14 +25,7 @@ pub async fn create_screen_grid(
     Extension(user_id): Extension<UserId>,
     Form(form): Form<GridForm>,
 ) -> Result<impl IntoResponse, AppError> {
-    let user_id = user_id
-        .0
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .parse::<i32>()
-        .map_err(|err| {
-            tracing::error!("Couldn't parse user_id: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
+    let user_id = parse_user_id(user_id)?;
 
     let rows = Folder::get_desktop_folders(user_id, vec!["id", "sort_type"], &pool).await?;
 
