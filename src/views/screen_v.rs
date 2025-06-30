@@ -133,13 +133,13 @@ pub fn render_screen_section() -> impl Renderable {
             <script type="module">
                 import {setupGlobalVariables} from "/assets/js/global_vars.js";
                 import {setupDesktopContextMenu} from "/assets/js/context_menu.js";
-                import {setupGridDimensions, setupGridResize, setupGridItemSingleSelect} from "/assets/js/grid.js";
+                import {setupGridDimensions, setupGridResize, setupItemSingleSelect} from "/assets/js/grid.js";
                 import {setupDesktopDrag} from "/assets/js/drag.js";
                 setupGlobalVariables();
                 setupDesktopContextMenu();
                 setupGridDimensions();
                 setupGridResize();
-                setupGridItemSingleSelect();
+                setupItemSingleSelect();
                 setupDesktopDrag();
             </script>
         "#))
@@ -182,12 +182,11 @@ pub fn render_screen_grid(
                             class = "flex justify-center items-center relative"
                             style={ "width:" (rectangle_width) "px;" }
                             id={ "item-" (row) "-" (col) }
-                            draggable="true"
                         {
                             @if let Some(item) = item_map.get(&(row, col)) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
                                     ItemType::File => {
-                                        (render_txt(item.id.expect("No id column or value is null")))
+                                        (render_txt(item.id.expect("No id column or value is null"), &item.name))
                                     }
                                     ItemType::Folder => {
                                         (render_folder(item.id.expect("No id column or value is null")))
@@ -210,7 +209,7 @@ pub fn render_screen_grid(
                             @if let Some(item) = items.get((col * rows + row) as usize) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
                                     ItemType::File => {
-                                        (render_txt(item.id.expect("No id column or value is null")))
+                                        (render_txt(item.id.expect("No id column or value is null"), &item.name))
                                     }
                                     ItemType::Folder => {
                                         (render_folder(item.id.expect("No id column or value is null")))

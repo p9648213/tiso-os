@@ -1,13 +1,24 @@
 use axum::{
-    Extension,
+    Extension, Form,
     extract::{Path, State},
+    http::StatusCode,
+    response::IntoResponse,
 };
 use deadpool_postgres::Pool;
+use hypertext::Renderable;
+use serde::Deserialize;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{error::AppError, files_db::File, folders_db::FolderSortType, state::SessionMap}, utilities::user_utils::parse_user_id,
+    models::{error::AppError, files_db::File, folders_db::FolderSortType, state::SessionMap},
+    utilities::user_utils::parse_user_id,
+    views::txt_v::render_txt,
 };
+
+#[derive(Deserialize)]
+pub struct FileRenameForm {
+    pub file_name: String,
+}
 
 pub async fn update_file_desktop_position(
     Path((file_id, desktop_id, position)): Path<(i32, i32, String)>,
@@ -55,4 +66,20 @@ pub async fn delete_file(
     let user_id = parse_user_id(user_id)?;
 
     File::delete_file(file_id, user_id, &pool).await
+}
+
+pub async fn rename_file(
+    Path((file_type, file_id)): Path<(String, i32)>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+    Form(form): Form<FileRenameForm>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    File::rename_file(file_id, user_id, &form.file_name, &pool).await?;
+
+    match file_type.as_str() {
+        "txt" => Ok(render_txt(file_id, &Some(form.file_name)).render()),
+        _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
+    }
 }

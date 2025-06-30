@@ -44,7 +44,7 @@ pub async fn create_txt(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    Ok(render_txt(file_id).render())
+    Ok(render_txt(file_id, &None).render())
 }
 
 pub async fn get_txt_input(

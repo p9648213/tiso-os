@@ -4,7 +4,7 @@ export function setupDesktopDrag() {
   let draggedItem = null;
 
   main.addEventListener("dragstart", (event) => {
-    if (event.target.innerHTML) {
+    if (event.target.innerHTML && !window.editMode) {
       draggedItem = event.target;
     } else {
       draggedItem = null;

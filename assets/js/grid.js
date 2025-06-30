@@ -37,7 +37,7 @@ export function setupGridResize() {
   });
 }
 
-export function setupGridItemSingleSelect() {
+export function setupItemSingleSelect() {
   const main = document.querySelector("main");
 
   main.addEventListener("click", (event) => {

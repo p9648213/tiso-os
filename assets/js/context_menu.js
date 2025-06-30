@@ -101,14 +101,14 @@ export function setupDesktopContextMenu() {
             let fileType = desktopItem.getAttribute("data-file-type");
 
             menuForm.addEventListener("mouseup", () => {
-              htmx.ajax(
-                "GET",
-                `/read/${fileType}/input/${itemId}`,
-                {
+              htmx
+                .ajax("GET", `/read/${fileType}/input/${itemId}`, {
                   target: `#${desktopItem.id}`,
                   swap: "outerHTML",
-                }
-              );
+                })
+                .then(() => {
+                  window.editMode = true;
+                });
             });
           }
         }
