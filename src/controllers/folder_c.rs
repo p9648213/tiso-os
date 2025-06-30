@@ -1,19 +1,22 @@
 use axum::{
-    Extension,
-    extract::{Path, State},
-    http::StatusCode,
-    response::IntoResponse,
+    extract::{Path, State}, http::StatusCode, response::IntoResponse, Extension, Form
 };
 use deadpool_postgres::Pool;
 use hypertext::Renderable;
+use serde::Deserialize;
 
 use crate::{
     middlewares::session_mw::UserId, models::{
         error::AppError,
         folders_db::{Folder, FolderSortType, FolderType},
         state::SessionMap,
-    }, utilities::user_utils::parse_user_id, views::folder_v::render_folder
+    }, utilities::user_utils::parse_user_id, views::folder_v::{render_folder, render_folder_input}
 };
+
+#[derive(Deserialize)]
+pub struct FolderRenameForm {
+    pub folder_name: String,
+}
 
 pub async fn create_folder(
     Path((folder_id, position_id)): Path<(i32, String)>,
@@ -45,7 +48,7 @@ pub async fn create_folder(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    Ok(render_folder(folder_id).render())
+    Ok(render_folder(folder_id, &None).render())
 }
 
 pub async fn update_folder_desktop_position(
@@ -94,4 +97,36 @@ pub async fn delete_folder(
     let user_id = parse_user_id(user_id)?;
 
     Folder::delete_folder(folder_id, user_id, &pool).await
+}
+
+pub async fn get_folder_input(
+    Path(folder_id): Path<i32>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    let row = Folder::get_folder(folder_id, user_id, vec!["folder_name"], &pool).await?;
+
+    let folder = Folder::try_from(&row, None);
+
+    let folder_name = folder.folder_name.ok_or_else(|| {
+        tracing::error!("No folder_name column or value is null");
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+    })?;
+
+    Ok(render_folder_input(folder_id, &folder_name).render())
+}
+
+pub async fn rename_folder(
+    Path(folder_id): Path<i32>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+    Form(form): Form<FolderRenameForm>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    Folder::rename_folder(folder_id, user_id, &form.folder_name, &pool).await?;
+
+    Ok(render_folder(folder_id, &Some(form.folder_name)).render())
 }

@@ -111,6 +111,18 @@ export function setupDesktopContextMenu() {
                 });
             });
           }
+          if(itemType === "folder") {
+            menuForm.addEventListener("mouseup", () => {
+              htmx
+                .ajax("GET", `/read/folder/input/${itemId}`, {
+                  target: `#${desktopItem.id}`,
+                  swap: "outerHTML",
+                })
+                .then(() => {
+                  window.editMode = true;
+                });
+            });
+          }
         }
 
         contextMenu.appendChild(menuForm);

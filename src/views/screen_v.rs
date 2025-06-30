@@ -189,7 +189,7 @@ pub fn render_screen_grid(
                                         (render_txt(item.id.expect("No id column or value is null"), &item.name))
                                     }
                                     ItemType::Folder => {
-                                        (render_folder(item.id.expect("No id column or value is null")))
+                                        (render_folder(item.id.expect("No id column or value is null"), &item.name))
                                     }
                                 }
                             }
@@ -212,7 +212,7 @@ pub fn render_screen_grid(
                                         (render_txt(item.id.expect("No id column or value is null"), &item.name))
                                     }
                                     ItemType::Folder => {
-                                        (render_folder(item.id.expect("No id column or value is null")))
+                                        (render_folder(item.id.expect("No id column or value is null"), &item.name))
                                     }
                                 }
                             }

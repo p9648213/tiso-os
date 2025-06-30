@@ -5,7 +5,10 @@ use crate::{
     controllers::{
         account_c::create_account,
         file_c::{delete_file, rename_file, update_file_desktop_position},
-        folder_c::{create_folder, delete_folder, update_folder_desktop_position},
+        folder_c::{
+            create_folder, delete_folder, get_folder_input, rename_folder,
+            update_folder_desktop_position,
+        },
         screen_c::{create_screen_grid, get_screen},
         txt_c::{create_txt, get_txt_input},
     },
@@ -79,6 +82,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 post(update_folder_desktop_position),
             )
             .route("/file/rename/{file_type}/{file_id}", post(rename_file))
+            .route("/folder/rename/{folder_id}", post(rename_folder))
             .layer(from_fn(csrf_middleware)),
     );
 
@@ -92,7 +96,9 @@ pub async fn create_router(pool: Pool) -> Router {
 
     let read_routes = Router::new().nest(
         "/read",
-        Router::new().route("/txt/input/{file_id}", get(get_txt_input)),
+        Router::new()
+            .route("/txt/input/{file_id}", get(get_txt_input))
+            .route("/folder/input/{folder_id}", get(get_folder_input)),
     );
 
     Router::new()
