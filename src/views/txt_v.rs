@@ -10,9 +10,9 @@ pub fn render_txt(file_id: i32, file_name: &Option<String>) -> impl Renderable {
             </script>
         "#, file_id)))
         div id={ "file-" (file_id) } data-file-type="txt" class="absolute inset-0 flex justify-center py-2" {
-            div class="flex flex-col justify-center items-center h-fit gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit cursor-pointer" {
+            div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit h-fit cursor-pointer" {
                 img class="w-9 h-9" src="/assets/images/text-editor.svg" draggable="false";
-                div class="max-w-[75px] overflow-ellipsis overflow-hidden text-white text-sm text-center select-none" {
+                div class="max-w-[75px] overflow-ellipsis text-white text-sm text-center line-clamp-2 select-none" {
                     (file_name)
                 }
             }
@@ -27,19 +27,22 @@ pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
                 document.getElementById("file-{}").parentNode.draggable = false;
             </script>
         "#, file_id)))
-        div id={ "file-" (file_id) } data-file-type="txt" class="absolute inset-0 flex justify-center items-center" {
-            div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit cursor-pointer" {
+        div id={ "file-" (file_id) } data-file-type="txt" class="absolute inset-0 flex justify-center py-2" {
+            div class="flex flex-col justify-center items-center gap-1.5 p-1.5 rounded-xs w-fit h-fit cursor-pointer" {
                 img class="w-9 h-9" src="/assets/images/text-editor.svg" draggable="false";
-                input
+                textarea
                     hx-post={"/update/file/rename/txt/" (file_id)}
                     hx-target={"#file-" (file_id)}
                     hx-swap="outerHTML"
-                    hx-trigger="blur"
+                    hx-trigger="blur, keyup[key=='Enter']"
+                    hx-on:blur="window.editMode = false"
+                    hx-on:keydown=r#"if(event.key == 'Enter') { event.preventDefault(); window.editMode = false }"#
                     name="file_name"
-                    type="text"
-                    class="max-w-[75px] text-white text-sm text-center"
-                    value=(value)
-                    autofocus="true";
+                    class="max-w-[75px] overflow-hidden text-white text-sm text-center resize-none"
+                    autofocus="true"
+                {
+                    (value)
+                }
             }
         }
     }

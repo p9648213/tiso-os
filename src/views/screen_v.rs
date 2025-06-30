@@ -179,7 +179,7 @@ pub fn render_screen_grid(
                 @for row in 0..rows {
                     @for col in 0..cols {
                         div
-                            class = "flex justify-center items-center relative"
+                            class = "flex justify-center items-center relative overflow-hidden"
                             style={ "width:" (rectangle_width) "px;" }
                             id={ "item-" (row) "-" (col) }
                         {
@@ -201,7 +201,7 @@ pub fn render_screen_grid(
                 @for row in 0..rows {
                     @for col in 0..cols {
                         div
-                            class = "flex justify-center items-center relative"
+                            class = "flex justify-center items-center relative overflow-hidden"
                             style={ "width:" (rectangle_width) "px;" }
                             id={ "item-" (row) "-" (col) }
                             draggable="true"

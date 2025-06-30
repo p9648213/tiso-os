@@ -56,8 +56,11 @@ export function setupItemSingleSelect() {
       if (window.selectedItem) {
         window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
       }
-      window.selectedItem = checkDesktopItem;
-      checkDesktopItem.childNodes[0].classList.add("bg-blue-900");
+
+      if (window.editMode === false) {
+        window.selectedItem = checkDesktopItem;
+        checkDesktopItem.childNodes[0].classList.add("bg-blue-900");
+      }
     } else {
       if (window.selectedItem) {
         window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
