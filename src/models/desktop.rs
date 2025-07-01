@@ -68,6 +68,7 @@ impl DesktopItem {
 
     pub async fn get_desktop_items(
         desktop_id: i32,
+        user_id: i32,
         sort_type: &FolderSortType,
         pool: &Pool,
     ) -> Result<Vec<Row>, AppError> {
@@ -78,11 +79,11 @@ impl DesktopItem {
 
         let sql = 
             "SELECT * FROM (
-                SELECT id, user_id, file_name AS name, 'file' AS item_type, desktop_position, created_at
-                FROM files WHERE folder_id = $1
+                SELECT id, user_id, file_name AS name, 'file' AS item_type, file_type, desktop_position, created_at
+                FROM files WHERE folder_id = $1 AND user_id = $2
                 UNION
-                SELECT id, user_id, folder_name AS name, 'folder' AS item_type, desktop_position, created_at
-                FROM folders WHERE parent_folder_id = $1
+                SELECT id, user_id, folder_name AS name, 'folder' AS item_type, NULL AS file_type, desktop_position, created_at
+                FROM folders WHERE parent_folder_id = $1 AND user_id = $2
             ) AS combined";
 
         let sql = match sort_type {
@@ -90,7 +91,7 @@ impl DesktopItem {
             FolderSortType::DateCreated => &format!("{} ORDER BY created_at ASC", sql),
         };
 
-        client.query(sql, &[&desktop_id]).await.map_err(|error| {
+        client.query(sql, &[&desktop_id, &user_id]).await.map_err(|error| {
             tracing::error!("Couldn't query postgres: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })
