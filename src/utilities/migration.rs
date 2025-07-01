@@ -59,6 +59,20 @@ pub async fn init_database(pool: &Pool) {
 
     client.execute(sql, &[]).await.unwrap();
 
+    let sql = "CREATE TABLE IF NOT EXISTS files (
+      id SERIAL PRIMARY KEY,
+      user_id INT,
+      folder_id INT,
+      file_name VARCHAR(255) NOT NULL,
+      file_type FileType NOT NULL,
+      desktop_position VARCHAR(32),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE
+    );";
+
+    client.execute(sql, &[]).await.unwrap();
+
     let sql = "CREATE TABLE IF NOT EXISTS txt (
       id SERIAL PRIMARY KEY,
       file_id INT,
@@ -71,20 +85,6 @@ pub async fn init_database(pool: &Pool) {
       id SERIAL PRIMARY KEY,
       file_id INT,
       FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
-    );";
-
-    client.execute(sql, &[]).await.unwrap();
-
-    let sql = "CREATE TABLE IF NOT EXISTS files (
-      id SERIAL PRIMARY KEY,
-      user_id INT,
-      folder_id INT,
-      file_name VARCHAR(255) NOT NULL,
-      file_type FileType NOT NULL,
-      desktop_position VARCHAR(32),
-      created_at TIMESTAMPTZ DEFAULT NOW(),
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-      FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE
     );";
 
     client.execute(sql, &[]).await.unwrap();

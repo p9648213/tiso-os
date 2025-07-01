@@ -11,7 +11,7 @@ use crate::{
     middlewares::session_mw::UserId,
     models::{
         error::AppError,
-        files_db::{File, FileType},
+        files_db::{File, FileType}, txt_db::Txt,
     },
     utilities::user_utils::parse_user_id,
     views::txt_v::{render_txt, render_txt_input},
@@ -46,6 +46,8 @@ pub async fn create_txt(
         tracing::error!("No id column or value is null");
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
+
+    Txt::create_txt(file_id, &pool).await?;
 
     Ok(render_txt(file_id, &None).render())
 }

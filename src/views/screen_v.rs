@@ -182,6 +182,7 @@ pub fn render_screen_grid(
                             class = "flex justify-center items-center relative overflow-hidden"
                             style={ "width:" (rectangle_width) "px;" }
                             id={ "item-" (row) "-" (col) }
+                            draggable="true"
                         {
                             @if let Some(item) = item_map.get(&(row, col)) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
