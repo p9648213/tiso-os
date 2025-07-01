@@ -49,12 +49,38 @@ pub async fn init_database(pool: &Pool) {
 
     client.execute(sql, &[]).await.unwrap();
 
+    let sql = "DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'filetype') THEN
+          CREATE TYPE FileType AS ENUM ('Txt', 'Calculator');
+        END IF;
+      END
+    $$;";
+
+    client.execute(sql, &[]).await.unwrap();
+
+    let sql = "CREATE TABLE IF NOT EXISTS txt (
+      id SERIAL PRIMARY KEY,
+      file_id INT,
+      FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+    );";
+
+    client.execute(sql, &[]).await.unwrap();
+
+    let sql = "CREATE TABLE IF NOT EXISTS calculator (
+      id SERIAL PRIMARY KEY,
+      file_id INT,
+      FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+    );";
+
+    client.execute(sql, &[]).await.unwrap();
+
     let sql = "CREATE TABLE IF NOT EXISTS files (
       id SERIAL PRIMARY KEY,
       user_id INT,
       folder_id INT,
       file_name VARCHAR(255) NOT NULL,
-      execute_path VARCHAR(255) NOT NULL,
+      file_type FileType NOT NULL,
       desktop_position VARCHAR(32),
       created_at TIMESTAMPTZ DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -66,7 +92,10 @@ pub async fn init_database(pool: &Pool) {
     let sql = "SELECT * from files WHERE file_name = 'Calculator'";
 
     if client.query(sql, &[]).await.unwrap().is_empty() {
-        let sql = "INSERT INTO files (file_name, execute_path) VALUES ('Calculator', '/execute/calculator');";
-        client.execute(sql, &[]).await.unwrap();
+        let sql = "INSERT INTO files (file_name, file_type) VALUES ('Calculator', 'Calculator') RETURNING id;";
+        let id: i32 = client.query_one(sql, &[]).await.unwrap().get("id");
+
+        let sql = "INSERT INTO calculator (file_id) VALUES ($1);";
+        client.execute(sql, &[&id]).await.unwrap();
     }
 }

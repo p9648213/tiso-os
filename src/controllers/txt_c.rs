@@ -9,7 +9,10 @@ use hypertext::Renderable;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{error::AppError, files_db::File},
+    models::{
+        error::AppError,
+        files_db::{File, FileType},
+    },
     utilities::user_utils::parse_user_id,
     views::txt_v::{render_txt, render_txt_input},
 };
@@ -31,7 +34,7 @@ pub async fn create_txt(
         user_id,
         folder_id,
         "New Text",
-        &format!("/execute/txt/{}", user_id),
+        FileType::Txt,
         desktop_position,
         &pool,
     )

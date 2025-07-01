@@ -1,5 +1,6 @@
 use axum::http::StatusCode;
 use deadpool_postgres::Pool;
+use postgres_types::{FromSql, ToSql};
 use time::OffsetDateTime;
 use tokio_postgres::Row;
 
@@ -8,12 +9,19 @@ use crate::{
     utilities::postgres::DbExecutor,
 };
 
+#[derive(Debug, ToSql, FromSql, Clone)]
+#[postgres(name = "filetype")]
+pub enum FileType {
+    Txt,
+    Calculator,
+}
+
 pub struct File {
     pub id: Option<i32>,
     pub user_id: Option<i32>,
     pub folder_id: Option<i32>,
     pub file_name: Option<String>,
-    pub execute_path: Option<String>,
+    pub file_type: Option<FileType>,
     pub desktop_position: Option<String>,
     pub created_at: Option<OffsetDateTime>,
 }
@@ -34,8 +42,8 @@ impl File {
         let file_name: Option<String> = row
             .try_get(format!("{}file_name", prefix).as_str())
             .unwrap_or(None);
-        let execute_path: Option<String> = row
-            .try_get(format!("{}execute_path", prefix).as_str())
+        let file_type: Option<FileType> = row
+            .try_get(format!("{}file_type", prefix).as_str())
             .unwrap_or(None);
         let desktop_position: Option<String> = row
             .try_get(format!("{}desktop_position", prefix).as_str())
@@ -49,7 +57,7 @@ impl File {
             user_id,
             folder_id,
             file_name,
-            execute_path,
+            file_type,
             desktop_position,
             created_at,
         }
@@ -76,7 +84,10 @@ impl File {
 
         let row = client
             .query_one(
-                &format!("SELECT {} FROM files WHERE id = $1 AND user_id = $2", columns),
+                &format!(
+                    "SELECT {} FROM files WHERE id = $1 AND user_id = $2",
+                    columns
+                ),
                 &[&id, &user_id],
             )
             .await?;
@@ -88,7 +99,7 @@ impl File {
         user_id: i32,
         folder_id: i32,
         file_name: &str,
-        execute_path: &str,
+        file_type: FileType,
         desktop_position: Option<String>,
         pool: &Pool,
     ) -> Result<Row, AppError> {
@@ -99,13 +110,13 @@ impl File {
 
         client
             .query_one(
-                "INSERT INTO files (user_id, folder_id, file_name, execute_path, desktop_position) 
+                "INSERT INTO files (user_id, folder_id, file_name, file_type, desktop_position) 
                     VALUES ($1, $2, $3, $4, $5) RETURNING id",
                 &[
                     &user_id,
                     &folder_id,
                     &file_name,
-                    &execute_path,
+                    &file_type,
                     &desktop_position,
                 ],
             )
