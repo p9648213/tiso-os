@@ -11,10 +11,11 @@ use crate::{
     middlewares::session_mw::UserId,
     models::{
         error::AppError,
-        files_db::{File, FileType}, txt_db::Txt,
+        file_db::{File, FileType},
+        txt_db::Txt,
     },
     utilities::user_utils::parse_user_id,
-    views::txt_v::{render_txt, render_txt_input},
+    views::txt_v::{render_txt_file, render_txt_input, render_txt_window},
 };
 
 pub async fn create_txt(
@@ -49,7 +50,7 @@ pub async fn create_txt(
 
     Txt::create_txt(file_id, &pool).await?;
 
-    Ok(render_txt(file_id, &None).render())
+    Ok(render_txt_file(file_id, &None).render())
 }
 
 pub async fn get_txt_input(
@@ -69,4 +70,14 @@ pub async fn get_txt_input(
     })?;
 
     Ok(render_txt_input(file_id, &file_name).render())
+}
+
+pub async fn get_txt_window(
+    Path(file_id): Path<i32>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    Ok(render_txt_window().render())
 }

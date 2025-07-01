@@ -3,7 +3,7 @@ use deadpool_postgres::Pool;
 use time::OffsetDateTime;
 use tokio_postgres::Row;
 
-use crate::models::{error::AppError, folders_db::FolderSortType};
+use crate::models::{error::AppError, folder_db::FolderSortType};
 
 #[derive(Debug)]
 pub enum ItemType {
@@ -80,10 +80,10 @@ impl DesktopItem {
         let sql = 
             "SELECT * FROM (
                 SELECT id, user_id, file_name AS name, 'file' AS item_type, file_type, desktop_position, created_at
-                FROM files WHERE folder_id = $1 AND user_id = $2
+                FROM file WHERE folder_id = $1 AND user_id = $2
                 UNION
                 SELECT id, user_id, folder_name AS name, 'folder' AS item_type, NULL AS file_type, desktop_position, created_at
-                FROM folders WHERE parent_folder_id = $1 AND user_id = $2
+                FROM folder WHERE parent_folder_id = $1 AND user_id = $2
             ) AS combined";
 
         let sql = match sort_type {

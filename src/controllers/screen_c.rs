@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{desktop::DesktopItem, error::AppError, folders_db::Folder},
+    models::{desktop::DesktopItem, error::AppError, folder_db::Folder},
     utilities::user_utils::parse_user_id,
     views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
 };

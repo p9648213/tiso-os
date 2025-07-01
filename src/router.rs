@@ -10,7 +10,7 @@ use crate::{
             update_folder_desktop_position,
         },
         screen_c::{create_screen_grid, get_screen},
-        txt_c::{create_txt, get_txt_input},
+        txt_c::{create_txt, get_txt_input, get_txt_window},
     },
     middlewares::{csrf_mw::csrf_middleware, log_mw::request_log, session_mw::session_middleware},
     models::state::AppState,
@@ -97,6 +97,7 @@ pub async fn create_router(pool: Pool) -> Router {
     let read_routes = Router::new().nest(
         "/read",
         Router::new()
+            .route("/txt/{file_id}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))
             .route("/folder/input/{folder_id}", get(get_folder_input)),
     );

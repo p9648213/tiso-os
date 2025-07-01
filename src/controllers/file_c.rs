@@ -10,9 +10,9 @@ use serde::Deserialize;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{error::AppError, files_db::File, folders_db::FolderSortType, state::SessionMap},
+    models::{error::AppError, file_db::File, folder_db::FolderSortType, state::SessionMap},
     utilities::user_utils::parse_user_id,
-    views::txt_v::render_txt,
+    views::txt_v::render_txt_file,
 };
 
 #[derive(Deserialize)]
@@ -79,7 +79,7 @@ pub async fn rename_file(
     File::rename_file(file_id, user_id, &form.file_name, &pool).await?;
 
     match file_type.as_str() {
-        "txt" => Ok(render_txt(file_id, &Some(form.file_name)).render()),
+        "txt" => Ok(render_txt_file(file_id, &Some(form.file_name)).render()),
         _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
     }
 }

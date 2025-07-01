@@ -92,7 +92,7 @@ impl Folder {
         client
             .query_one(
                 &format!(
-                    "SELECT {} FROM folders WHERE id = $1 AND user_id = $2",
+                    "SELECT {} FROM folder WHERE id = $1 AND user_id = $2",
                     columns
                 ),
                 &[&folder_id, &user_id],
@@ -115,7 +115,7 @@ impl Folder {
         client
             .query_one(
                 &format!(
-                    "SELECT {} FROM folders WHERE user_id = $1 AND folder_type = $2",
+                    "SELECT {} FROM folder WHERE user_id = $1 AND folder_type = $2",
                     columns
                 ),
                 &[&user_id, &FolderType::Desktop],
@@ -137,7 +137,7 @@ impl Folder {
         })?;
 
         client.query_one(
-            "INSERT INTO folders (user_id, folder_name, folder_type, parent_folder_id, desktop_position) 
+            "INSERT INTO folder (user_id, folder_name, folder_type, parent_folder_id, desktop_position) 
                     VALUES ($1, $2, $3, $4, $5) RETURNING id",
             &[&user_id, &folder_name, &folder_type, &parent_folder_id, &desktop_position],
         )
@@ -159,7 +159,7 @@ impl Folder {
 
         let rows = client
             .execute(
-                "UPDATE folders SET desktop_position = $1 WHERE id = $2 AND user_id = $3",
+                "UPDATE folder SET desktop_position = $1 WHERE id = $2 AND user_id = $3",
                 &[&desktop_position, &id, &user_id],
             )
             .await?;
@@ -180,7 +180,7 @@ impl Folder {
         if should_update_sort_type {
             let rows = client
                 .execute(
-                    "UPDATE folders SET sort_type = $1 WHERE id = $2",
+                    "UPDATE folder SET sort_type = $1 WHERE id = $2",
                     &[&FolderSortType::Custom, &desktop_id],
                 )
                 .await?;
@@ -205,7 +205,7 @@ impl Folder {
 
         let rows = client
             .execute(
-                "DELETE FROM folders WHERE id = $1 AND user_id = $2",
+                "DELETE FROM folder WHERE id = $1 AND user_id = $2",
                 &[&id, &user_id],
             )
             .await?;
@@ -229,7 +229,7 @@ impl Folder {
 
         let row = client
             .execute(
-                "UPDATE folders SET folder_name = $1 WHERE id = $2 AND user_id = $3",
+                "UPDATE folder SET folder_name = $1 WHERE id = $2 AND user_id = $3",
                 &[&folder_name, &id, &user_id],
             )
             .await?;

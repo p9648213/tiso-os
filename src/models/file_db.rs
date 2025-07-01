@@ -5,7 +5,7 @@ use time::OffsetDateTime;
 use tokio_postgres::Row;
 
 use crate::{
-    models::{error::AppError, folders_db::FolderSortType},
+    models::{error::AppError, folder_db::FolderSortType},
     utilities::postgres::DbExecutor,
 };
 
@@ -85,7 +85,7 @@ impl File {
         let row = client
             .query_one(
                 &format!(
-                    "SELECT {} FROM files WHERE id = $1 AND user_id = $2",
+                    "SELECT {} FROM file WHERE id = $1 AND user_id = $2",
                     columns
                 ),
                 &[&id, &user_id],
@@ -110,7 +110,7 @@ impl File {
 
         client
             .query_one(
-                "INSERT INTO files (user_id, folder_id, file_name, file_type, desktop_position) 
+                "INSERT INTO file (user_id, folder_id, file_name, file_type, desktop_position) 
                     VALUES ($1, $2, $3, $4, $5) RETURNING id",
                 &[
                     &user_id,
@@ -138,7 +138,7 @@ impl File {
 
         let rows = client
             .execute(
-                "UPDATE files SET desktop_position = $1 WHERE id = $2 AND user_id = $3",
+                "UPDATE file SET desktop_position = $1 WHERE id = $2 AND user_id = $3",
                 &[&desktop_position, &id, &user_id],
             )
             .await?;
@@ -159,7 +159,7 @@ impl File {
         if should_update_sort_type {
             let rows = client
                 .execute(
-                    "UPDATE folders SET sort_type = $1 WHERE id = $2",
+                    "UPDATE folder SET sort_type = $1 WHERE id = $2",
                     &[&FolderSortType::Custom, &desktop_id],
                 )
                 .await?;
@@ -184,7 +184,7 @@ impl File {
 
         let rows = client
             .execute(
-                "DELETE FROM files WHERE id = $1 AND user_id = $2",
+                "DELETE FROM file WHERE id = $1 AND user_id = $2",
                 &[&id, &user_id],
             )
             .await?;
@@ -213,7 +213,7 @@ impl File {
 
         let row = client
             .execute(
-                "UPDATE files SET file_name = $1 WHERE id = $2 AND user_id = $3",
+                "UPDATE file SET file_name = $1 WHERE id = $2 AND user_id = $3",
                 &[&file_name, &id, &user_id],
             )
             .await?;

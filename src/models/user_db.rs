@@ -1,4 +1,4 @@
-use crate::{models::folders_db::FolderType, utilities::postgres::DbExecutor};
+use crate::{models::folder_db::FolderType, utilities::postgres::DbExecutor};
 
 use super::error::AppError;
 
@@ -54,7 +54,7 @@ impl User {
 
         client
             .query_optional(
-                &format!("SELECT {} FROM users WHERE username = $1", columns),
+                &format!("SELECT {} FROM user WHERE username = $1", columns),
                 &[&username],
             )
             .await
@@ -73,7 +73,7 @@ impl User {
 
         let row = txn
             .query_one(
-                "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
+                "INSERT INTO user (username, password) VALUES ($1, $2) RETURNING id",
                 &[&username, &password],
             )
             .await?;
@@ -86,7 +86,7 @@ impl User {
         })?;
 
         txn.execute(
-            "INSERT INTO folders (user_id, folder_name, folder_type) VALUES 
+            "INSERT INTO folder (user_id, folder_name, folder_type) VALUES 
                 ($1, $2, $3), 
                 ($1, $4, $5)",
             &[

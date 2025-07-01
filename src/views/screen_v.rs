@@ -9,10 +9,10 @@ use crate::{
     controllers::account_c::AccountForm,
     models::{
         desktop::{DesktopItem, ItemType},
-        folders_db::FolderSortType,
+        folder_db::FolderSortType,
     },
     utilities::screen_utils::parse_position,
-    views::{folder_v::render_folder, txt_v::render_txt},
+    views::{folder_v::render_folder, txt_v::render_txt_file},
 };
 
 pub fn render_welcome_screen() -> impl Renderable {
@@ -132,15 +132,21 @@ pub fn render_screen_section() -> impl Renderable {
         (Raw(r#"
             <script type="module">
                 import {setupGlobalVariables} from "/assets/js/global_vars.js";
-                import {setupDesktopContextMenu} from "/assets/js/context_menu.js";
-                import {setupGridDimensions, setupGridResize, setupItemSingleSelect} from "/assets/js/grid.js";
-                import {setupDesktopDrag} from "/assets/js/drag.js";
+                import {
+                    setupGridDimensions, 
+                    setupGridResize,
+                    setupGridContextMenu, 
+                    setupGridItemSingleSelect, 
+                    setupGridItemDrag, 
+                    setupGridItemOpen
+                } from "/assets/js/grid.js";
                 setupGlobalVariables();
-                setupDesktopContextMenu();
+                setupGridContextMenu();
                 setupGridDimensions();
                 setupGridResize();
-                setupItemSingleSelect();
-                setupDesktopDrag();
+                setupGridItemSingleSelect();
+                setupGridItemOpen();
+                setupGridItemDrag();
             </script>
         "#))
         main class="flex flex-wrap h-[calc(100%-theme('spacing.12'))]" {}
@@ -187,7 +193,7 @@ pub fn render_screen_grid(
                             @if let Some(item) = item_map.get(&(row, col)) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
                                     ItemType::File => {
-                                        (render_txt(item.id.expect("No id column or value is null"), &item.name))
+                                        (render_txt_file(item.id.expect("No id column or value is null"), &item.name))
                                     }
                                     ItemType::Folder => {
                                         (render_folder(item.id.expect("No id column or value is null"), &item.name))
@@ -210,7 +216,7 @@ pub fn render_screen_grid(
                             @if let Some(item) = items.get((col * rows + row) as usize) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
                                     ItemType::File => {
-                                        (render_txt(item.id.expect("No id column or value is null"), &item.name))
+                                        (render_txt_file(item.id.expect("No id column or value is null"), &item.name))
                                     }
                                     ItemType::Folder => {
                                         (render_folder(item.id.expect("No id column or value is null"), &item.name))

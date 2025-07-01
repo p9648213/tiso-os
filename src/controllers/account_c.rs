@@ -15,7 +15,7 @@ use rand::Rng;
 use serde::Deserialize;
 
 use crate::{
-    models::{error::AppError, state::SessionMap, users_db::User},
+    models::{error::AppError, state::SessionMap, user_db::User},
     utilities::argon::{compare_password, hash_password},
     views::screen_v::{render_comfirm_password, render_screen_section},
 };

@@ -1,12 +1,12 @@
-use hypertext::{GlobalAttributes, HtmxAttributes, Renderable, html_elements, maud_move};
+use hypertext::{GlobalAttributes, HtmxAttributes, Renderable, html_elements, maud, maud_move};
 
-pub fn render_txt(file_id: i32, file_name: &Option<String>) -> impl Renderable {
+pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Renderable {
     let file_name = file_name.as_deref().unwrap_or("New Text");
 
     maud_move! {
-        div 
-            id={ "file-" (file_id) } 
-            data-file-type="txt" 
+        div
+            id={ "file-" (file_id) }
+            data-file-type="txt"
             class="absolute inset-0 flex justify-center py-2"
         {
             div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit h-fit cursor-pointer" {
@@ -21,9 +21,9 @@ pub fn render_txt(file_id: i32, file_name: &Option<String>) -> impl Renderable {
 
 pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
     maud_move! {
-        div 
-            id={ "file-" (file_id) } 
-            data-file-type="txt" 
+        div
+            id={ "file-" (file_id) }
+            data-file-type="txt"
             class="absolute inset-0 flex justify-center py-2"
         {
             div class="flex flex-col justify-center items-center gap-1.5 p-1.5 rounded-xs w-fit h-fit cursor-pointer" {
@@ -43,5 +43,11 @@ pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
                 }
             }
         }
+    }
+}
+
+pub fn render_txt_window() -> impl Renderable {
+    maud! {
+        div class="fixed w-50 h-50 m-auto inset-0 bg-white" { "Hello" }
     }
 }
