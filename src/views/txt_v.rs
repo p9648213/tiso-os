@@ -1,4 +1,4 @@
-use hypertext::{GlobalAttributes, HtmxAttributes, Renderable, html_elements, maud_move};
+use hypertext::{GlobalAttributes, HtmxAttributes, Raw, Renderable, html_elements, maud_move};
 
 pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Renderable {
     let file_name = file_name.as_deref().unwrap_or("New Text");
@@ -59,12 +59,20 @@ pub fn render_txt_window(
     let top = ((parent_height / 2) - (window_height / 2)).max(0);
 
     maud_move! {
+        (Raw(format!(
+            r#"
+                <script type="module">
+                    import {{setupTxtWindowGrab}} from "/assets/js/txt.js";
+                    setupTxtWindowGrab({});
+                </script>
+            "#, txt_id
+        )))
         div
             id={ "txt-window-" (txt_id) }
             class="absolute bg-white shadow-lg"
             style={ "top:" (top) "px; left:" (left) "px; width:" (window_width) "px; height:" (window_height) "px;" }
         {
-            div id={ "txt-header-" (txt_id) } class="flex items-center bg-red-300 px-2 h-5" {
+            div id={ "txt-header-" (txt_id) } class="flex items-center bg-red-300 px-2 h-5 select-none" {
                 (file_name)
             }
             div class="p-2" { "Content" }
