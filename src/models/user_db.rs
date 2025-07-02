@@ -54,7 +54,7 @@ impl User {
 
         client
             .query_optional(
-                &format!("SELECT {} FROM user WHERE username = $1", columns),
+                &format!(r#"SELECT {} FROM "user" WHERE username = $1"#, columns),
                 &[&username],
             )
             .await
@@ -73,7 +73,7 @@ impl User {
 
         let row = txn
             .query_one(
-                "INSERT INTO user (username, password) VALUES ($1, $2) RETURNING id",
+                r#"INSERT INTO "user" (username, password) VALUES ($1, $2) RETURNING id"#,
                 &[&username, &password],
             )
             .await?;

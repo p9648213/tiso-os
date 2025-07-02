@@ -5,12 +5,12 @@ use crate::utilities::postgres::DbExecutor;
 pub async fn init_database(pool: &Pool) {
     let client = pool.get().await.unwrap();
 
-    let sql = "CREATE TABLE IF NOT EXISTS user (
+    let sql = r#"CREATE TABLE IF NOT EXISTS "user" (
       id SERIAL PRIMARY KEY,
       username VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW()
-    );";
+    );"#;
 
     client.execute(sql, &[]).await.unwrap();
 
@@ -34,7 +34,7 @@ pub async fn init_database(pool: &Pool) {
 
     client.execute(sql, &[]).await.unwrap();
 
-    let sql = "CREATE TABLE IF NOT EXISTS folder (
+    let sql = r#"CREATE TABLE IF NOT EXISTS folder (
       id SERIAL PRIMARY KEY,
       user_id INT,
       parent_folder_id INT,
@@ -43,9 +43,9 @@ pub async fn init_database(pool: &Pool) {
       sort_type FolderSortType NOT NULL DEFAULT 'DateCreated',
       desktop_position VARCHAR(32),
       created_at TIMESTAMPTZ DEFAULT NOW(),
-      FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
       FOREIGN KEY (parent_folder_id) REFERENCES folder(id) ON DELETE CASCADE
-    );";
+    );"#;
 
     client.execute(sql, &[]).await.unwrap();
 
@@ -59,7 +59,7 @@ pub async fn init_database(pool: &Pool) {
 
     client.execute(sql, &[]).await.unwrap();
 
-    let sql = "CREATE TABLE IF NOT EXISTS file (
+    let sql = r#"CREATE TABLE IF NOT EXISTS file (
       id SERIAL PRIMARY KEY,
       user_id INT,
       folder_id INT,
@@ -67,9 +67,9 @@ pub async fn init_database(pool: &Pool) {
       file_type FileType NOT NULL,
       desktop_position VARCHAR(32),
       created_at TIMESTAMPTZ DEFAULT NOW(),
-      FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
       FOREIGN KEY (folder_id) REFERENCES folder(id) ON DELETE CASCADE
-    );";
+    );"#;
 
     client.execute(sql, &[]).await.unwrap();
 

@@ -97,7 +97,7 @@ pub async fn create_router(pool: Pool) -> Router {
     let read_routes = Router::new().nest(
         "/read",
         Router::new()
-            .route("/txt/{file_id}", get(get_txt_window))
+            .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))
             .route("/folder/input/{folder_id}", get(get_folder_input)),
     );

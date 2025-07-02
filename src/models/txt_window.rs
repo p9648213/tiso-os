@@ -26,8 +26,9 @@ impl TxtWindow {
 
     pub async fn get_txt_window(
         file_id: i32,
-        mut txt_columns: Vec<String>,
-        mut file_columns: Vec<String>,
+        user_id: i32,
+        txt_columns: Vec<&str>,
+        file_columns: Vec<&str>,
         pool: &Pool,
     ) -> Result<Row, AppError> {
         let client = pool.get().await.map_err(|error| {
@@ -35,23 +36,25 @@ impl TxtWindow {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
-        txt_columns.iter_mut().for_each(|col| {
-          *col = format!("txt.{} AS txt_{}", col, col);
+        let mut columns = vec![];
+
+        txt_columns.iter().for_each(|col| {
+            columns.push(format!("txt.{} AS txt_{}", col, col));
         });
 
-        file_columns.iter_mut().for_each(|col| {
-          *col = format!("file.{} AS file_{}", col, col);
+        file_columns.iter().for_each(|col| {
+            columns.push(format!("file.{} AS file_{}", col, col));
         });
 
-        let columns = [txt_columns, file_columns].concat().join(",");
+        let columns = columns.join(",");
 
         client
             .query_one(
                 &format!(
-                    "SELECT {} FROM txt, file WHERE txt.file_id = file.id AND file.id = $1",
+                    "SELECT {} FROM txt JOIN file ON txt.file_id = file.id WHERE file.id = $1 AND file.user_id = $2",
                     columns
                 ),
-                &[&file_id],
+                &[&file_id, &user_id],
             )
             .await
     }

@@ -43,24 +43,6 @@ export function setupGridResize() {
 export function setupGridContextMenu() {
   const main = document.querySelector("main");
 
-  function checkEmptySpace() {
-    const totalRows = document.getElementById("screen_rows")?.value;
-    const totalCols = document.getElementById("screen_cols")?.value;
-
-    if (totalRows && totalCols) {
-      for (let i = 0; i < totalCols; i++) {
-        for (let j = 0; j < totalRows; j++) {
-          const item = document.getElementById(`item-${j}-${i}`);
-          if (item && item.innerHTML == "") {
-            return `item-${j}-${i}`;
-          }
-        }
-      }
-    } else {
-      return null;
-    }
-  }
-
   main.addEventListener("mouseup", (event) => {
     let contextMenuEl = document.getElementById("context_menu");
 
@@ -68,10 +50,7 @@ export function setupGridContextMenu() {
       switch (event.button) {
         case 0:
           document.body.removeChild(contextMenuEl);
-          if (window.selectedItem) {
-            window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
-            window.selectedItem = null;
-          }
+          removeSelectedItem();
           break;
         default:
           break;
@@ -82,20 +61,17 @@ export function setupGridContextMenu() {
   main.addEventListener("contextmenu", (event) => {
     event.preventDefault();
 
-    if (window.selectedItem) {
-      window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
-      window.selectedItem = null;
-    }
+    removeSelectedItem();
 
     if (document.body.style.cursor == "wait") {
       return;
     }
 
-    let contextMenuEl = document.getElementById("context_menu");
+    let oldContextMenu = document.getElementById("context_menu");
     let desktopId = document.getElementById("desktop_id").value;
 
-    if (contextMenuEl) {
-      document.body.removeChild(contextMenuEl);
+    if (oldContextMenu) {
+      document.body.removeChild(oldContextMenu);
     }
 
     let contextMenu = document.createElement("div");
@@ -152,6 +128,7 @@ export function setupGridContextMenu() {
               target: `#${desktopItem.id}`,
               swap: "outerHTML",
             });
+            document.body.removeChild(contextMenu);
           });
         }
 
@@ -168,6 +145,7 @@ export function setupGridContextMenu() {
                 .then(() => {
                   window.editMode = true;
                 });
+              document.body.removeChild(contextMenu);
             });
           }
           if (itemType === "folder") {
@@ -180,6 +158,7 @@ export function setupGridContextMenu() {
                 .then(() => {
                   window.editMode = true;
                 });
+              document.body.removeChild(contextMenu);
             });
           }
         }
@@ -218,6 +197,7 @@ export function setupGridContextMenu() {
                 target: `#${targetId}`,
               });
             }
+            document.body.removeChild(contextMenu);
           });
         } else if (itemsType === "folder") {
           menuForm.addEventListener("mouseup", () => {
@@ -227,6 +207,7 @@ export function setupGridContextMenu() {
                 target: `#${targetId}`,
               });
             }
+            document.body.removeChild(contextMenu);
           });
         }
 
@@ -255,7 +236,7 @@ export function setupGridItemSingleSelect() {
       }
 
       if (window.selectedItem) {
-        window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
+        removeSelectedItem();
       }
 
       if (window.editMode === false) {
@@ -263,10 +244,7 @@ export function setupGridItemSingleSelect() {
         checkDesktopItem.childNodes[0].classList.add("bg-blue-900");
       }
     } else {
-      if (window.selectedItem) {
-        window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
-        window.selectedItem = null;
-      }
+      removeSelectedItem();
     }
   });
 }
@@ -326,7 +304,7 @@ export function setupGridItemOpen() {
   const main = document.querySelector("main");
 
   main.addEventListener("dblclick", () => {
-    if(window.selectedItem) {      
+    if (window.selectedItem) {
       const splitId = window.selectedItem.id.split("-");
       const itemType = splitId[0];
       const itemId = splitId[1];
@@ -334,11 +312,44 @@ export function setupGridItemOpen() {
       if (itemType === "file") {
         const fileType = window.selectedItem.getAttribute("data-file-type");
 
-        htmx.ajax("GET", `/read/${fileType}/${itemId}`, {
-          target: "body",
-          swap: "beforeend",
-        });
+        htmx
+          .ajax(
+            "GET",
+            `/read/${fileType}/${itemId}/${main.clientHeight}/${main.clientWidth}`,
+            {
+              target: "body",
+              swap: "beforeend",
+            }
+          )
+          .then(() => {
+            removeSelectedItem();
+          });
       }
     }
   });
+}
+
+function checkEmptySpace() {
+  const totalRows = document.getElementById("screen_rows")?.value;
+  const totalCols = document.getElementById("screen_cols")?.value;
+
+  if (totalRows && totalCols) {
+    for (let i = 0; i < totalCols; i++) {
+      for (let j = 0; j < totalRows; j++) {
+        const item = document.getElementById(`item-${j}-${i}`);
+        if (item && item.innerHTML == "") {
+          return `item-${j}-${i}`;
+        }
+      }
+    }
+  } else {
+    return null;
+  }
+}
+
+function removeSelectedItem() {
+  if (window.selectedItem) {
+    window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
+    window.selectedItem = null;
+  }
 }

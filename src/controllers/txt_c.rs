@@ -13,6 +13,7 @@ use crate::{
         error::AppError,
         file_db::{File, FileType},
         txt_db::Txt,
+        txt_window::TxtWindow,
     },
     utilities::user_utils::parse_user_id,
     views::txt_v::{render_txt_file, render_txt_input, render_txt_window},
@@ -73,11 +74,27 @@ pub async fn get_txt_input(
 }
 
 pub async fn get_txt_window(
-    Path(file_id): Path<i32>,
+    Path((file_id, height, width)): Path<(i32, i32, i32)>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    Ok(render_txt_window().render())
+    let row =
+        TxtWindow::get_txt_window(file_id, user_id, vec!["id"], vec!["id", "file_name"], &pool)
+            .await?;
+
+    let txt_window = TxtWindow::try_from(&row);
+
+    let file_name = txt_window.file.file_name.ok_or_else(|| {
+        tracing::error!("No file_name column or value is null");
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+    })?;
+
+    let txt_id = txt_window.txt.id.ok_or_else(|| {
+        tracing::error!("No id column or value is null");
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+    })?;
+
+    Ok(render_txt_window(&file_name, txt_id, height, width).render())
 }

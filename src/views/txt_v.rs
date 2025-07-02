@@ -1,4 +1,4 @@
-use hypertext::{GlobalAttributes, HtmxAttributes, Renderable, html_elements, maud, maud_move};
+use hypertext::{GlobalAttributes, HtmxAttributes, Renderable, html_elements, maud_move};
 
 pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Renderable {
     let file_name = file_name.as_deref().unwrap_or("New Text");
@@ -46,8 +46,28 @@ pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
     }
 }
 
-pub fn render_txt_window() -> impl Renderable {
-    maud! {
-        div class="fixed w-50 h-50 m-auto inset-0 bg-white" { "Hello" }
+pub fn render_txt_window(
+    file_name: &str,
+    txt_id: i32,
+    parent_height: i32,
+    parent_width: i32,
+) -> impl Renderable {
+    let window_width = 300;
+    let window_height = 200;
+
+    let left = ((parent_width / 2) - (window_width / 2)).max(0);
+    let top = ((parent_height / 2) - (window_height / 2)).max(0);
+
+    maud_move! {
+        div
+            id={ "txt-window-" (txt_id) }
+            class="absolute bg-white shadow-lg"
+            style={ "top:" (top) "px; left:" (left) "px; width:" (window_width) "px; height:" (window_height) "px;" }
+        {
+            div id={ "txt-header-" (txt_id) } class="flex items-center bg-red-300 px-2 h-5" {
+                (file_name)
+            }
+            div class="p-2" { "Content" }
+        }
     }
 }
