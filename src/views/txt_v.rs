@@ -21,6 +21,15 @@ pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Rendera
 
 pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
     maud_move! {
+        (Raw(format!(
+            r#"
+                <script type="module">
+                    const txtInput = document.getElementById("file-{}").querySelector("textarea");
+                    txtInput.focus();
+                    txtInput.setSelectionRange(txtInput.value.length, txtInput.value.length);
+                </script>
+            "#, file_id
+        )))
         div
             id={ "file-" (file_id) }
             data-file-type="txt"
@@ -37,7 +46,6 @@ pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
                     hx-on:keydown=r#"if(event.key == 'Enter') { event.preventDefault(); window.editMode = false }"#
                     name="file_name"
                     class="max-w-[75px] overflow-hidden text-white text-sm text-center resize-none"
-                    autofocus="true"
                 {
                     (value)
                 }
@@ -64,20 +72,39 @@ pub fn render_txt_window(
                 <script type="module">
                     import {{setupTxtWindowGrab}} from "/assets/js/txt.js";
                     setupTxtWindowGrab({});
+                    const txtEditor = document.getElementById("txt-editor-{}");
+                    txtEditor.focus();
+                    txtEditor.setSelectionRange(txtEditor.value.length, txtEditor.value.length);
                 </script>
-            "#, txt_id
+            "#, txt_id, txt_id
         )))
         div
             id={ "txt-window-" (txt_id) }
             class="absolute flex flex-col bg-zinc-800 rounded-sm overflow-hidden text-white"
             style={ "top:" (top) "px; left:" (left) "px; width:" (window_width) "px; height:" (window_height) "px;" }
         {
-            div id={ "txt-header-" (txt_id) } class="flex items-center bg-zinc-900 px-3 h-10 select-none" {
-                img class="mr-2 w-5 h-5" src="/assets/images/text-editor.svg" draggable="false";
-                (file_name)
+            div id={ "txt-header-" (txt_id) } class="flex items-center justify-between bg-zinc-950 px-3 h-12 select-none" {
+                div class="flex gap-2 items-center" {
+                    img class="w-5 h-5" src="/assets/images/text-editor.svg" draggable="false";
+                    (file_name)
+                }
+                div class="flex gap-3 items-center" {
+                    img class="hide w-5 h-5 hover:opacity-70 cursor-pointer" src="/assets/images/minus.svg" draggable="false";
+                    img class="maximize w-4 h-4 hover:opacity-70 cursor-pointer" src="/assets/images/square.svg" draggable="false";
+                    img class="close w-5 h-5 hover:opacity-70 cursor-pointer" src="/assets/images/x.svg" draggable="false";
+                }
+            }
+            div id={"txt-buttons-" (txt_id)} class="flex gap-3 px-3 py-2 bg-zinc-900" {
+                img class="bold w-5 h-5 hover:opacity-70 cursor-pointer" src="/assets/images/bold.svg" draggable="false";
+                img class="italic w-5 h-5 hover:opacity-70 cursor-pointer" src="/assets/images/italic.svg" draggable="false";
+                img class="underline w-5 h-5 hover:opacity-70 cursor-pointer" src="/assets/images/underline.svg" draggable="false";
+                img class="link w-5 h-5 hover:opacity-70 cursor-pointer" src="/assets/images/link.svg" draggable="false";
             }
             div class="px-3 py-2 h-full" {
-                textarea id={"txt-editor-" (txt_id)} class="focus-visible:border-none focus-visible:outline-none w-full h-full resize-none" {
+                textarea 
+                    id={"txt-editor-" (txt_id)} 
+                    class="focus-visible:border-none focus-visible:outline-none w-full h-full resize-none"
+                {
                     "Hello, world!"
                 }
             }
