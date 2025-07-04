@@ -28,13 +28,11 @@ export function setupTxtWindowGrab(txtId) {
 }
 
 export function setupTxtEditor(txtId) {
-  const txtEditor = document.getElementById(`txt-editor-${txtId}`);
   const txtButtons = document.getElementById(`txt-buttons-${txtId}`);
 
   const boldButton = txtButtons.querySelector(".bold");
   const italicButton = txtButtons.querySelector(".italic");
   const underlineButton = txtButtons.querySelector(".underline");
-  const linkButton = txtButtons.querySelector(".link");
 
   boldButton.addEventListener("click", () => {
     applyFormat("strong");
@@ -47,36 +45,9 @@ export function setupTxtEditor(txtId) {
   underlineButton.addEventListener("click", () => {
     applyFormat("u");
   });
-
-  linkButton.addEventListener("click", () => {
-    const selection = window.getSelection();
-    if (!selection.rangeCount || selection.getRangeAt(0).collapsed) {
-      alert("Please select the text you want to link.");
-      return;
-    }
-
-    const url = prompt("Enter the URL:");
-    if (url) {
-      const range = selection.getRangeAt(0);
-      const link = document.createElement("A");
-      link.href = url;
-      link.target = "_blank";
-
-      try {
-        range.surroundContents(link);
-      } catch (e) {
-        console.warn(
-          "surroundContents failed for link, falling back to execCommand.",
-          e
-        );
-        document.execCommand("createLink", false, url);
-      }
-    }
-    txtEditor.focus();
-  });
 }
 
-function applyFormat(formatTag) {
+function applyFormat(formatTag, txtEditor) {
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
 
@@ -101,6 +72,4 @@ function applyFormat(formatTag) {
       document.execCommand(formatTag.toLowerCase(), false, null);
     }
   }
-
-  txtEditor.focus();
 }

@@ -75,7 +75,12 @@ pub fn render_txt_window(
                     setupTxtEditor({});
                     const txtEditor = document.getElementById("txt-editor-{}");
                     txtEditor.focus();
-                    txtEditor.setSelectionRange(txtEditor.value.length, txtEditor.value.length);
+                    const range = document.createRange();
+                    range.selectNodeContents(txtEditor);
+                    range.collapse(false);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
                 </script>
             "#, txt_id, txt_id, txt_id
         )))
@@ -99,7 +104,6 @@ pub fn render_txt_window(
                 img class="hover:opacity-70 w-5 h-5 cursor-pointer bold" src="/assets/images/bold.svg" draggable="false";
                 img class="hover:opacity-70 w-5 h-5 italic cursor-pointer" src="/assets/images/italic.svg" draggable="false";
                 img class="hover:opacity-70 w-5 h-5 underline cursor-pointer" src="/assets/images/underline.svg" draggable="false";
-                img class="hover:opacity-70 w-5 h-5 cursor-pointer link" src="/assets/images/link.svg" draggable="false";
             }
             div class="px-3 py-2 h-full" {
                 div
