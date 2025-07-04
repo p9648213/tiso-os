@@ -35,15 +35,15 @@ export function setupTxtEditor(txtId) {
   const underlineButton = txtButtons.querySelector(".underline");
 
   boldButton.addEventListener("click", () => {
-    applyFormat("strong");
+    applyFormat("STRONG");
   });
 
   italicButton.addEventListener("click", () => {
-    applyFormat("em");
+    applyFormat("EM");
   });
 
   underlineButton.addEventListener("click", () => {
-    applyFormat("u");
+    applyFormat("U");
   });
 }
 
@@ -57,6 +57,7 @@ function applyFormat(formatTag) {
   if (selectedText.length === 0) return;
 
   const parentElement = range.commonAncestorContainer.parentElement;
+
   if (parentElement.tagName === formatTag) {
     const textNode = document.createTextNode(selectedText);
     parentElement.parentNode.replaceChild(textNode, parentElement);
