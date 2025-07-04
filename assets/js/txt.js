@@ -28,6 +28,7 @@ export function setupTxtWindowGrab(txtId) {
 }
 
 export function setupTxtEditor(txtId) {
+  const txtEditor = document.getElementById(`txt-editor-${txtId}`);
   const txtButtons = document.getElementById(`txt-buttons-${txtId}`);
 
   const boldButton = txtButtons.querySelector(".bold");
@@ -36,14 +37,17 @@ export function setupTxtEditor(txtId) {
 
   boldButton.addEventListener("click", () => {
     applyFormat("STRONG");
+    focusAfterChange(txtEditor);
   });
 
   italicButton.addEventListener("click", () => {
     applyFormat("EM");
+    focusAfterChange(txtEditor);
   });
 
   underlineButton.addEventListener("click", () => {
     applyFormat("U");
+    focusAfterChange(txtEditor);
   });
 }
 
@@ -56,21 +60,40 @@ function applyFormat(formatTag) {
 
   if (selectedText.length === 0) return;
 
-  const parentElement = range.commonAncestorContainer.parentElement;
+  let parentElement = range.commonAncestorContainer.parentElement;
 
-  if (parentElement.tagName === formatTag) {
-    const textNode = document.createTextNode(selectedText);
-    parentElement.parentNode.replaceChild(textNode, parentElement);
-    selection.removeAllRanges();
-    range.selectNode(textNode);
-    selection.addRange(range);
+  let recursiveParentEl = parentElement;
+  let styledEl = null;
+
+  while (!recursiveParentEl.id.includes("txt-editor-")) {
+    if (recursiveParentEl.tagName === formatTag) {
+      styledEl = recursiveParentEl;
+      break;
+    }
+    recursiveParentEl = recursiveParentEl.parentElement;
+  }
+
+  if (styledEl) {
+    if (styledEl.children.length > 0) {
+      styledEl.parentElement.appendChild(styledEl.children[0]);
+    } else {
+      styledEl.parentElement.appendChild(document.createTextNode(selectedText));
+    }
+    styledEl.parentElement.removeChild(styledEl);
   } else {
     const formatElement = document.createElement(formatTag);
-    try {
-      range.surroundContents(formatElement);
-    } catch (e) {
-      console.warn("surroundContents failed, falling back to execCommand.", e);
-      document.execCommand(formatTag.toLowerCase(), false, null);
-    }
+    range.surroundContents(formatElement);
   }
+
+  selection.removeAllRanges();
+}
+
+function focusAfterChange(txtEditor) {
+  txtEditor.focus();
+  const range = document.createRange();
+  range.selectNodeContents(txtEditor);
+  range.collapse(false);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
