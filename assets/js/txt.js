@@ -47,7 +47,7 @@ export function setupTxtEditor(txtId) {
   });
 }
 
-function applyFormat(formatTag, txtEditor) {
+function applyFormat(formatTag) {
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
 
