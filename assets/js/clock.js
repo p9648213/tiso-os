@@ -4,11 +4,6 @@ export function setupClock() {
   const timeEl = document.getElementById("clock-time");
   const dateEl = document.getElementById("clock-date");
 
-  if (!timeEl || !dateEl) {
-    console.error("Clock elements not found!");
-    return;
-  }
-
   if (clockIntervalId) {
     clearInterval(clockIntervalId);
   }
