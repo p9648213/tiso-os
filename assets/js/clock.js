@@ -1,9 +1,21 @@
+let clockIntervalId = null;
+
 export function setupClock() {
   const timeEl = document.getElementById("clock-time");
   const dateEl = document.getElementById("clock-date");
 
-  setInterval(() => updateClock(timeEl, dateEl), 1000);
+  if (!timeEl || !dateEl) {
+    console.error("Clock elements not found!");
+    return;
+  }
+
+  if (clockIntervalId) {
+    clearInterval(clockIntervalId);
+  }
+
   updateClock(timeEl, dateEl);
+
+  clockIntervalId = setInterval(() => updateClock(timeEl, dateEl), 1000);
 }
 
 function updateClock(timeEl, dateEl) {
