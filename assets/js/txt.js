@@ -35,17 +35,17 @@ export function setupTxtEditor(txtId) {
   const italicButton = txtButtons.querySelector(".italic");
   const underlineButton = txtButtons.querySelector(".underline");
 
-  boldButton.addEventListener("click", () => {
+  boldButton.addEventListener("mousedown", () => {
     applyFormat("STRONG");
     focusAfterChange(txtEditor);
   });
 
-  italicButton.addEventListener("click", () => {
+  italicButton.addEventListener("mousedown", () => {
     applyFormat("EM");
     focusAfterChange(txtEditor);
   });
 
-  underlineButton.addEventListener("click", () => {
+  underlineButton.addEventListener("mousedown", () => {
     applyFormat("U");
     focusAfterChange(txtEditor);
   });

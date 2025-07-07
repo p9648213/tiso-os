@@ -12,7 +12,7 @@ use crate::{
         folder_db::FolderSortType,
     },
     utilities::screen_utils::parse_position,
-    views::{folder_v::render_folder, txt_v::render_txt_file},
+    views::{folder_v::render_folder, taskbar_v::render_taskbar, txt_v::render_txt_file},
 };
 
 pub fn render_welcome_screen() -> impl Renderable {
@@ -150,7 +150,7 @@ pub fn render_screen_section() -> impl Renderable {
             </script>
         "#))
         main class="flex flex-wrap h-[calc(100%-theme('spacing.12'))]" {}
-        footer class="right-0 bottom-0 left-0 absolute bg-zinc-800 border-t border-t-zinc-700 h-12" {}
+        (render_taskbar())
     }
 }
 

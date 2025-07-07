@@ -95,7 +95,7 @@ pub fn render_txt_window(
                     (file_name)
                 }
                 div class="flex items-center gap-3" {
-                    img class="hover:opacity-70 w-5 h-5 cursor-pointer hide" src="/assets/images/minus.svg" draggable="false";
+                    img class="hover:opacity-70 w-5 h-5 cursor-pointer hide" src="/assets/images/menu.svg" draggable="false";
                     img class="hover:opacity-70 w-4 h-4 cursor-pointer maximize" src="/assets/images/square.svg" draggable="false";
                     img class="hover:opacity-70 w-5 h-5 cursor-pointer close" src="/assets/images/x.svg" draggable="false";
                 }
