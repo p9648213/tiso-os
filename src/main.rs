@@ -8,7 +8,7 @@ use tiso_os::{
 async fn main() {
     init_tracing();
 
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", PORT))
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{PORT}"))
         .await
         .unwrap();
 

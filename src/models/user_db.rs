@@ -19,17 +19,15 @@ impl User {
     pub fn try_from(row: &Row, prefix: Option<&str>) -> Self {
         let prefix = prefix.unwrap_or("");
 
-        let id: Option<i32> = row
-            .try_get(format!("{}id", prefix).as_str())
-            .unwrap_or(None);
+        let id: Option<i32> = row.try_get(format!("{prefix}id").as_str()).unwrap_or(None);
         let username: Option<String> = row
-            .try_get(format!("{}username", prefix).as_str())
+            .try_get(format!("{prefix}username").as_str())
             .unwrap_or(None);
         let password: Option<String> = row
-            .try_get(format!("{}password", prefix).as_str())
+            .try_get(format!("{prefix}password").as_str())
             .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
-            .try_get(format!("{}created_at", prefix).as_str())
+            .try_get(format!("{prefix}created_at").as_str())
             .unwrap_or(None);
 
         Self {
@@ -54,7 +52,7 @@ impl User {
 
         client
             .query_optional(
-                &format!(r#"SELECT {} FROM "user" WHERE username = $1"#, columns),
+                &format!(r#"SELECT {columns} FROM "user" WHERE username = $1"#),
                 &[&username],
             )
             .await

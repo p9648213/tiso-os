@@ -39,11 +39,11 @@ impl TxtWindow {
         let mut columns = vec![];
 
         txt_columns.iter().for_each(|col| {
-            columns.push(format!("txt.{} AS txt_{}", col, col));
+            columns.push(format!("txt.{col} AS txt_{col}"));
         });
 
         file_columns.iter().for_each(|col| {
-            columns.push(format!("file.{} AS file_{}", col, col));
+            columns.push(format!("file.{col} AS file_{col}"));
         });
 
         let columns = columns.join(",");
@@ -51,8 +51,7 @@ impl TxtWindow {
         client
             .query_one(
                 &format!(
-                    "SELECT {} FROM txt JOIN file ON txt.file_id = file.id WHERE file.id = $1 AND file.user_id = $2",
-                    columns
+                    "SELECT {columns} FROM txt JOIN file ON txt.file_id = file.id WHERE file.id = $1 AND file.user_id = $2"
                 ),
                 &[&file_id, &user_id],
             )

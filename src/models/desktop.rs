@@ -26,22 +26,22 @@ impl DesktopItem {
         let prefix = prefix.unwrap_or("");
 
         let id: Option<i32> = row
-            .try_get(format!("{}id", prefix).as_str())
+            .try_get(format!("{prefix}id").as_str())
             .unwrap_or(None);
         let user_id: Option<i32> = row
-            .try_get(format!("{}user_id", prefix).as_str())
+            .try_get(format!("{prefix}user_id").as_str())
             .unwrap_or(None);
         let name: Option<String> = row
-            .try_get(format!("{}name", prefix).as_str())
+            .try_get(format!("{prefix}name").as_str())
             .unwrap_or(None);
         let item_type: Option<String> = row
-            .try_get(format!("{}item_type", prefix).as_str())
+            .try_get(format!("{prefix}item_type").as_str())
             .unwrap_or(None);
         let desktop_position: Option<String> = row
-            .try_get(format!("{}desktop_position", prefix).as_str())
+            .try_get(format!("{prefix}desktop_position").as_str())
             .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
-            .try_get(format!("{}created_at", prefix).as_str())
+            .try_get(format!("{prefix}created_at").as_str())
             .unwrap_or(None);
 
         let item_type = match item_type.as_deref() {
@@ -88,7 +88,7 @@ impl DesktopItem {
 
         let sql = match sort_type {
             FolderSortType::Custom => sql,
-            FolderSortType::DateCreated => &format!("{} ORDER BY created_at ASC", sql),
+            FolderSortType::DateCreated => &format!("{sql} ORDER BY created_at ASC"),
         };
 
         client.query(sql, &[&desktop_id, &user_id]).await.map_err(|error| {

@@ -30,7 +30,7 @@ pub async fn update_file_desktop_position(
 
     let session_map = session_map.pin_owned();
 
-    let current_sort_type = session_map.get(&format!("user-{}-sort-type", user_id));
+    let current_sort_type = session_map.get(&format!("user-{user_id}-sort-type"));
 
     let current_sort_type = match current_sort_type {
         Some(sort_type) => match sort_type.as_str() {
@@ -52,7 +52,7 @@ pub async fn update_file_desktop_position(
     .await?;
 
     if current_sort_type.is_none() {
-        session_map.insert(format!("user-{}-sort-type", user_id), "custom".to_string());
+        session_map.insert(format!("user-{user_id}-sort-type"), "custom".to_string());
     }
 
     Ok(())

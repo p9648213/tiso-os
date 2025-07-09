@@ -24,11 +24,11 @@ pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
         (Raw(format!(
             r#"
                 <script type="module">
-                    const txtInput = document.getElementById("file-{}").querySelector("textarea");
+                    const txtInput = document.getElementById("file-{file_id}").querySelector("textarea");
                     txtInput.focus();
                     txtInput.setSelectionRange(txtInput.value.length, txtInput.value.length);
                 </script>
-            "#, file_id
+            "#
         )))
         div
             id={ "file-" (file_id) }
@@ -71,9 +71,9 @@ pub fn render_txt_window(
             r#"
                 <script type="module">
                     import {{setupTxtWindowGrab, setupTxtEditor}} from "/assets/js/txt.js";
-                    setupTxtWindowGrab({});
-                    setupTxtEditor({});
-                    const txtEditor = document.getElementById("txt-editor-{}");
+                    setupTxtWindowGrab({txt_id});
+                    setupTxtEditor({txt_id});
+                    const txtEditor = document.getElementById("txt-editor-{txt_id}");
                     txtEditor.focus();
                     const range = document.createRange();
                     range.selectNodeContents(txtEditor);
@@ -82,7 +82,7 @@ pub fn render_txt_window(
                     selection.removeAllRanges();
                     selection.addRange(range);
                 </script>
-            "#, txt_id, txt_id, txt_id
+            "#
         )))
         div
             id={ "txt-window-" (txt_id) }

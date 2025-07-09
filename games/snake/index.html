@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Snake</title>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <script type="text/javascript">
+      var Module = { canvas: document.getElementById("canvas") };
+    </script>
+
+    <script
+      type="text/javascript"
+      src="target/wasm32-unknown-emscripten/debug/snake.js"
+    ></script>
+  </body>
+</html>

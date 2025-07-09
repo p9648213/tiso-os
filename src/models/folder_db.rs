@@ -38,29 +38,27 @@ impl Folder {
     pub fn try_from(row: &Row, prefix: Option<&str>) -> Self {
         let prefix = prefix.unwrap_or("");
 
-        let id: Option<i32> = row
-            .try_get(format!("{}id", prefix).as_str())
-            .unwrap_or(None);
+        let id: Option<i32> = row.try_get(format!("{prefix}id").as_str()).unwrap_or(None);
         let user_id: Option<i32> = row
-            .try_get(format!("{}user_id", prefix).as_str())
+            .try_get(format!("{prefix}user_id").as_str())
             .unwrap_or(None);
         let folder_name: Option<String> = row
-            .try_get(format!("{}folder_name", prefix).as_str())
+            .try_get(format!("{prefix}folder_name").as_str())
             .unwrap_or(None);
         let folder_type: Option<FolderType> = row
-            .try_get(format!("{}folder_type", prefix).as_str())
+            .try_get(format!("{prefix}folder_type").as_str())
             .unwrap_or(None);
         let sort_type: Option<FolderSortType> = row
-            .try_get(format!("{}sort_type", prefix).as_str())
+            .try_get(format!("{prefix}sort_type").as_str())
             .unwrap_or(None);
         let desktop_position: Option<String> = row
-            .try_get(format!("{}desktop_position", prefix).as_str())
+            .try_get(format!("{prefix}desktop_position").as_str())
             .unwrap_or(None);
         let parent_folder_id: Option<i32> = row
-            .try_get(format!("{}parent_folder_id", prefix).as_str())
+            .try_get(format!("{prefix}parent_folder_id").as_str())
             .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
-            .try_get(format!("{}created_at", prefix).as_str())
+            .try_get(format!("{prefix}created_at").as_str())
             .unwrap_or(None);
 
         Self {
@@ -81,7 +79,12 @@ impl Folder {
             .collect()
     }
 
-    pub async fn get_folder(folder_id: i32, user_id: i32, columns: Vec<&str>, pool: &Pool) -> Result<Row, AppError> {
+    pub async fn get_folder(
+        folder_id: i32,
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Row, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -91,10 +94,7 @@ impl Folder {
 
         client
             .query_one(
-                &format!(
-                    "SELECT {} FROM folder WHERE id = $1 AND user_id = $2",
-                    columns
-                ),
+                &format!("SELECT {columns} FROM folder WHERE id = $1 AND user_id = $2"),
                 &[&folder_id, &user_id],
             )
             .await
@@ -114,10 +114,7 @@ impl Folder {
 
         client
             .query_one(
-                &format!(
-                    "SELECT {} FROM folder WHERE user_id = $1 AND folder_type = $2",
-                    columns
-                ),
+                &format!("SELECT {columns} FROM folder WHERE user_id = $1 AND folder_type = $2"),
                 &[&user_id, &FolderType::Desktop],
             )
             .await
@@ -221,7 +218,12 @@ impl Folder {
         Ok(())
     }
 
-    pub async fn rename_folder(id: i32, user_id: i32, folder_name: &str, pool: &Pool) -> Result<(), AppError> {
+    pub async fn rename_folder(
+        id: i32,
+        user_id: i32,
+        folder_name: &str,
+        pool: &Pool,
+    ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")

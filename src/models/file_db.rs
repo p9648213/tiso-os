@@ -30,26 +30,24 @@ impl File {
     pub fn try_from(row: &Row, prefix: Option<&str>) -> Self {
         let prefix = prefix.unwrap_or("");
 
-        let id: Option<i32> = row
-            .try_get(format!("{}id", prefix).as_str())
-            .unwrap_or(None);
+        let id: Option<i32> = row.try_get(format!("{prefix}id").as_str()).unwrap_or(None);
         let user_id: Option<i32> = row
-            .try_get(format!("{}user_id", prefix).as_str())
+            .try_get(format!("{prefix}user_id").as_str())
             .unwrap_or(None);
         let folder_id: Option<i32> = row
-            .try_get(format!("{}folder_id", prefix).as_str())
+            .try_get(format!("{prefix}folder_id").as_str())
             .unwrap_or(None);
         let file_name: Option<String> = row
-            .try_get(format!("{}file_name", prefix).as_str())
+            .try_get(format!("{prefix}file_name").as_str())
             .unwrap_or(None);
         let file_type: Option<FileType> = row
-            .try_get(format!("{}file_type", prefix).as_str())
+            .try_get(format!("{prefix}file_type").as_str())
             .unwrap_or(None);
         let desktop_position: Option<String> = row
-            .try_get(format!("{}desktop_position", prefix).as_str())
+            .try_get(format!("{prefix}desktop_position").as_str())
             .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
-            .try_get(format!("{}created_at", prefix).as_str())
+            .try_get(format!("{prefix}created_at").as_str())
             .unwrap_or(None);
 
         Self {
@@ -84,10 +82,7 @@ impl File {
 
         let row = client
             .query_one(
-                &format!(
-                    "SELECT {} FROM file WHERE id = $1 AND user_id = $2",
-                    columns
-                ),
+                &format!("SELECT {columns} FROM file WHERE id = $1 AND user_id = $2"),
                 &[&id, &user_id],
             )
             .await?;
