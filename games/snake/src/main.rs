@@ -1,86 +1,66 @@
 use sdl2::{
-    Sdl, event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window,
+    pixels::{self, Color},
+    rect::Rect,
+    video::WindowSurfaceRef,
 };
 
-static BLACK: Color = Color::RGB(0, 0, 0);
-static WHITE: Color = Color::RGB(255, 255, 255);
+static WIDTH: u32 = 900;
+static HEIGHT: u32 = 600;
 
-struct Game {
-    pub ctx: Sdl,
-    pub rect: Rect,
-    pub canvas: Canvas<Window>,
+static GRID_SIZE: u32 = 15;
+static ROWS: u32 = HEIGHT / GRID_SIZE;
+static COLUMNS: u32 = WIDTH / GRID_SIZE;
+static LINE_WIDTH: u32 = 2;
+
+static GRID_COLOR: u32 = 0x1f1f1f1f;
+
+fn argb_to_sdl_rbga(color: u32) -> Color {
+    let a = ((color >> 24) & 0xff) as u8;
+    let r = ((color >> 16) & 0xff) as u8;
+    let g = ((color >> 8) & 0xff) as u8;
+    let b = (color & 0xff) as u8;
+
+    Color::RGBA(r, g, b, a)
 }
 
-impl emscripten_main_loop::MainLoop for Game {
-    fn main_loop(&mut self) -> emscripten_main_loop::MainLoopEvent {
-        let mut events = self.ctx.event_pump().unwrap();
+fn draw_grid(surface: &mut WindowSurfaceRef<'_>) {
+    let mut row_line = Rect::new(0, 0, WIDTH, LINE_WIDTH);
 
-        for event in events.poll_iter() {
-            match event {
-                Event::Quit { .. }
-                | Event::KeyDown {
-                    keycode: Some(Keycode::Escape),
-                    ..
-                } => return emscripten_main_loop::MainLoopEvent::Terminate,
-                Event::KeyDown {
-                    keycode: Some(Keycode::Left),
-                    ..
-                } => {
-                    self.rect.x -= 10;
-                }
-                Event::KeyDown {
-                    keycode: Some(Keycode::Right),
-                    ..
-                } => {
-                    self.rect.x += 10;
-                }
-                Event::KeyDown {
-                    keycode: Some(Keycode::Up),
-                    ..
-                } => {
-                    self.rect.y -= 10;
-                }
-                Event::KeyDown {
-                    keycode: Some(Keycode::Down),
-                    ..
-                } => {
-                    self.rect.y += 10;
-                }
-                _ => {}
-            }
-        }
+    while row_line.y < HEIGHT as i32 {
+        surface
+            .fill_rect(row_line, argb_to_sdl_rbga(GRID_COLOR))
+            .unwrap();
+        row_line.y += GRID_SIZE as i32;
+    }
 
-        self.canvas.set_draw_color(BLACK);
-        self.canvas.clear();
-        self.canvas.set_draw_color(WHITE);
-        let _ = self.canvas.fill_rect(self.rect);
-        self.canvas.present();
+    let mut column_line = Rect::new(0, 0, LINE_WIDTH, HEIGHT);
 
-        emscripten_main_loop::MainLoopEvent::Continue
+    while column_line.x < WIDTH as i32 {
+        surface
+            .fill_rect(column_line, argb_to_sdl_rbga(GRID_COLOR))
+            .unwrap();
+        column_line.x += GRID_SIZE as i32;
     }
 }
 
 fn main() {
     let ctx = sdl2::init().unwrap();
     let video_ctx = ctx.video().unwrap();
-
-    let window = match video_ctx
-        .window("Hello, Rust / SDL2 / WASM!", 640, 480)
+    let window = video_ctx
+        .window("Classic Snake", WIDTH, HEIGHT)
         .position_centered()
         .build()
-    {
-        Ok(window) => window,
-        Err(err) => panic!("failed to create window: {err}"),
-    };
+        .unwrap();
 
-    let canvas = match window.into_canvas().build() {
-        Ok(canvas) => canvas,
-        Err(err) => panic!("failed to create canvas: {err}"),
-    };
+    let event_pump = ctx.event_pump().unwrap();
+    let mut surface = window.surface(&event_pump).unwrap();
 
-    let rect = Rect::new(0, 0, 10, 10);
+    let rect = Rect::new(200, 200, 200, 200);
+    surface.fill_rect(rect, pixels::Color::WHITE).unwrap();
 
-    let game = Game { ctx, rect, canvas };
+    draw_grid(&mut surface);
 
-    emscripten_main_loop::run(game);
+    surface.update_window().unwrap();
+
+    ctx.timer().unwrap().delay(5000);
 }
