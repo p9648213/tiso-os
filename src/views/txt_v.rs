@@ -10,7 +10,7 @@ pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Rendera
             class="absolute inset-0 flex justify-center py-2"
         {
             div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit h-fit cursor-pointer" {
-                img class="w-9 h-9" src="/assets/images/text-editor.svg" draggable="false";
+                img class="w-9 h-9 select-none" src="/assets/images/text-editor.svg" draggable="false";
                 div class="max-w-[75px] overflow-ellipsis text-white text-sm text-center line-clamp-2 select-none" {
                     (file_name)
                 }

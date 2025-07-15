@@ -14,6 +14,7 @@ use crate::{
 pub enum FileType {
     Txt,
     Calculator,
+    Snake,
 }
 
 pub struct File {
@@ -88,6 +89,27 @@ impl File {
             .await?;
 
         Ok(row)
+    }
+
+    pub async fn get_taskbar_menu_files(
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Vec<Row>, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let columns = columns.join(",");
+
+        let rows = client
+            .query(
+                &format!("SELECT {columns} FROM file WHERE user_id IS NULL"),
+                &[],
+            )
+            .await?;
+
+        Ok(rows)
     }
 
     pub async fn create_file(

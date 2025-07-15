@@ -52,7 +52,7 @@ pub async fn init_database(pool: &Pool) {
     let sql = "DO $$
       BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'filetype') THEN
-          CREATE TYPE FileType AS ENUM ('Txt', 'Calculator');
+          CREATE TYPE FileType AS ENUM ('Txt', 'Calculator', 'Snake');
         END IF;
       END
     $$;";
@@ -96,6 +96,24 @@ pub async fn init_database(pool: &Pool) {
         let id: i32 = client.query_one(sql, &[]).await.unwrap().get("id");
 
         let sql = "INSERT INTO calculator (file_id) VALUES ($1);";
+        client.execute(sql, &[&id]).await.unwrap();
+    }
+
+    let sql = "CREATE TABLE IF NOT EXISTS snake (
+      id SERIAL PRIMARY KEY,
+      file_id INT UNIQUE,
+      FOREIGN KEY (file_id) REFERENCES file(id) ON DELETE CASCADE
+    );";
+
+    client.execute(sql, &[]).await.unwrap();
+
+    let sql = "SELECT * from file WHERE file_name = 'Snake'";
+
+    if client.query(sql, &[]).await.unwrap().is_empty() {
+        let sql = "INSERT INTO file (file_name, file_type) VALUES ('Snake', 'Snake') RETURNING id;";
+        let id: i32 = client.query_one(sql, &[]).await.unwrap().get("id");
+
+        let sql = "INSERT INTO snake (file_id) VALUES ($1);";
         client.execute(sql, &[&id]).await.unwrap();
     }
 }
