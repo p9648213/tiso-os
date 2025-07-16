@@ -24,6 +24,9 @@ window.addEventListener("htmx:configRequest", function (event) {
 
 window.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
-    document.getElementById("canvas-container").remove();
+    const canvasContainer = document.getElementById("canvas-container");
+    if (canvasContainer) {
+      canvasContainer.remove();
+    }
   }
 });

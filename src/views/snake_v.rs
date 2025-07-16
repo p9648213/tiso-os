@@ -17,8 +17,8 @@ pub fn render_snake_window() -> impl Renderable {
             canvas id="canvas" {}
         }
         (Raw(r#"
-            <script type="text/javascript">              
-              window.Module = { canvas: document.getElementById("canvas") };
+            <script type="text/javascript">      
+              var Module = { canvas: document.getElementById("canvas") };
             </script>
             <script type="text/javascript" src="/assets/snake/snake.js"></script>
         "#))
