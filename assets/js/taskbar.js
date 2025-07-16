@@ -14,6 +14,7 @@ export function setupTaskbarMenuToggle() {
 }
 
 export function setupTaskbarMenuFiles() {
+  const main = document.querySelector("main");
   const menu = document.getElementById("taskbar-menu");
   const menuFiles = document.getElementById("taskbar-menu-files");
 
@@ -22,10 +23,14 @@ export function setupTaskbarMenuFiles() {
 
     file.addEventListener("click", () => {
       htmx
-        .ajax("GET", `/read/file/${fileType}`, {
-          target: "body",
-          swap: "beforeend",
-        })
+        .ajax(
+          "GET",
+          `/read/file/${fileType}/${main.clientHeight}/${main.clientWidth}`,
+          {
+            target: "body",
+            swap: "beforeend",
+          }
+        )
         .then(() => {
           menu.classList.add("hidden");
         });

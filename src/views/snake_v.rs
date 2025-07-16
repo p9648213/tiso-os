@@ -11,9 +11,12 @@ pub fn render_snake_file() -> impl Renderable {
     }
 }
 
-pub fn render_snake_window() -> impl Renderable {
+pub fn render_snake_window(parent_height: i32, parent_width: i32) -> impl Renderable {
+    let left = ((parent_width / 2) - (900 / 2)).max(0);
+    let top = ((parent_height / 2) - (600 / 2)).max(0);
+
     maud_move! {
-        div id="canvas-container" class="top-1/2 left-1/2 absolute -translate-x-1/2 -translate-y-1/2" {
+        div id="canvas-container" class="absolute" style={ "top:" (top) "px; left:" (left) "px;" } {
             canvas id="canvas" {}
         }
         (Raw(r#"
