@@ -26,6 +26,9 @@ window.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
     const canvasContainer = document.getElementById("canvas-container");
     if (canvasContainer) {
+      if (window.snakeInstance) {
+        window.snakeInstance.pauseMainLoop();
+      }
       canvasContainer.remove();
     }
   }

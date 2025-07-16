@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 emscripten_main_loop = "0.1.1"
-sdl2 = "0.37.0"
+sdl2 = "0.38.0"

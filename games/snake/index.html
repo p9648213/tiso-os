@@ -6,13 +6,17 @@
   <body>
     <canvas id="canvas"></canvas>
 
-    <script type="text/javascript">
-      var Module = { canvas: document.getElementById("canvas") };
-    </script>
-
     <script
       type="text/javascript"
       src="target/wasm32-unknown-emscripten/release/snake.js"
     ></script>
+
+    <script type="text/javascript">
+      const canvas = document.getElementById("canvas");
+
+      SnakeModule({ canvas }).then((instance) => {
+        console.log("WASM running", instance);
+      });
+    </script>
   </body>
 </html>

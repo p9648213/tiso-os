@@ -132,6 +132,7 @@ pub fn render_screen_section() -> impl Renderable {
         (Raw(r#"
             <script type="module">
                 import {setupGlobalVariables} from "/assets/js/global_vars.js";
+                import {setupGlobalFunctions} from "/assets/js/global_func.js";
                 import {
                     setupGridDimensions, 
                     setupGridResize,
@@ -141,6 +142,7 @@ pub fn render_screen_section() -> impl Renderable {
                     setupGridItemOpen
                 } from "/assets/js/grid.js";
                 setupGlobalVariables();
+                setupGlobalFunctions();
                 setupGridContextMenu();
                 setupGridDimensions();
                 setupGridResize();
