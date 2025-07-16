@@ -21,3 +21,9 @@ window.addEventListener("htmx:configRequest", function (event) {
     event.detail.headers["X-Csrf-Protection"] = "1";
   }
 });
+
+window.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") {
+    document.getElementById("canvas-container").remove();
+  }
+});

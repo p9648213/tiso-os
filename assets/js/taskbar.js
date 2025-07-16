@@ -17,9 +17,18 @@ export function setupTaskbarMenuFiles() {
   const menu = document.getElementById("taskbar-menu");
   const menuFiles = document.getElementById("taskbar-menu-files");
 
-  for (const file of menuFiles.childNodes) {
+  for (const file of menuFiles.querySelectorAll("div")) {
+    let fileType = file.getAttribute("data-file-type");
+
     file.addEventListener("click", () => {
-      menu.classList.add("hidden");
+      htmx
+        .ajax("GET", `/read/file/${fileType}`, {
+          target: "body",
+          swap: "beforeend",
+        })
+        .then(() => {
+          menu.classList.add("hidden");
+        });
     });
   }
 }

@@ -2,7 +2,7 @@ use hypertext::{GlobalAttributes, HtmxAttributes, Raw, Renderable, html_elements
 
 use crate::{
     models::file_db::{File, FileType},
-    views::{calculator::render_calculator_file, snake_v::render_snake_file},
+    views::{calculator_v::render_calculator_file, snake_v::render_snake_file},
 };
 
 pub fn render_taskbar() -> impl Renderable {

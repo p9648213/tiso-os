@@ -10,6 +10,7 @@ use crate::{
             update_folder_desktop_position,
         },
         screen_c::{create_screen_grid, get_screen},
+        snake_c::get_snake_window,
         taskbar_c::get_taskbar_menu_files,
         txt_c::{create_txt, get_txt_input, get_txt_window},
     },
@@ -98,6 +99,7 @@ pub async fn create_router(pool: Pool) -> Router {
     let read_routes = Router::new().nest(
         "/read",
         Router::new()
+            .route("/file/snake", get(get_snake_window))
             .route("/taskbar/files", get(get_taskbar_menu_files))
             .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))

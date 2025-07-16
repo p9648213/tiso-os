@@ -1,4 +1,4 @@
-pub mod calculator;
+pub mod calculator_v;
 pub mod folder_v;
 pub mod screen_v;
 pub mod snake_v;
