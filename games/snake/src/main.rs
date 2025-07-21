@@ -5,12 +5,14 @@ use sdl2::{
 static WIDTH: u32 = 900;
 static HEIGHT: u32 = 600;
 
-static GRID_SIZE: u32 = 15;
-static ROWS: u32 = HEIGHT / GRID_SIZE;
-static COLUMNS: u32 = WIDTH / GRID_SIZE;
+static CELL_SIZE: u32 = 30;
+static ROWS: u32 = HEIGHT / CELL_SIZE;
+static COLUMNS: u32 = WIDTH / CELL_SIZE;
 static LINE_WIDTH: u32 = 2;
 
-static GRID_COLOR: u32 = 0x1f1f1f1f;
+static COLOR_GRID: u32 = 0x1f1f1f1f;
+static COLOR_WHITE: u32 = 0xffffffff;
+static COLOR_APPLE: u32 = 0x00ff0000;
 
 fn argb_to_sdl_color(color: u32) -> Color {
     let a = ((color >> 24) & 0xff) as u8;
@@ -21,7 +23,7 @@ fn argb_to_sdl_color(color: u32) -> Color {
 }
 
 fn draw_grid(canvas: &mut Canvas<Window>) {
-    let grid_color = argb_to_sdl_color(GRID_COLOR);
+    let grid_color = argb_to_sdl_color(COLOR_GRID);
 
     // Draw horizontal lines
     let mut row_line = Rect::new(0, 0, WIDTH, LINE_WIDTH);
@@ -29,7 +31,7 @@ fn draw_grid(canvas: &mut Canvas<Window>) {
     while row_line.y < HEIGHT as i32 {
         canvas.set_draw_color(grid_color);
         canvas.fill_rect(row_line).unwrap();
-        row_line.y += GRID_SIZE as i32;
+        row_line.y += CELL_SIZE as i32;
     }
 
     // Draw vertical lines
@@ -38,14 +40,29 @@ fn draw_grid(canvas: &mut Canvas<Window>) {
     while column_line.x < WIDTH as i32 {
         canvas.set_draw_color(grid_color);
         canvas.fill_rect(column_line).unwrap();
-        column_line.x += GRID_SIZE as i32;
+        column_line.x += CELL_SIZE as i32;
     }
+}
+
+fn fill_cell(canvas: &mut Canvas<Window>, x: u32, y: u32, color: u32) {
+    let cell_color = argb_to_sdl_color(color);
+    let cell_rect = Rect::new(
+        (x * CELL_SIZE) as i32,
+        (y * CELL_SIZE) as i32,
+        CELL_SIZE,
+        CELL_SIZE,
+    );
+    canvas.set_draw_color(cell_color);
+    canvas.fill_rect(cell_rect).unwrap();
 }
 
 struct Game {
     canvas: Canvas<Window>,
     event_pump: sdl2::EventPump,
-    rect: Rect,
+    snake_x: u32,
+    snake_y: u32,
+    apple_x: u32,
+    apple_y: u32,
 }
 
 impl emscripten_main_loop::MainLoop for Game {
@@ -57,16 +74,31 @@ impl emscripten_main_loop::MainLoop for Game {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => return emscripten_main_loop::MainLoopEvent::Terminate,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Up),
+                    ..
+                } => self.snake_y -= 1,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Down),
+                    ..
+                } => self.snake_y += 1,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Left),
+                    ..
+                } => self.snake_x -= 1,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Right),
+                    ..
+                } => self.snake_x += 1,
                 _ => {}
             }
         }
 
         self.canvas.set_draw_color(Color::BLACK);
-        self.canvas.clear();
+        // self.canvas.clear();
 
-        self.canvas.set_draw_color(Color::WHITE);
-        self.canvas.fill_rect(self.rect).unwrap();
-
+        fill_cell(&mut self.canvas, self.snake_x, self.snake_y, COLOR_WHITE);
+        fill_cell(&mut self.canvas, self.apple_x, self.apple_y, COLOR_APPLE);
         draw_grid(&mut self.canvas);
 
         self.canvas.present();
@@ -88,12 +120,13 @@ fn main() {
     let canvas = window.into_canvas().present_vsync().build().unwrap();
     let event_pump = ctx.event_pump().unwrap();
 
-    let rect = Rect::new(200, 200, 200, 200);
-
     let game = Game {
         canvas,
         event_pump,
-        rect,
+        snake_x: 5,
+        snake_y: 5,
+        apple_x: 13,
+        apple_y: 17,
     };
 
     emscripten_main_loop::run(game);
