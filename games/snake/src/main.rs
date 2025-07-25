@@ -14,6 +14,12 @@ static COLOR_GRID: u32 = 0x1f1f1f1f;
 static COLOR_WHITE: u32 = 0xffffffff;
 static COLOR_APPLE: u32 = 0x00ff0000;
 
+struct SnakeElement {
+    x: u32,
+    y: u32,
+    pnext: Option<Box<SnakeElement>>,
+}
+
 fn argb_to_sdl_color(color: u32) -> Color {
     let a = ((color >> 24) & 0xff) as u8;
     let r = ((color >> 16) & 0xff) as u8;
@@ -56,11 +62,17 @@ fn fill_cell(canvas: &mut Canvas<Window>, x: u32, y: u32, color: u32) {
     canvas.fill_rect(cell_rect).unwrap();
 }
 
+fn draw_snake(canvas: &mut Canvas<Window>, snake: Option<&SnakeElement>) {
+    if let Some(snake) = snake {
+        fill_cell(canvas, snake.x, snake.y, COLOR_WHITE);
+        draw_snake(canvas, snake.pnext.as_deref());
+    }
+}
+
 struct Game {
     canvas: Canvas<Window>,
     event_pump: sdl2::EventPump,
-    snake_x: u32,
-    snake_y: u32,
+    snake: Box<SnakeElement>,
     apple_x: u32,
     apple_y: u32,
 }
@@ -77,27 +89,27 @@ impl emscripten_main_loop::MainLoop for Game {
                 Event::KeyDown {
                     keycode: Some(Keycode::Up),
                     ..
-                } => self.snake_y -= 1,
+                } => self.snake.y -= 1,
                 Event::KeyDown {
                     keycode: Some(Keycode::Down),
                     ..
-                } => self.snake_y += 1,
+                } => self.snake.y += 1,
                 Event::KeyDown {
                     keycode: Some(Keycode::Left),
                     ..
-                } => self.snake_x -= 1,
+                } => self.snake.x -= 1,
                 Event::KeyDown {
                     keycode: Some(Keycode::Right),
                     ..
-                } => self.snake_x += 1,
+                } => self.snake.x += 1,
                 _ => {}
             }
         }
 
         self.canvas.set_draw_color(Color::BLACK);
-        // self.canvas.clear();
+        self.canvas.clear();
 
-        fill_cell(&mut self.canvas, self.snake_x, self.snake_y, COLOR_WHITE);
+        draw_snake(&mut self.canvas, Some(&self.snake));
         fill_cell(&mut self.canvas, self.apple_x, self.apple_y, COLOR_APPLE);
         draw_grid(&mut self.canvas);
 
@@ -120,11 +132,16 @@ fn main() {
     let canvas = window.into_canvas().present_vsync().build().unwrap();
     let event_pump = ctx.event_pump().unwrap();
 
+    let snake = Box::new(SnakeElement {
+        x: 5,
+        y: 5,
+        pnext: None,
+    });
+
     let game = Game {
         canvas,
         event_pump,
-        snake_x: 5,
-        snake_y: 5,
+        snake,
         apple_x: 13,
         apple_y: 17,
     };
