@@ -1,9 +1,9 @@
-use hypertext::{GlobalAttributes, HtmxAttributes, Renderable, html_elements, maud_move};
+use hypertext::prelude::*;
 
 pub fn render_folder(folder_id: i32, folder_name: &Option<String>) -> impl Renderable {
     let folder_name = folder_name.as_deref().unwrap_or("New Folder");
 
-    maud_move! {
+    maud! {
         div
             id={ "folder-" (folder_id) }
             class="absolute inset-0 flex justify-center py-2"
@@ -19,7 +19,7 @@ pub fn render_folder(folder_id: i32, folder_name: &Option<String>) -> impl Rende
 }
 
 pub fn render_folder_input(folder_id: i32, value: &str) -> impl Renderable {
-    maud_move! {
+    maud! {
         div
             id={ "folder-" (folder_id) }
             class="absolute inset-0 flex justify-center py-2"

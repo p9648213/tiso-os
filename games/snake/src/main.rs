@@ -1,5 +1,6 @@
 use std::time::{Duration, Instant};
 
+use rand::Rng;
 use sdl2::{
     event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window,
 };
@@ -25,6 +26,11 @@ struct SnakeElement {
 struct Direction {
     dx: i32,
     dy: i32,
+}
+
+struct Apple {
+    x: i32,
+    y: i32,
 }
 
 fn move_snake(snake: &mut SnakeElement, direction: &Direction) {
@@ -81,13 +87,34 @@ fn draw_snake(canvas: &mut Canvas<Window>, snake: Option<&SnakeElement>) {
     }
 }
 
+fn reset_apple(snake: &SnakeElement, apple: &mut Apple) {
+    let mut rng = rand::rng();
+
+    apple.x = (COLUMNS as f64 * rng.random_range(0.0..=1.0)) as i32;
+    apple.y = (ROWS as f64 * rng.random_range(0.0..=1.0)) as i32;
+
+    let mut current_snake = snake;
+
+    loop {
+        if current_snake.x == apple.x && current_snake.y == apple.y {
+            reset_apple(current_snake, apple);
+            break;
+        }
+
+        if current_snake.pnext.is_none() {
+            break;
+        }
+
+        current_snake = current_snake.pnext.as_ref().unwrap();
+    }
+}
+
 struct Game {
     canvas: Canvas<Window>,
     event_pump: sdl2::EventPump,
     snake: Box<SnakeElement>,
+    apple: Apple,
     direction: Direction,
-    apple_x: i32,
-    apple_y: i32,
     last_frame: Instant,
 }
 
@@ -144,8 +171,15 @@ impl emscripten_main_loop::MainLoop for Game {
         self.canvas.clear();
 
         move_snake(&mut self.snake, &self.direction);
+
+        if self.snake.x == self.apple.x && self.snake.y == self.apple.y {
+            reset_apple(&self.snake, &mut self.apple);
+        }
+
+        println!("{} {}", self.apple.x, self.apple.y);
+
+        fill_cell(&mut self.canvas, self.apple.x, self.apple.y, COLOR_APPLE);
         draw_snake(&mut self.canvas, Some(&self.snake));
-        fill_cell(&mut self.canvas, self.apple_x, self.apple_y, COLOR_APPLE);
         draw_grid(&mut self.canvas);
 
         self.canvas.present();
@@ -173,6 +207,9 @@ fn main() {
         pnext: None,
     });
 
+    let mut apple = Apple { x: 0, y: 0 };
+    reset_apple(&snake, &mut apple);
+
     let direction = Direction { dx: 0, dy: 0 };
 
     let game = Game {
@@ -180,8 +217,7 @@ fn main() {
         event_pump,
         snake,
         direction,
-        apple_x: 13,
-        apple_y: 17,
+        apple,
         last_frame: Instant::now(),
     };
 

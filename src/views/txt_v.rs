@@ -1,9 +1,9 @@
-use hypertext::{GlobalAttributes, HtmxAttributes, Raw, Renderable, html_elements, maud_move};
+use hypertext::{Raw, prelude::*};
 
 pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Renderable {
     let file_name = file_name.as_deref().unwrap_or("New Text");
 
-    maud_move! {
+    maud! {
         div
             id={ "file-" (file_id) }
             data-file-type="txt"
@@ -20,7 +20,7 @@ pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Rendera
 }
 
 pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
-    maud_move! {
+    maud! {
         (Raw(format!(
             r#"
                 <script type="module">
@@ -66,7 +66,7 @@ pub fn render_txt_window(
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
     let top = ((parent_height / 2) - (window_height / 2)).max(0);
 
-    maud_move! {
+    maud! {
         (Raw(format!(
             r#"
                 <script type="module">

@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use hypertext::{
-    GlobalAttributes, HtmxAttributes, Raw, Renderable, html_elements, maud, maud_move,
-};
+use hypertext::{Raw, prelude::*};
 
 use crate::{
     contanst::MIN_RECTANGLE_WIDTH,
@@ -22,7 +20,7 @@ pub fn render_welcome_screen() -> impl Renderable {
         confirm_password: None,
     };
 
-    maud_move!(
+    maud!(
         (Raw(r#"<!DOCTYPE html>"#))
         html lang="en" {
             head {
@@ -59,7 +57,7 @@ pub fn render_welcome_screen() -> impl Renderable {
 }
 
 pub fn render_account_form(account_form: &AccountForm, register_mode: bool) -> impl Renderable {
-    maud_move! {
+    maud! {
         form
             id="account_form"
             hx-post="/create/account"
@@ -93,7 +91,7 @@ pub fn render_account_form(account_form: &AccountForm, register_mode: bool) -> i
 }
 
 pub fn render_comfirm_password(value: &Option<String>, register_mode: bool) -> impl Renderable {
-    maud_move! {
+    maud! {
         input
             class="bg-white px-3 rounded-sm h-8"
             name="confirm_password"
@@ -167,7 +165,7 @@ pub fn render_screen_grid(
     let cols = width / MIN_RECTANGLE_WIDTH;
     let rectangle_width = width as f32 / cols as f32 - 0.1;
 
-    maud_move! {
+    maud! {
         input id="screen_rows" type="hidden" value=(rows);
         input id="screen_cols" type="hidden" value=(cols);
         input id="desktop_id" type="hidden" value=(desktop_id);

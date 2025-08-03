@@ -1,4 +1,4 @@
-use hypertext::{GlobalAttributes, HtmxAttributes, Raw, Renderable, html_elements, maud_move};
+use hypertext::{Raw, prelude::*};
 
 use crate::{
     models::file_db::{File, FileType},
@@ -6,7 +6,7 @@ use crate::{
 };
 
 pub fn render_taskbar() -> impl Renderable {
-    maud_move! {
+    maud! {
       (Raw(r#"
           <script type="module">
               import {setupClock} from "/assets/js/clock.js";
@@ -35,7 +35,7 @@ pub fn render_taskbar() -> impl Renderable {
 }
 
 pub fn render_taskbar_menu_files(files: &Vec<File>) -> impl Renderable {
-    maud_move!(
+    maud!(
       (Raw(r#"
           <script type="module">
               import {setupTaskbarMenuFiles} from "/assets/js/taskbar.js";
