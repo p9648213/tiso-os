@@ -1,3 +1,5 @@
+use std::time::{Duration, Instant};
+
 use sdl2::{
     event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window,
 };
@@ -15,9 +17,19 @@ static COLOR_WHITE: u32 = 0xffffffff;
 static COLOR_APPLE: u32 = 0x00ff0000;
 
 struct SnakeElement {
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
     pnext: Option<Box<SnakeElement>>,
+}
+
+struct Direction {
+    dx: i32,
+    dy: i32,
+}
+
+fn move_snake(snake: &mut SnakeElement, direction: &Direction) {
+    snake.x += direction.dx;
+    snake.y += direction.dy;
 }
 
 fn argb_to_sdl_color(color: u32) -> Color {
@@ -50,11 +62,11 @@ fn draw_grid(canvas: &mut Canvas<Window>) {
     }
 }
 
-fn fill_cell(canvas: &mut Canvas<Window>, x: u32, y: u32, color: u32) {
+fn fill_cell(canvas: &mut Canvas<Window>, x: i32, y: i32, color: u32) {
     let cell_color = argb_to_sdl_color(color);
     let cell_rect = Rect::new(
-        (x * CELL_SIZE) as i32,
-        (y * CELL_SIZE) as i32,
+        x * CELL_SIZE as i32,
+        y * CELL_SIZE as i32,
         CELL_SIZE,
         CELL_SIZE,
     );
@@ -73,12 +85,22 @@ struct Game {
     canvas: Canvas<Window>,
     event_pump: sdl2::EventPump,
     snake: Box<SnakeElement>,
-    apple_x: u32,
-    apple_y: u32,
+    direction: Direction,
+    apple_x: i32,
+    apple_y: i32,
+    last_frame: Instant,
 }
 
 impl emscripten_main_loop::MainLoop for Game {
     fn main_loop(&mut self) -> emscripten_main_loop::MainLoopEvent {
+        let frame_duration = Duration::from_millis(300);
+
+        if self.last_frame.elapsed() < frame_duration {
+            return emscripten_main_loop::MainLoopEvent::Continue;
+        }
+
+        self.last_frame = Instant::now();
+
         for event in self.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. }
@@ -89,19 +111,31 @@ impl emscripten_main_loop::MainLoop for Game {
                 Event::KeyDown {
                     keycode: Some(Keycode::Up),
                     ..
-                } => self.snake.y -= 1,
+                } => {
+                    self.direction.dy = -1;
+                    self.direction.dx = 0;
+                }
                 Event::KeyDown {
                     keycode: Some(Keycode::Down),
                     ..
-                } => self.snake.y += 1,
+                } => {
+                    self.direction.dy = 1;
+                    self.direction.dx = 0;
+                }
                 Event::KeyDown {
                     keycode: Some(Keycode::Left),
                     ..
-                } => self.snake.x -= 1,
+                } => {
+                    self.direction.dy = 0;
+                    self.direction.dx = -1;
+                }
                 Event::KeyDown {
                     keycode: Some(Keycode::Right),
                     ..
-                } => self.snake.x += 1,
+                } => {
+                    self.direction.dy = 0;
+                    self.direction.dx = 1;
+                }
                 _ => {}
             }
         }
@@ -109,6 +143,7 @@ impl emscripten_main_loop::MainLoop for Game {
         self.canvas.set_draw_color(Color::BLACK);
         self.canvas.clear();
 
+        move_snake(&mut self.snake, &self.direction);
         draw_snake(&mut self.canvas, Some(&self.snake));
         fill_cell(&mut self.canvas, self.apple_x, self.apple_y, COLOR_APPLE);
         draw_grid(&mut self.canvas);
@@ -138,12 +173,16 @@ fn main() {
         pnext: None,
     });
 
+    let direction = Direction { dx: 0, dy: 0 };
+
     let game = Game {
         canvas,
         event_pump,
         snake,
+        direction,
         apple_x: 13,
         apple_y: 17,
+        last_frame: Instant::now(),
     };
 
     emscripten_main_loop::run(game);
