@@ -7,7 +7,7 @@ use crate::{
 
 pub fn render_taskbar() -> impl Renderable {
     maud! {
-      (Raw(r#"
+      (Raw::dangerously_create(r#"
           <script type="module">
               import {setupClock} from "/assets/js/clock.js";
               import {setupTaskbarMenuToggle} from "/assets/js/taskbar.js";
@@ -36,7 +36,7 @@ pub fn render_taskbar() -> impl Renderable {
 
 pub fn render_taskbar_menu_files(files: &Vec<File>) -> impl Renderable {
     maud!(
-      (Raw(r#"
+      (Raw::dangerously_create(r#"
           <script type="module">
               import {setupTaskbarMenuFiles} from "/assets/js/taskbar.js";
               setupTaskbarMenuFiles();

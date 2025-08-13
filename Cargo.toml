@@ -9,7 +9,7 @@ async-trait = "0.1.88"
 axum = { version = "0.8.4", features = ["macros"] }
 axum-extra = { version = "0.10.1", features = ["cookie"] }
 deadpool-postgres = "0.14.1"
-hypertext = { version = "0.10.0", features = ["axum", "htmx"] }
+hypertext = { version = "0.12.1", features = ["axum", "htmx"] }
 memory-serve = { version = "1.2.1" }
 papaya = "0.2.3"
 postgres-types = { version = "0.2.9", features = ["derive"] }

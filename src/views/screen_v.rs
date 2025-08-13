@@ -21,7 +21,7 @@ pub fn render_welcome_screen() -> impl Renderable {
     };
 
     maud!(
-        (Raw(r#"<!DOCTYPE html>"#))
+        (Raw::dangerously_create(r#"<!DOCTYPE html>"#))
         html lang="en" {
             head {
                 meta charset="UTF-8";
@@ -107,7 +107,7 @@ pub fn render_comfirm_password(value: &Option<String>, register_mode: bool) -> i
 
 pub fn render_screen() -> impl Renderable {
     maud! {
-        (Raw(r#"<!DOCTYPE html>"#))
+        (Raw::dangerously_create(r#"<!DOCTYPE html>"#))
         html lang="en" {
             head {
                 meta charset="UTF-8";
@@ -127,7 +127,7 @@ pub fn render_screen() -> impl Renderable {
 
 pub fn render_screen_section() -> impl Renderable {
     maud! {
-        (Raw(r#"
+        (Raw::dangerously_create(r#"
             <script type="module">
                 import {setupGlobalVariables} from "/assets/js/global_vars.js";
                 import {setupGlobalFunctions} from "/assets/js/global_func.js";

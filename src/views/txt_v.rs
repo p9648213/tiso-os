@@ -21,7 +21,7 @@ pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Rendera
 
 pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
     maud! {
-        (Raw(format!(
+        (Raw::dangerously_create(format!(
             r#"
                 <script type="module">
                     const txtInput = document.getElementById("file-{file_id}").querySelector("textarea");
@@ -67,7 +67,7 @@ pub fn render_txt_window(
     let top = ((parent_height / 2) - (window_height / 2)).max(0);
 
     maud! {
-        (Raw(format!(
+        (Raw::dangerously_create(format!(
             r#"
                 <script type="module">
                     import {{setupTxtWindowGrab, setupTxtEditor}} from "/assets/js/txt.js";

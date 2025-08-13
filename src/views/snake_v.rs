@@ -19,7 +19,7 @@ pub fn render_snake_window(parent_height: i32, parent_width: i32) -> impl Render
         div id="canvas-container" class="absolute" style={ "top:" (top) "px; left:" (left) "px;" } {
             canvas id="canvas" {}
         }
-        (Raw(r#"
+        (Raw::dangerously_create(r#"
             <script type="text/javascript">
                 window.loadSnakeModule();
             </script>
