@@ -109,6 +109,7 @@ pub fn setup(
         Transform::from_xyz(0., 0., 2.),
         Bird {
             timer: Timer::from_seconds(0.2, TimerMode::Repeating),
+            velocity: 0.,
         },
     ));
 
@@ -139,7 +140,7 @@ pub fn setup(
                 ..default()
             },
             transform,
-            UpperPipe,
+            UpperPipe { passed: false },
         ));
     }
 }

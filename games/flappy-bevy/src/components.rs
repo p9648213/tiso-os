@@ -18,10 +18,13 @@ pub struct ScoreText;
 #[derive(Component)]
 pub struct Bird {
     pub timer: Timer,
+    pub velocity: f32,
 }
 
 #[derive(Component)]
-pub struct UpperPipe;
+pub struct UpperPipe {
+    pub passed: bool,
+}
 
 #[derive(Component)]
 pub struct LowerPipe;
