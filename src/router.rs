@@ -5,6 +5,7 @@ use crate::{
     controllers::{
         account_c::create_account,
         file_c::{delete_file, rename_file, update_file_desktop_position},
+        flappy_bird_c::get_flappy_bird_window,
         folder_c::{
             create_folder, delete_folder, get_folder_input, rename_folder,
             update_folder_desktop_position,
@@ -100,6 +101,10 @@ pub async fn create_router(pool: Pool) -> Router {
         "/read",
         Router::new()
             .route("/file/snake/{height}/{width}", get(get_snake_window))
+            .route(
+                "/file/flappybird/{height}/{width}",
+                get(get_flappy_bird_window),
+            )
             .route("/taskbar/files", get(get_taskbar_menu_files))
             .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))

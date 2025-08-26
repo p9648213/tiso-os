@@ -23,7 +23,7 @@ pub fn setup(
     // Spawn the background
     commands.spawn((
         Sprite {
-            image: asset_server.load("texture/background.png"),
+            image: asset_server.load("flappybird/texture/background.png"),
             image_mode: SpriteImageMode::Tiled {
                 tile_x: true,       // Only repeat on the x-axis
                 tile_y: false,      // No repeat on the y-axis
@@ -38,7 +38,7 @@ pub fn setup(
     // Spawn the ground
     commands.spawn((
         Sprite {
-            image: asset_server.load("texture/base.png"),
+            image: asset_server.load("flappybird/texture/base.png"),
             custom_size: Some(Vec2::new(WINDOW_WIDTH + 288. * 2., 112.)),
             image_mode: SpriteImageMode::Tiled {
                 tile_x: true,       // Only repeat on the x-axis
@@ -54,7 +54,7 @@ pub fn setup(
     // Game over text
     commands.spawn((
         Sprite {
-            image: asset_server.load("texture/game-over.png"),
+            image: asset_server.load("flappybird/texture/game-over.png"),
             ..default()
         },
         Visibility::Hidden,
@@ -65,7 +65,7 @@ pub fn setup(
     // Space bar text
     commands.spawn((
         Sprite {
-            image: asset_server.load("texture/space.png"),
+            image: asset_server.load("flappybird/texture/space.png"),
             ..default()
         },
         Transform::from_xyz(0., -50., 1.),
@@ -78,7 +78,7 @@ pub fn setup(
 
         commands.spawn((
             Sprite {
-                image: asset_server.load("texture/numbers.png"),
+                image: asset_server.load("flappybird/texture/numbers.png"),
                 texture_atlas: Some(TextureAtlas {
                     index: 0,
                     layout: number_texture_atlas_layout.clone(),
@@ -93,7 +93,7 @@ pub fn setup(
     // Spawn the bird
     commands.spawn((
         Sprite {
-            image: asset_server.load("texture/bird.png"),
+            image: asset_server.load("flappybird/texture/bird.png"),
             texture_atlas: Some(TextureAtlas {
                 index: 1,
                 layout: texture_atlas_layouts.add(TextureAtlasLayout::from_grid(
@@ -121,7 +121,7 @@ pub fn setup(
         // Spawn lower pipe
         commands.spawn((
             Sprite {
-                image: asset_server.load("texture/pipe.png"),
+                image: asset_server.load("flappybird/texture/pipe.png"),
                 ..default()
             },
             transform,
@@ -136,7 +136,7 @@ pub fn setup(
         // Spawn upper pipe
         commands.spawn((
             Sprite {
-                image: asset_server.load("texture/pipe.png"),
+                image: asset_server.load("flappybird/texture/pipe.png"),
                 ..default()
             },
             transform,

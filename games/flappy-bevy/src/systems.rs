@@ -160,7 +160,7 @@ pub fn gravity(
 
             // Play game over sound
             commands.spawn((
-                AudioPlayer::new(asset_serve.load("audio/hit.ogg")),
+                AudioPlayer::new(asset_serve.load("flappybird/audio/hit.ogg")),
                 PlaybackSettings::DESPAWN,
             ));
         }
@@ -178,7 +178,7 @@ pub fn jump(
     }
 
     commands.spawn((
-        AudioPlayer::new(asset_server.load("audio/wing.ogg")),
+        AudioPlayer::new(asset_server.load("flappybird/audio/wing.ogg")),
         PlaybackSettings::DESPAWN,
     ));
 
@@ -259,7 +259,7 @@ pub fn pipes(
 
             // Play game over sound
             commands.spawn((
-                AudioPlayer::new(asset_server.load("audio/hit.ogg")),
+                AudioPlayer::new(asset_server.load("flappybird/audio/hit.ogg")),
                 PlaybackSettings::DESPAWN,
             ));
         };
@@ -293,12 +293,12 @@ pub fn score(
             if passed && !passed_state {
                 game.score += 1;
                 upper_pipe.passed = true;
-            }
 
-            commands.spawn((
-                AudioPlayer::new(asset_server.load("audio/point.ogg")),
-                PlaybackSettings::DESPAWN,
-            ));
+                commands.spawn((
+                    AudioPlayer::new(asset_server.load("flappybird/audio/point.ogg")),
+                    PlaybackSettings::DESPAWN,
+                ));
+            }
         }
     }
 }
