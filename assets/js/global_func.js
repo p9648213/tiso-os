@@ -12,4 +12,9 @@ export function setupGlobalFunctions() {
     };
     document.body.appendChild(script);
   };
+
+  window.loadFlappyBirdModule = async function () {
+    const init = (await import("/assets/flappybird/flappybird.js")).default;
+    await init();
+  };
 }

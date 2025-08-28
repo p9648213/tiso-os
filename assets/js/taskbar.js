@@ -18,7 +18,7 @@ export function setupTaskbarMenuFiles() {
   const menu = document.getElementById("taskbar-menu");
   const menuFiles = document.getElementById("taskbar-menu-files");
 
-  for (const file of menuFiles.querySelectorAll("div")) {
+  for (const file of menuFiles.querySelectorAll(".file")) {
     let fileType = file.getAttribute("data-file-type");
 
     file.addEventListener("click", () => {
