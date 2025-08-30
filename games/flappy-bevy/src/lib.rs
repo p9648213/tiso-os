@@ -8,13 +8,6 @@ use crate::systems::{
     render_score, score, start_game as start_game_system,
 };
 
-#[cfg(target_arch = "wasm32")]
-use gloo_timers::future::TimeoutFuture;
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen_futures::spawn_local;
-
 mod components;
 mod constants;
 mod plugin;
@@ -31,7 +24,6 @@ fn is_game_not_active(game: Res<Game>) -> bool {
     game.state != GameState::Active
 }
 
-/// Build the Bevy app (shared between native + wasm)
 pub fn build_app() -> App {
     let mut app = App::new();
 
@@ -50,20 +42,4 @@ pub fn build_app() -> App {
         .add_plugins(MyPlugin);
 
     app
-}
-
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn start_game() {
-    let mut app = build_app();
-
-    app.finish();
-    app.cleanup();
-
-    spawn_local(async move {
-        loop {
-            app.update();
-            TimeoutFuture::new(16).await; // ~60 FPS
-        }
-    });
 }

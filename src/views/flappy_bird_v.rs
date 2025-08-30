@@ -16,7 +16,7 @@ pub fn render_flappy_bird_window(parent_height: i32, parent_width: i32) -> impl 
     let top = ((parent_height / 2) - (512 / 2)).max(0);
 
     maud! {
-        div id="canvas-container" class="absolute" style={ "top:" (top) "px; left:" (left) "px;" } {
+        div id="flappy-canvas-container" class="absolute" style={ "top:" (top) "px; left:" (left) "px;" } {
             canvas id="canvas" {}
         }
         (Raw::dangerously_create(r#"

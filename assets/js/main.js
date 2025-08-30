@@ -24,12 +24,11 @@ window.addEventListener("htmx:configRequest", function (event) {
 
 window.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
-    const canvasContainer = document.getElementById("canvas-container");
-    if (canvasContainer) {
-      if (window.snakeInstance) {
-        window.snakeInstance.pauseMainLoop();
-      }
-      canvasContainer.remove();
+    if (window.snakeState.isRunning) {
+      window.stopSnake();
+    }
+    if (window.flappyBirdState.isRunning) {
+      window.stopFlappyBird();
     }
   }
 });

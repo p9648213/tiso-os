@@ -13,6 +13,8 @@ impl Plugin for MyPlugin {
                         resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
                         resizable: false,
                         canvas: Some("#canvas".into()),
+                        fit_canvas_to_parent: true,
+                        prevent_default_event_handling: true,
                         ..default()
                     }),
                     ..default()

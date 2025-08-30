@@ -1,4 +1,4 @@
-use hypertext::{Raw, prelude::*};
+use hypertext::{prelude::*, Raw};
 
 pub fn render_snake_file() -> impl Renderable {
     maud! {
@@ -16,7 +16,7 @@ pub fn render_snake_window(parent_height: i32, parent_width: i32) -> impl Render
     let top = ((parent_height / 2) - (600 / 2)).max(0);
 
     maud! {
-        div id="canvas-container" class="absolute" style={ "top:" (top) "px; left:" (left) "px;" } {
+        div id="snake-canvas-container" class="absolute" style={ "top:" (top) "px; left:" (left) "px;" } {
             canvas id="canvas" {}
         }
         (Raw::dangerously_create(r#"
