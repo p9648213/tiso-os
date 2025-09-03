@@ -60,7 +60,7 @@ function applyFormat(formatTag) {
 
   if (selectedText.length === 0) return;
 
-  let parentElement = range.commonAncestorContainer.parentElement;
+  let parentElement = range.startContainer.parentElement;
 
   let recursiveParentEl = parentElement;
   let styledEl = null;
@@ -76,10 +76,10 @@ function applyFormat(formatTag) {
   if (styledEl) {
     if (styledEl.children.length > 0) {
       styledEl.parentElement.appendChild(styledEl.children[0]);
+      styledEl.parentElement.removeChild(styledEl);
     } else {
-      styledEl.parentElement.appendChild(document.createTextNode(selectedText));
+      // TODO - WHEN SELECT TEXT IN SAME ELEMENT
     }
-    styledEl.parentElement.removeChild(styledEl);
   } else {
     const formatElement = document.createElement(formatTag);
     range.surroundContents(formatElement);
