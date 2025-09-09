@@ -1,4 +1,4 @@
-const CONTEXT_MENU_SCREEN = ["Create document", "Create folder"];
+const CONTEXT_MENU_SCREEN = ["Create document", "Create folder", "Refresh"];
 const CONTEXT_MENU_ITEM = ["Rename", "Delete"];
 
 export function setupGridDimensions() {
@@ -171,7 +171,11 @@ export function setupGridContextMenu() {
         let menuItem = document.createElement("div");
 
         let id = contextItem.replace(/\s/g, "").toLowerCase();
-        let itemsType = "txt";
+        let itemsType = null;
+
+        if (contextItem === "Create document") {
+          itemsType = "txt";
+        }
 
         if (contextItem === "Create folder") {
           itemsType = "folder";
@@ -208,6 +212,12 @@ export function setupGridContextMenu() {
               });
             }
             document.body.removeChild(contextMenu);
+          });
+        }
+
+        if (contextItem === "Refresh") {
+          menuForm.addEventListener("mouseup", () => {
+            window.location.reload();
           });
         }
 
