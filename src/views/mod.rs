@@ -1,4 +1,5 @@
 pub mod calculator_v;
+pub mod display_setting_v;
 pub mod flappy_bird_v;
 pub mod folder_v;
 pub mod screen_v;

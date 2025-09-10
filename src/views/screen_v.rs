@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use base64::{Engine, engine::general_purpose};
 use hypertext::{Raw, prelude::*};
 
 use crate::{
@@ -105,7 +106,13 @@ pub fn render_comfirm_password(value: &Option<String>, register_mode: bool) -> i
     }
 }
 
-pub fn render_screen() -> impl Renderable {
+pub fn render_screen(background: Option<Vec<u8>>) -> impl Renderable {
+    let background_base64_string = if let Some(background) = background {
+        general_purpose::STANDARD.encode(background)
+    } else {
+        String::from("background: radial-gradient(ellipse at top left, #070f2b, #1b1a55, #535c91);")
+    };
+
     maud! {
         (Raw::dangerously_create(r#"<!DOCTYPE html>"#))
         html lang="en" {
@@ -118,7 +125,7 @@ pub fn render_screen() -> impl Renderable {
                 script src="/assets/js/main.js" type="module" defer {}
             }
             title { "TisoOS" }
-            body style="background: radial-gradient(ellipse at top left, #070f2b, #1b1a55, #535c91);" class="relative overflow-hidden" {
+            body style=(background_base64_string) class="relative overflow-hidden" {
                 (render_screen_section())
             }
         }

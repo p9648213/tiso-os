@@ -4,6 +4,7 @@ use crate::{
     contanst::MIN_COMPRESS_SIZE,
     controllers::{
         account_c::create_account,
+        display_setting_c::get_display_setting_window,
         file_c::{delete_file, rename_file, update_file_desktop_position},
         flappy_bird_c::get_flappy_bird_window,
         folder_c::{
@@ -108,7 +109,11 @@ pub async fn create_router(pool: Pool) -> Router {
             .route("/taskbar/files", get(get_taskbar_menu_files))
             .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))
-            .route("/folder/input/{folder_id}", get(get_folder_input)),
+            .route("/folder/input/{folder_id}", get(get_folder_input))
+            .route(
+                "/setting/display/{height}/{width}",
+                get(get_display_setting_window),
+            ),
     );
 
     Router::new()

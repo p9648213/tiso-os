@@ -97,6 +97,9 @@ impl User {
         )
         .await?;
 
+        txn.execute("INSERT INTO setting (user_id) VALUES ($1)", &[&user_id])
+            .await?;
+
         txn.commit().await.map_err(|err| {
             tracing::error!("Couldn't commit transaction: {:?}", err);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")

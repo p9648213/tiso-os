@@ -1,3 +1,5 @@
+use std::vec;
+
 use axum::{Extension, Form, extract::State, http::StatusCode, response::IntoResponse};
 use deadpool_postgres::Pool;
 use hypertext::Renderable;
@@ -5,7 +7,7 @@ use serde::Deserialize;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{desktop::DesktopItem, error::AppError, folder_db::Folder},
+    models::{desktop::DesktopItem, error::AppError, folder_db::Folder, settings_db::Setting},
     utilities::user_utils::parse_user_id,
     views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
 };
@@ -16,11 +18,21 @@ pub struct GridForm {
     pub width: u16,
 }
 
-pub async fn get_screen(Extension(user_id): Extension<UserId>) -> impl IntoResponse {
+pub async fn get_screen(
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
     if user_id.0.is_none() {
-        return render_welcome_screen().render();
+        return Ok(render_welcome_screen().render());
     }
-    render_screen().render()
+
+    let user_id = parse_user_id(user_id)?;
+
+    let row = Setting::get_setting_by_user_id(user_id, vec!["background"], &pool).await?;
+
+    let setting = Setting::try_from(&row, None);
+
+    Ok(render_screen(setting.background).render())
 }
 
 pub async fn create_screen_grid(

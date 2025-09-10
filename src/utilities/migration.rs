@@ -134,4 +134,14 @@ pub async fn init_database(pool: &Pool) {
         let sql = "INSERT INTO flappybird (file_id) VALUES ($1);";
         client.execute(sql, &[&id]).await.unwrap();
     }
+
+    let sql = r#"CREATE TABLE IF NOT EXISTS setting (
+      id SERIAL PRIMARY KEY,
+      user_id INT,
+      background BYTEA,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
+    );"#;
+
+    client.execute(sql, &[]).await.unwrap();
 }
