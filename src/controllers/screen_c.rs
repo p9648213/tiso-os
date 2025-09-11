@@ -1,13 +1,19 @@
 use std::vec;
 
 use axum::{Extension, Form, extract::State, http::StatusCode, response::IntoResponse};
+use base64::{Engine, engine::general_purpose};
 use deadpool_postgres::Pool;
 use hypertext::Renderable;
 use serde::Deserialize;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{desktop::DesktopItem, error::AppError, folder_db::Folder, settings_db::Setting},
+    models::{
+        desktop::DesktopItem,
+        display_settings_db::{BackgroundType, DisplaySetting},
+        error::AppError,
+        folder_db::Folder,
+    },
     utilities::user_utils::parse_user_id,
     views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
 };
@@ -28,11 +34,34 @@ pub async fn get_screen(
 
     let user_id = parse_user_id(user_id)?;
 
-    let row = Setting::get_setting_by_user_id(user_id, vec!["background"], &pool).await?;
+    let row = DisplaySetting::get_setting_by_user_id(
+        user_id,
+        vec!["background_type", "background_picture", "background_color"],
+        &pool,
+    )
+    .await?;
 
-    let setting = Setting::try_from(&row, None);
+    let display_setting = DisplaySetting::try_from(&row, None);
 
-    Ok(render_screen(setting.background).render())
+    let background_type = display_setting.background_type.ok_or_else(|| {
+        tracing::error!("No background_type column or value is null");
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+    })?;
+
+    let background = match background_type {
+        BackgroundType::SolidColor => display_setting.background_color.ok_or_else(|| {
+            tracing::error!("No background_color column or value is null");
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?,
+        BackgroundType::Picture => general_purpose::STANDARD.encode(
+            display_setting.background_picture.ok_or_else(|| {
+                tracing::error!("No background_picture column or value is null");
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            })?,
+        ),
+    };
+
+    Ok(render_screen(background).render())
 }
 
 pub async fn create_screen_grid(

@@ -1,19 +1,29 @@
 use axum::http::StatusCode;
 use deadpool_postgres::Pool;
+use postgres_types::{FromSql, ToSql};
 use time::OffsetDateTime;
 use tokio_postgres::Row;
 
 use crate::{models::error::AppError, utilities::postgres::DbExecutor};
 
+#[derive(Debug, ToSql, FromSql, Clone)]
+#[postgres(name = "backgroundtype")]
+pub enum BackgroundType {
+    SolidColor,
+    Picture,
+}
+
 #[derive(Debug, Clone)]
-pub struct Setting {
+pub struct DisplaySetting {
     pub id: Option<i32>,
     pub user_id: Option<i32>,
-    pub background: Option<Vec<u8>>,
+    pub background_type: Option<BackgroundType>,
+    pub background_picture: Option<Vec<u8>>,
+    pub background_color: Option<String>,
     pub created_at: Option<OffsetDateTime>,
 }
 
-impl Setting {
+impl DisplaySetting {
     pub fn try_from(row: &Row, prefix: Option<&str>) -> Self {
         let prefix = prefix.unwrap_or("");
 
@@ -21,8 +31,14 @@ impl Setting {
         let user_id: Option<i32> = row
             .try_get(format!("{prefix}user_id").as_str())
             .unwrap_or(None);
-        let background: Option<Vec<u8>> = row
-            .try_get(format!("{prefix}background").as_str())
+        let background_type: Option<BackgroundType> = row
+            .try_get(format!("{prefix}background_type").as_str())
+            .unwrap_or(None);
+        let background_picture: Option<Vec<u8>> = row
+            .try_get(format!("{prefix}background_picture").as_str())
+            .unwrap_or(None);
+        let background_color: Option<String> = row
+            .try_get(format!("{prefix}background_color").as_str())
             .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
             .try_get(format!("{prefix}created_at").as_str())
@@ -31,7 +47,9 @@ impl Setting {
         Self {
             id,
             user_id,
-            background,
+            background_type,
+            background_picture,
+            background_color,
             created_at,
         }
     }
@@ -50,13 +68,13 @@ impl Setting {
 
         client
             .query_one(
-                &format!(r#"SELECT {columns} FROM "setting" WHERE user_id = $1"#),
+                &format!(r#"SELECT {columns} FROM "display_setting" WHERE user_id = $1"#),
                 &[&user_id],
             )
             .await
     }
 
-    pub async fn update_background_by_user_id(
+    pub async fn update_background_picture_by_user_id(
         user_id: i32,
         background: Option<Vec<u8>>,
         pool: &Pool,
@@ -68,7 +86,7 @@ impl Setting {
 
         let row = client
             .execute(
-                "UPDATE setting SET background = $1 WHERE user_id = $2",
+                "UPDATE display_setting SET background_picture = $1 WHERE user_id = $2",
                 &[&background, &user_id],
             )
             .await?;

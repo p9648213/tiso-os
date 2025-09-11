@@ -135,10 +135,22 @@ pub async fn init_database(pool: &Pool) {
         client.execute(sql, &[&id]).await.unwrap();
     }
 
-    let sql = r#"CREATE TABLE IF NOT EXISTS setting (
+    let sql = "DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'backgroundtype') THEN
+          CREATE TYPE BackgroundType AS ENUM ('SolidColor', 'Picture');
+        END IF;
+      END
+    $$;";
+
+    client.execute(sql, &[]).await.unwrap();
+
+    let sql = r#"CREATE TABLE IF NOT EXISTS display_setting (
       id SERIAL PRIMARY KEY,
       user_id INT,
-      background BYTEA,
+      background_type BackgroundType NOT NULL DEFAULT 'SolidColor',
+      background_picture BYTEA,
+      background_color VARCHAR(255) NOT NULL DEFAULT 'radial-gradient(ellipse at top left, #070f2b, #1b1a55, #535c91)',
       created_at TIMESTAMPTZ DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
     );"#;

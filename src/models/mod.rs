@@ -1,9 +1,9 @@
 pub mod calculator_db;
 pub mod desktop;
+pub mod display_settings_db;
 pub mod error;
 pub mod file_db;
 pub mod folder_db;
-pub mod settings_db;
 pub mod state;
 pub mod txt_db;
 pub mod txt_window;
