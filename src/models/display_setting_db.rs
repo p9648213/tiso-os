@@ -6,7 +6,7 @@ use tokio_postgres::Row;
 
 use crate::{models::error::AppError, utilities::postgres::DbExecutor};
 
-#[derive(Debug, ToSql, FromSql, Clone)]
+#[derive(Debug, ToSql, FromSql, Clone, PartialEq, Eq)]
 #[postgres(name = "backgroundtype")]
 pub enum BackgroundType {
     SolidColor,
@@ -93,6 +93,34 @@ impl DisplaySetting {
 
         if row == 0 {
             tracing::error!("Error updating background");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
+
+    pub async fn update_background_type_by_user_id(
+        user_id: i32,
+        background_type: BackgroundType,
+        pool: &Pool,
+    ) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let row = client
+            .execute(
+                "UPDATE display_setting SET background_type = $1 WHERE user_id = $2",
+                &[&background_type, &user_id],
+            )
+            .await?;
+
+        if row == 0 {
+            tracing::error!("Error updating background type");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Server Error",

@@ -10,7 +10,7 @@ use crate::{
     middlewares::session_mw::UserId,
     models::{
         desktop::DesktopItem,
-        display_settings_db::{BackgroundType, DisplaySetting},
+        display_setting_db::{BackgroundType, DisplaySetting},
         error::AppError,
         folder_db::Folder,
     },

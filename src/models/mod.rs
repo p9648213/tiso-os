@@ -1,6 +1,6 @@
 pub mod calculator_db;
 pub mod desktop;
-pub mod display_settings_db;
+pub mod display_setting_db;
 pub mod error;
 pub mod file_db;
 pub mod folder_db;
