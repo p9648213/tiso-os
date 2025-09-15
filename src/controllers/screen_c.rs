@@ -36,7 +36,12 @@ pub async fn get_screen(
 
     let row = DisplaySetting::get_setting_by_user_id(
         user_id,
-        vec!["background_type", "background_picture", "background_color", "background_content_type"],
+        vec![
+            "background_type",
+            "background_picture",
+            "background_color",
+            "background_content_type",
+        ],
         &pool,
     )
     .await?;

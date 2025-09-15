@@ -27,7 +27,8 @@ export function setupSelectBackgroundType() {
       "POST",
       `/update/setting/display/background_type/${event.target.value}`,
       {
-        swap: "none",
+        swap: "outerHTML",
+        target: "#background-container",
       }
     );
   });

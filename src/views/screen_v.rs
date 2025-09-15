@@ -117,9 +117,18 @@ pub fn render_screen(background: String) -> impl Renderable {
                 script src="/assets/js/main.js" type="module" defer {}
             }
             title { "TisoOS" }
-            body style={"background: " (background)} class="relative overflow-hidden" {
+            body class="relative overflow-hidden" {
                 (render_screen_section())
+                (render_screen_background(&background))
             }
+        }
+    }
+}
+
+pub fn render_screen_background(background: &str) -> impl Renderable {
+    maud! {
+        div id="background-container" class="-z-10 absolute inset-0"  {
+            div class="w-full h-full" style={"background: " (background)} {}
         }
     }
 }

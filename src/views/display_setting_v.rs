@@ -85,11 +85,12 @@ pub fn render_display_setting_window(
                     form
                         hx-post="update/setting/display/background_picture"
                         hx-encoding="multipart/form-data"
-                        hx-swap="none"
+                        hx-swap="outerHTML"
+                        hx-target="#background-container"
                         hx-trigger="change"
                     {
                         input type="file" id="background-picture" name="background-picture" accept="image/*" required="true" class="hidden";
-                        div class="flex gap-2 items-center" {
+                        div class="flex items-center gap-2" {
                             button type="button" class="bg-zinc-700 rounded-sm h-7" {
                                 label for="background-picture" class="px-3 cursor-pointer" { "Choose Image" }
                             }

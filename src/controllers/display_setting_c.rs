@@ -17,7 +17,10 @@ use crate::{
         error::AppError,
     },
     utilities::user_utils::parse_user_id,
-    views::display_setting_v::render_display_setting_window,
+    views::{
+        display_setting_v::render_display_setting_window,
+        screen_v::{render_screen, render_screen_background},
+    },
 };
 
 pub async fn get_display_setting_window(
@@ -43,13 +46,7 @@ pub async fn get_display_setting_window(
 
     let background_color = display_setting.background_color;
 
-    Ok(render_display_setting_window(
-        height,
-        width,
-        background_type,
-        background_color,
-    )
-    .render())
+    Ok(render_display_setting_window(height, width, background_type, background_color).render())
 }
 
 pub async fn update_background_type(
@@ -97,13 +94,7 @@ pub async fn update_background_type(
         }
     };
 
-    Ok([(
-        "HX-Trigger",
-        format!(
-            r#"{{"changebackground":{{"background":"{}"}}}}"#,
-            background
-        ),
-    )])
+    Ok(render_screen_background(&background).render())
 }
 
 pub async fn update_background_color(
@@ -172,15 +163,10 @@ pub async fn upload_background_picture(
         .await?;
     }
 
-    Ok([(
-        "HX-Trigger",
-        format!(
-            r#"{{"changebackground":{{"background":"{}"}}}}"#,
-            format!(
-                "url('data:{};base64,{}');",
-                content_type,
-                general_purpose::STANDARD.encode(file_bytes.to_vec())
-            )
-        ),
-    )])
+    Ok(render_screen_background(&format!(
+        "url('data:{};base64,{}');",
+        content_type,
+        general_purpose::STANDARD.encode(file_bytes)
+    ))
+    .render())
 }
