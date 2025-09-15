@@ -36,7 +36,7 @@ pub async fn get_screen(
 
     let row = DisplaySetting::get_setting_by_user_id(
         user_id,
-        vec!["background_type", "background_picture", "background_color"],
+        vec!["background_type", "background_picture", "background_color", "background_content_type"],
         &pool,
     )
     .await?;
@@ -48,10 +48,20 @@ pub async fn get_screen(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
+    let background_content_type = display_setting.background_content_type.ok_or_else(|| {
+        tracing::error!("No background_content_type column or value is null");
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+    })?;
+
     let background = match background_type {
         BackgroundType::SolidColor => display_setting.background_color.unwrap_or_default(),
         BackgroundType::Picture => {
-            general_purpose::STANDARD.encode(display_setting.background_picture.unwrap_or_default())
+            format!(
+                "url('data:{};base64,{}');",
+                background_content_type,
+                general_purpose::STANDARD
+                    .encode(display_setting.background_picture.unwrap_or_default())
+            )
         }
     };
 

@@ -130,6 +130,7 @@ pub fn render_screen_section() -> impl Renderable {
             <script type="module">
                 import {setupGlobalVariables} from "/assets/js/global_vars.js";
                 import {setupGlobalFunctions} from "/assets/js/global_func.js";
+                import {setupGlobalEvents} from "/assets/js/global_event.js";
                 import {
                     setupGridDimensions, 
                     setupGridResize,
@@ -140,6 +141,7 @@ pub fn render_screen_section() -> impl Renderable {
                 } from "/assets/js/grid.js";
                 setupGlobalVariables();
                 setupGlobalFunctions();
+                setupGlobalEvents();
                 setupGridContextMenu();
                 setupGridDimensions();
                 setupGridResize();

@@ -151,6 +151,7 @@ pub async fn init_database(pool: &Pool) {
       background_type BackgroundType NOT NULL DEFAULT 'SolidColor',
       background_picture BYTEA,
       background_color VARCHAR(255) NOT NULL DEFAULT 'radial-gradient(ellipse at top left, #070f2b, #1b1a55, #535c91)',
+      background_content_type VARCHAR(255) NOT NULL DEFAULT 'image/png',
       created_at TIMESTAMPTZ DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
     );"#;

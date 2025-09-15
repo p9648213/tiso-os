@@ -1,3 +1,5 @@
+use std::fmt;
+
 use axum::http::StatusCode;
 use deadpool_postgres::Pool;
 use postgres_types::{FromSql, ToSql};
@@ -13,6 +15,15 @@ pub enum BackgroundType {
     Picture,
 }
 
+impl fmt::Display for BackgroundType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            BackgroundType::SolidColor => write!(f, "SolidColor"),
+            BackgroundType::Picture => write!(f, "Picture"),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct DisplaySetting {
     pub id: Option<i32>,
@@ -20,6 +31,7 @@ pub struct DisplaySetting {
     pub background_type: Option<BackgroundType>,
     pub background_picture: Option<Vec<u8>>,
     pub background_color: Option<String>,
+    pub background_content_type: Option<String>,
     pub created_at: Option<OffsetDateTime>,
 }
 
@@ -40,6 +52,9 @@ impl DisplaySetting {
         let background_color: Option<String> = row
             .try_get(format!("{prefix}background_color").as_str())
             .unwrap_or(None);
+        let background_content_type: Option<String> = row
+            .try_get(format!("{prefix}background_content_type").as_str())
+            .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
             .try_get(format!("{prefix}created_at").as_str())
             .unwrap_or(None);
@@ -50,6 +65,7 @@ impl DisplaySetting {
             background_type,
             background_picture,
             background_color,
+            background_content_type,
             created_at,
         }
     }
@@ -77,6 +93,7 @@ impl DisplaySetting {
     pub async fn update_background_picture_by_user_id(
         user_id: i32,
         background: Option<Vec<u8>>,
+        content_type: &str,
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
@@ -86,8 +103,8 @@ impl DisplaySetting {
 
         let row = client
             .execute(
-                "UPDATE display_setting SET background_picture = $1 WHERE user_id = $2",
-                &[&background, &user_id],
+                "UPDATE display_setting SET background_picture = $1, background_content_type = $2 WHERE user_id = $3",
+                &[&background, &content_type, &user_id],
             )
             .await?;
 
@@ -104,7 +121,7 @@ impl DisplaySetting {
 
     pub async fn update_background_type_by_user_id(
         user_id: i32,
-        background_type: BackgroundType,
+        background_type: &BackgroundType,
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {

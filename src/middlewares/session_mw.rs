@@ -32,7 +32,7 @@ pub async fn session_middleware(
         None => request
             .extensions_mut()
             // .insert(UserId(None)),
-            .insert(UserId(Some(String::from("6")))), // For fast test
+            .insert(UserId(Some(String::from("1")))), // For fast test
     };
 
     Ok(next.run(request).await)

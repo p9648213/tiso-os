@@ -1,7 +1,4 @@
-use hypertext::{
-    Raw,
-    prelude::{hypertext_elements::b, *},
-};
+use hypertext::{Raw, prelude::*};
 
 use crate::{contanst::EXAMPLE_COLORS, models::display_setting_db::BackgroundType};
 
@@ -15,17 +12,16 @@ pub fn render_display_setting_window(
     let window_width = 800;
     let window_height = 700;
 
-    println!("{:?}", background_type);
-
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
     let top = ((parent_height / 2) - (window_height / 2)).max(0);
 
     maud! {
         (Raw::dangerously_create(r#"
             <script type="module">
-                import {setupSelectBackgroundType, setupBackgroundColorList} from "/assets/js/display_setting.js";
+                import {setupSelectBackgroundType, setupBackgroundColorList, setupSelectBackgroundPicture} from "/assets/js/display_setting.js";
                 setupSelectBackgroundType();
                 setupBackgroundColorList();
+                setupSelectBackgroundPicture();
             </script>
         "#))
         div
@@ -50,7 +46,7 @@ pub fn render_display_setting_window(
                     }
                     select
                         id="display-setting-background-type"
-                        class="bg-zinc-700 px-3 py-1 rounded-sm"
+                        class="bg-zinc-700 px-3 py-1 rounded-sm h-7"
                     {
                         @if background_type == BackgroundType::SolidColor {
                             option selected value="SolidColor" { "Solid Color" }
@@ -87,8 +83,19 @@ pub fn render_display_setting_window(
                     div {
                         "Choose your background picture"
                     }
-                    form {
-                        input type="file" name="file" accept="image/*" required="true" class="hidden";
+                    form
+                        hx-post="update/setting/display/background_picture"
+                        hx-encoding="multipart/form-data"
+                        hx-swap="none"
+                        hx-trigger="change"
+                    {
+                        input type="file" id="background-picture" name="background-picture" accept="image/*" required="true" class="hidden";
+                        div class="flex gap-2 items-center" {
+                            button type="button" class="bg-zinc-700 rounded-sm h-7" {
+                                label for="background-picture" class="px-3 cursor-pointer" { "Choose Image" }
+                            }
+                            div class="max-w-40 truncate" id="background-picture-name" { "No image selected" }
+                        }
                     }
                 }
             }

@@ -59,3 +59,18 @@ export function setupBackgroundColorList() {
     }
   });
 }
+
+export function setupSelectBackgroundPicture() {
+  const backgroundPictureInput = document.getElementById("background-picture");
+  const backgroundPictureName = document.getElementById(
+    "background-picture-name"
+  );
+
+  backgroundPictureInput.addEventListener("change", () => {
+    if (backgroundPictureInput.files.length > 0) {
+      backgroundPictureName.textContent = backgroundPictureInput.files[0].name;
+    } else {
+      backgroundPictureName.textContent = "No file selected";
+    }
+  });
+}

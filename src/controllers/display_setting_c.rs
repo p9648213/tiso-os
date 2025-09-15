@@ -1,13 +1,16 @@
 use axum::{
     Extension,
-    extract::{Path, State},
+    body::Bytes,
+    extract::{Multipart, Path, State},
     http::StatusCode,
     response::IntoResponse,
 };
+use base64::{Engine, engine::general_purpose};
 use deadpool_postgres::Pool;
 use hypertext::Renderable;
 
 use crate::{
+    contanst::MAX_BACKGROUND_PICTURE_SIZE,
     middlewares::session_mw::UserId,
     models::{
         display_setting_db::{BackgroundType, DisplaySetting},
@@ -52,7 +55,7 @@ pub async fn get_display_setting_window(
     .render())
 }
 
-pub async fn update_display_setting_background_type(
+pub async fn update_background_type(
     Path((background_type,)): Path<(String,)>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
@@ -65,12 +68,48 @@ pub async fn update_display_setting_background_type(
         _ => BackgroundType::SolidColor,
     };
 
-    DisplaySetting::update_background_type_by_user_id(user_id, background_type, &pool).await?;
+    DisplaySetting::update_background_type_by_user_id(user_id, &background_type, &pool).await?;
 
-    Ok(())
+    let background = match background_type {
+        BackgroundType::SolidColor => {
+            let row =
+                DisplaySetting::get_setting_by_user_id(user_id, vec!["background_color"], &pool)
+                    .await?;
+
+            DisplaySetting::try_from(&row, None)
+                .background_color
+                .unwrap_or_default()
+        }
+        BackgroundType::Picture => {
+            let row = DisplaySetting::get_setting_by_user_id(
+                user_id,
+                vec!["background_picture", "background_content_type"],
+                &pool,
+            )
+            .await?;
+
+            let setting = DisplaySetting::try_from(&row, None);
+
+            let content_type = setting.background_content_type.unwrap_or_default();
+
+            format!(
+                "url('data:{};base64,{}');",
+                content_type,
+                general_purpose::STANDARD.encode(setting.background_picture.unwrap_or_default())
+            )
+        }
+    };
+
+    Ok([(
+        "HX-Trigger",
+        format!(
+            r#"{{"changebackground":{{"background":"{}"}}}}"#,
+            background
+        ),
+    )])
 }
 
-pub async fn update_display_setting_background_color(
+pub async fn update_background_color(
     Path((background_color,)): Path<(String,)>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
@@ -80,4 +119,71 @@ pub async fn update_display_setting_background_color(
     DisplaySetting::update_background_color_by_user_id(user_id, background_color, &pool).await?;
 
     Ok(())
+}
+
+pub async fn upload_background_picture(
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+    mut multipart: Multipart,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    let mut content_type = String::new();
+    let mut file_bytes = Bytes::new();
+
+    while let Some(field) = multipart.next_field().await.map_err(|err| {
+        tracing::error!("Error while reading multipart field: {}", err);
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+    })? {
+        content_type = field
+            .content_type()
+            .map(|ct| ct.to_string())
+            .unwrap_or_default();
+
+        if !content_type.starts_with("image/") {
+            tracing::error!("Invalid content type: {}", content_type);
+            return Err(AppError::new(
+                StatusCode::BAD_REQUEST,
+                "Invalid content type",
+            ));
+        }
+
+        file_bytes = field.bytes().await.map_err(|err| {
+            tracing::error!("Error while reading multipart field: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        if file_bytes.len() > MAX_BACKGROUND_PICTURE_SIZE {
+            tracing::error!("File size is too large: {:?}", file_bytes);
+            return Err(AppError::new(
+                StatusCode::BAD_REQUEST,
+                "File size is too large",
+            ));
+        }
+
+        if file_bytes.is_empty() {
+            tracing::error!("File is empty");
+            return Err(AppError::new(StatusCode::BAD_REQUEST, "File is empty"));
+        }
+
+        DisplaySetting::update_background_picture_by_user_id(
+            user_id,
+            Some(file_bytes.to_vec()),
+            &content_type,
+            &pool,
+        )
+        .await?;
+    }
+
+    Ok([(
+        "HX-Trigger",
+        format!(
+            r#"{{"changebackground":{{"background":"{}"}}}}"#,
+            format!(
+                "url('data:{};base64,{}');",
+                content_type,
+                general_purpose::STANDARD.encode(file_bytes.to_vec())
+            )
+        ),
+    )])
 }

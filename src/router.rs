@@ -5,8 +5,8 @@ use crate::{
     controllers::{
         account_c::create_account,
         display_setting_c::{
-            get_display_setting_window, update_display_setting_background_color,
-            update_display_setting_background_type,
+            get_display_setting_window, update_background_color, update_background_type,
+            upload_background_picture,
         },
         file_c::{delete_file, rename_file, update_file_desktop_position},
         flappy_bird_c::get_flappy_bird_window,
@@ -92,11 +92,15 @@ pub async fn create_router(pool: Pool) -> Router {
             .route("/folder/rename/{folder_id}", post(rename_folder))
             .route(
                 "/setting/display/background_type/{background_type}",
-                post(update_display_setting_background_type),
+                post(update_background_type),
             )
             .route(
                 "/setting/display/background_color/{background_color}",
-                post(update_display_setting_background_color),
+                post(update_background_color),
+            )
+            .route(
+                "/setting/display/background_picture",
+                post(upload_background_picture),
             )
             .layer(from_fn(csrf_middleware)),
     );
