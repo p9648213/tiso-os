@@ -1,6 +1,9 @@
-use hypertext::{Raw, prelude::*};
+use hypertext::{
+    Raw,
+    prelude::{hypertext_elements::b, *},
+};
 
-use crate::models::display_setting_db::BackgroundType;
+use crate::{contanst::EXAMPLE_COLORS, models::display_setting_db::BackgroundType};
 
 pub fn render_display_setting_window(
     parent_height: i32,
@@ -12,14 +15,17 @@ pub fn render_display_setting_window(
     let window_width = 800;
     let window_height = 700;
 
+    println!("{:?}", background_type);
+
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
     let top = ((parent_height / 2) - (window_height / 2)).max(0);
 
     maud! {
         (Raw::dangerously_create(r#"
             <script type="module">
-                import {setupSelectBackgroundType} from "/assets/js/display_setting.js";
+                import {setupSelectBackgroundType, setupBackgroundColorList} from "/assets/js/display_setting.js";
                 setupSelectBackgroundType();
+                setupBackgroundColorList();
             </script>
         "#))
         div
@@ -46,18 +52,43 @@ pub fn render_display_setting_window(
                         id="display-setting-background-type"
                         class="bg-zinc-700 px-3 py-1 rounded-sm"
                     {
-                        option selected=(background_type == BackgroundType::SolidColor) value="SolidColor" { "Solid Color" }
-                        option selected=(background_type == BackgroundType::Picture) value="Picture" { "Picture" }
+                        @if background_type == BackgroundType::SolidColor {
+                            option selected value="SolidColor" { "Solid Color" }
+                        } @else {
+                            option value="SolidColor" { "Solid Color" }
+                        }
+
+                        @if background_type == BackgroundType::Picture {
+                            option selected value="Picture" { "Picture" }
+                        } @else {
+                            option value="Picture" { "Picture" }
+                        }
                     }
                 }
-                div id="display-setting-background-color" class="flex bg-zinc-800 p-2 rounded-sm" {
+                div id="display-setting-background-color" class=(if background_type == BackgroundType::SolidColor {"flex justify-between items-center bg-zinc-800 p-2 rounded-sm" } else { "hidden justify-between items-center bg-zinc-800 p-2 rounded-sm" }) {
                     div {
                         "Choose your background color"
                     }
+                    div id="background-color-list" class="flex gap-2" {
+                        @if let Some(background_color) = &background_color {
+                            @for color in EXAMPLE_COLORS {
+                                div
+                                    data-color=(color)
+                                    class="rounded-sm w-6 h-6 cursor-pointer"
+                                    style={
+                                        "background:" (color) ";"
+                                        "outline:" (if background_color == color { "3px solid #155dfc" } else { "none" })
+                                    } {}
+                            }
+                        }
+                    }
                 }
-                div id="display-setting-background-picture" class="hidden bg-zinc-800 p-2 rounded-sm" {
+                div id="display-setting-background-picture" class=(if background_type == BackgroundType::Picture {"flex justify-between items-center bg-zinc-800 p-2 rounded-sm" } else { "hidden justify-between items-center bg-zinc-800 p-2 rounded-sm" }) {
                     div {
                         "Choose your background picture"
+                    }
+                    form {
+                        input type="file" name="file" accept="image/*" required="true" class="hidden";
                     }
                 }
             }

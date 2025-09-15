@@ -32,3 +32,30 @@ export function setupSelectBackgroundType() {
     );
   });
 }
+
+export function setupBackgroundColorList() {
+  const backgroundColorList = document.getElementById("background-color-list");
+
+  backgroundColorList.addEventListener("click", (event) => {
+    if (event.target.dataset?.color) {
+      backgroundColorList.childNodes.forEach((node) => {
+        node.style.outline = "none";
+      });
+      event.target.style.outline = "3px solid #155dfc";
+
+      htmx
+        .ajax(
+          "POST",
+          `/update/setting/display/background_color/${encodeURIComponent(
+            event.target.dataset.color
+          )}`,
+          {
+            swap: "none",
+          }
+        )
+        .then(() => {
+          document.body.style.background = event.target.dataset.color;
+        });
+    }
+  });
+}

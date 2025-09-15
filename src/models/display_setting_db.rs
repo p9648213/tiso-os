@@ -129,4 +129,32 @@ impl DisplaySetting {
 
         Ok(())
     }
+
+    pub async fn update_background_color_by_user_id(
+        user_id: i32,
+        background_color: String,
+        pool: &Pool,
+    ) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let row = client
+            .execute(
+                "UPDATE display_setting SET background_color = $1 WHERE user_id = $2",
+                &[&background_color, &user_id],
+            )
+            .await?;
+
+        if row == 0 {
+            tracing::error!("Error updating background color");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
 }

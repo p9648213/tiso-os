@@ -4,7 +4,10 @@ use crate::{
     contanst::MIN_COMPRESS_SIZE,
     controllers::{
         account_c::create_account,
-        display_setting_c::{get_display_setting_window, update_display_setting_background_type},
+        display_setting_c::{
+            get_display_setting_window, update_display_setting_background_color,
+            update_display_setting_background_type,
+        },
         file_c::{delete_file, rename_file, update_file_desktop_position},
         flappy_bird_c::get_flappy_bird_window,
         folder_c::{
@@ -90,6 +93,10 @@ pub async fn create_router(pool: Pool) -> Router {
             .route(
                 "/setting/display/background_type/{background_type}",
                 post(update_display_setting_background_type),
+            )
+            .route(
+                "/setting/display/background_color/{background_color}",
+                post(update_display_setting_background_color),
             )
             .layer(from_fn(csrf_middleware)),
     );

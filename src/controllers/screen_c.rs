@@ -49,16 +49,10 @@ pub async fn get_screen(
     })?;
 
     let background = match background_type {
-        BackgroundType::SolidColor => display_setting.background_color.ok_or_else(|| {
-            tracing::error!("No background_color column or value is null");
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?,
-        BackgroundType::Picture => general_purpose::STANDARD.encode(
-            display_setting.background_picture.ok_or_else(|| {
-                tracing::error!("No background_picture column or value is null");
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })?,
-        ),
+        BackgroundType::SolidColor => display_setting.background_color.unwrap_or_default(),
+        BackgroundType::Picture => {
+            general_purpose::STANDARD.encode(display_setting.background_picture.unwrap_or_default())
+        }
     };
 
     Ok(render_screen(background).render())

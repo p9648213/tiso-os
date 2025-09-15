@@ -69,3 +69,15 @@ pub async fn update_display_setting_background_type(
 
     Ok(())
 }
+
+pub async fn update_display_setting_background_color(
+    Path((background_color,)): Path<(String,)>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    DisplaySetting::update_background_color_by_user_id(user_id, background_color, &pool).await?;
+
+    Ok(())
+}
