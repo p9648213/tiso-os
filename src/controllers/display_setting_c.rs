@@ -29,7 +29,7 @@ pub async fn get_display_setting_window(
 
     let row = DisplaySetting::get_setting_by_user_id(
         user_id,
-        vec!["background_type", "background_picture", "background_color"],
+        vec!["background_type", "background_color"],
         &pool,
     )
     .await?;
@@ -41,15 +41,12 @@ pub async fn get_display_setting_window(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    let background_picture = display_setting.background_picture;
-
     let background_color = display_setting.background_color;
 
     Ok(render_display_setting_window(
         height,
         width,
         background_type,
-        background_picture,
         background_color,
     )
     .render())

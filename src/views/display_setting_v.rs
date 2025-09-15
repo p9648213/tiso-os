@@ -6,7 +6,6 @@ pub fn render_display_setting_window(
     parent_height: i32,
     parent_width: i32,
     background_type: BackgroundType,
-    background_picture: Option<Vec<u8>>,
     background_color: Option<String>,
 ) -> impl Renderable {
     let window_width = 800;
