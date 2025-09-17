@@ -5,7 +5,10 @@ use time::OffsetDateTime;
 use tokio_postgres::Row;
 
 use crate::{
-    models::{error::AppError, folder_db::FolderSortType},
+    models::{
+        error::AppError,
+        folder_db::{Folder, FolderSortType},
+    },
     utilities::postgres::DbExecutor,
 };
 
@@ -93,6 +96,7 @@ impl File {
     }
 
     pub async fn get_taskbar_menu_files(
+        user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
     ) -> Result<Vec<Row>, AppError> {
@@ -101,12 +105,21 @@ impl File {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
+        let taskbar_folder = Folder::get_taskbar_folder(user_id, vec!["id"], pool).await?;
+
+        let taskbar_folder = Folder::try_from(&taskbar_folder, None);
+
+        let taskbar_folder_id = taskbar_folder.id.ok_or_else(|| {
+            tracing::error!("No id column or value is null");
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
         let columns = columns.join(",");
 
         let rows = client
             .query(
-                &format!("SELECT {columns} FROM file WHERE user_id IS NULL"),
-                &[],
+                &format!("SELECT {columns} FROM file WHERE user_id = $1 AND folder_id = $2"),
+                &[&user_id, &taskbar_folder_id],
             )
             .await?;
 

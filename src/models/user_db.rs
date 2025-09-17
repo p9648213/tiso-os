@@ -1,4 +1,7 @@
-use crate::{models::folder_db::FolderType, utilities::postgres::DbExecutor};
+use crate::{
+    models::folder_db::{Folder, FolderType},
+    utilities::postgres::DbExecutor,
+};
 
 use super::error::AppError;
 
@@ -86,14 +89,40 @@ impl User {
         txn.execute(
             "INSERT INTO folder (user_id, folder_name, folder_type) VALUES 
                 ($1, $2, $3), 
-                ($1, $4, $5)",
+                ($1, $4, $5),
+                ($1, $6, $7)",
             &[
                 &user_id,
                 &"Desktop",
                 &FolderType::Desktop,
                 &"Root",
                 &FolderType::Root,
+                &"Taskbar",
+                &FolderType::Taskbar,
             ],
+        )
+        .await?;
+
+        let row = txn
+            .query_one(
+                "SELECT id FROM folder WHERE user_id = $1 AND folder_type = $2",
+                &[&user_id, &FolderType::Taskbar],
+            )
+            .await?;
+
+        let taskbar_folder = Folder::try_from(&row, None);
+
+        let taskbar_folder_id = taskbar_folder.id.ok_or_else(|| {
+            tracing::error!("No id column or value is null");
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        txn.execute(
+            "INSERT INTO file (user_id, folder_id, file_name, file_type) VALUES 
+                ($1, $2, 'Calculator', 'Calculator'),
+                ($1, $2, 'Snake', 'Snake'),
+                ($1, $2, 'FlappyBird', 'FlappyBird')",
+            &[&user_id, &taskbar_folder_id],
         )
         .await?;
 

@@ -14,6 +14,7 @@ pub enum FolderType {
     Normal,
     Root,
     Desktop,
+    Taskbar,
 }
 
 #[derive(Debug, ToSql, FromSql, Clone, PartialEq, Eq)]
@@ -116,6 +117,26 @@ impl Folder {
             .query_one(
                 &format!("SELECT {columns} FROM folder WHERE user_id = $1 AND folder_type = $2"),
                 &[&user_id, &FolderType::Desktop],
+            )
+            .await
+    }
+
+    pub async fn get_taskbar_folder(
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Row, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let columns = columns.join(",");
+
+        client
+            .query_one(
+                &format!("SELECT {columns} FROM folder WHERE user_id = $1 AND folder_type = $2"),
+                &[&user_id, &FolderType::Taskbar],
             )
             .await
     }
