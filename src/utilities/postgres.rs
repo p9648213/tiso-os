@@ -119,12 +119,6 @@ pub fn create_pool() -> Pool {
         create_config_from_url(PG_URL)
     };
 
-    let connector = MakeTlsConnector::new(
-        TlsConnector::builder()
-            .build()
-            .expect("Failed to create TlsConnector"),
-    );
-
     let manager_config = ManagerConfig {
         recycling_method: RecyclingMethod::Fast,
     };
@@ -132,6 +126,12 @@ pub fn create_pool() -> Pool {
     let manager = if ENV == "dev" {
         Manager::from_config(pg_config, NoTls, manager_config)
     } else {
+        let connector = MakeTlsConnector::new(
+            TlsConnector::builder()
+                .build()
+                .expect("Failed to create TlsConnector"),
+        );
+
         Manager::from_config(pg_config, connector, manager_config)
     };
 

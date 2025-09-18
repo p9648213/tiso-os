@@ -32,7 +32,7 @@ use axum::{
 };
 
 use deadpool_postgres::Pool;
-use memory_serve::MemoryServe;
+use memory_serve::{MemoryServe, load_assets};
 use papaya::HashMap;
 use tower_http::{
     CompressionLevel,
@@ -51,7 +51,8 @@ fn response_log(response: &Response<Body>, latency: std::time::Duration, _: &Spa
 }
 
 pub async fn create_router(pool: Pool) -> Router {
-    let memory_router = MemoryServe::from_env().into_router();
+    let memory_router =
+        MemoryServe::new(load_assets!("assets")).into_router();
 
     let compression_layer = CompressionLayer::new()
         .quality(CompressionLevel::Fastest)
