@@ -32,13 +32,9 @@ use axum::{
 };
 
 use deadpool_postgres::Pool;
-use memory_serve::{MemoryServe, load_assets};
 use papaya::HashMap;
 use tower_http::{
-    CompressionLevel,
-    compression::{CompressionLayer, DefaultPredicate, Predicate, predicate::SizeAbove},
-    set_header::SetResponseHeaderLayer,
-    trace::TraceLayer,
+    compression::{predicate::SizeAbove, CompressionLayer, DefaultPredicate, Predicate}, services::ServeDir, set_header::SetResponseHeaderLayer, trace::TraceLayer, CompressionLevel
 };
 use tracing::Span;
 
@@ -51,9 +47,6 @@ fn response_log(response: &Response<Body>, latency: std::time::Duration, _: &Spa
 }
 
 pub async fn create_router(pool: Pool) -> Router {
-    let memory_router =
-        MemoryServe::new(load_assets!("assets")).into_router();
-
     let compression_layer = CompressionLayer::new()
         .quality(CompressionLevel::Fastest)
         .compress_when(DefaultPredicate::new().and(SizeAbove::new(MIN_COMPRESS_SIZE)));
@@ -141,7 +134,7 @@ pub async fn create_router(pool: Pool) -> Router {
         .layer(from_fn_with_state(app_state.clone(), session_middleware))
         .with_state(app_state.clone())
         .layer(compression_layer)
-        .nest("/assets", memory_router)
+        .nest_service("/assets", ServeDir::new("assets"))
         .layer(cache_control_layer)
         .fallback(fallback)
         .layer(TraceLayer::new_for_http().on_response(response_log))
