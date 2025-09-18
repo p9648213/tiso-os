@@ -1,4 +1,4 @@
-use crate::{contanst::ALLOW_ORIGIN, models::error::AppError};
+use crate::{constant::ALLOW_ORIGIN, models::error::AppError};
 use axum::{extract::Request, http::StatusCode, middleware::Next, response::IntoResponse};
 
 pub async fn csrf_middleware(request: Request, next: Next) -> Result<impl IntoResponse, AppError> {

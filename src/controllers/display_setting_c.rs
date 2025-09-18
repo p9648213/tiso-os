@@ -10,7 +10,7 @@ use deadpool_postgres::Pool;
 use hypertext::Renderable;
 
 use crate::{
-    contanst::MAX_BACKGROUND_PICTURE_SIZE,
+    constant::MAX_BACKGROUND_PICTURE_SIZE,
     middlewares::session_mw::UserId,
     models::{
         display_setting_db::{BackgroundType, DisplaySetting},

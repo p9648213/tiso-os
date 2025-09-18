@@ -1,11 +1,14 @@
+use std::str::FromStr;
+
 use axum::http::StatusCode;
 use deadpool_postgres::{GenericClient, Manager, ManagerConfig, Pool, RecyclingMethod};
 use postgres_types::ToSql;
 use tokio_postgres::{NoTls, Row};
 
 use crate::{
-    contanst::{
-        PG_DBNAME, PG_HOST, PG_PASSWORD, PG_PORT, PG_SOCKET_DIR, PG_USER, POSTGRE_UNIX_SOCKET,
+    constant::{
+        ENV, PG_DBNAME, PG_HOST, PG_PASSWORD, PG_PORT, PG_SOCKET_DIR, PG_URL, PG_USER,
+        POSTGRE_UNIX_SOCKET,
     },
     models::error::AppError,
 };
@@ -103,8 +106,16 @@ fn create_config() -> tokio_postgres::Config {
     cfg
 }
 
+fn create_config_from_url(url: &str) -> tokio_postgres::Config {
+    tokio_postgres::Config::from_str(url).expect("Invalid DATABASE_URL")
+}
+
 pub fn create_pool() -> Pool {
-    let pg_config = create_config();
+    let pg_config = if ENV == "dev" {
+        create_config()
+    } else {
+        create_config_from_url(PG_URL)
+    };
 
     let manager_config = ManagerConfig {
         recycling_method: RecyclingMethod::Fast,

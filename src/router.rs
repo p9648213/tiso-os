@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{
-    contanst::MIN_COMPRESS_SIZE,
+    constant::MIN_COMPRESS_SIZE,
     controllers::{
         account_c::create_account,
         display_setting_c::{

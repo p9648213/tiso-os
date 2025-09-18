@@ -2,7 +2,7 @@ use hypertext::{Raw, prelude::*};
 use std::collections::HashMap;
 
 use crate::{
-    contanst::MIN_RECTANGLE_WIDTH,
+    constant::MIN_RECTANGLE_WIDTH,
     controllers::account_c::AccountForm,
     models::{
         desktop::{DesktopItem, ItemType},

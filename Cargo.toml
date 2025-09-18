@@ -2,6 +2,7 @@
 name = "tiso-os"
 version = "0.1.0"
 edition = "2024"
+build = "build.rs"
 
 [dependencies]
 argon2 = { version = "0.5.3", features = ["std"] }
@@ -27,6 +28,9 @@ tower-http = { version = "0.6.6", features = [
 ] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
+
+[build-dependencies]
+dotenvy = "0.15"
 
 [profile.release]
 debug = false

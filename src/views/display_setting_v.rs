@@ -1,6 +1,6 @@
 use hypertext::{Raw, prelude::*};
 
-use crate::{contanst::EXAMPLE_COLORS, models::display_setting_db::BackgroundType};
+use crate::{constant::EXAMPLE_COLORS, models::display_setting_db::BackgroundType};
 
 pub fn render_display_setting_window(
     parent_height: i32,

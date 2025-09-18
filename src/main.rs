@@ -1,5 +1,5 @@
 use tiso_os::{
-    contanst::PORT,
+    constant::PORT,
     router::create_router,
     utilities::{migration::init_database, postgres::create_pool, tracing::init_tracing},
 };
