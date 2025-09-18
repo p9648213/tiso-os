@@ -113,7 +113,7 @@ fn create_config_from_url(url: &str) -> tokio_postgres::Config {
 }
 
 pub fn create_pool() -> Pool {
-    let pg_config = if ENV == "dev" {
+    let pg_config = if ENV == "local" {
         create_config()
     } else {
         create_config_from_url(PG_URL)
@@ -123,7 +123,7 @@ pub fn create_pool() -> Pool {
         recycling_method: RecyclingMethod::Fast,
     };
 
-    let manager = if ENV == "dev" {
+    let manager = if ENV == "local" {
         Manager::from_config(pg_config, NoTls, manager_config)
     } else {
         let connector = MakeTlsConnector::new(
