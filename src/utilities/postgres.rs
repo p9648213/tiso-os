@@ -2,6 +2,8 @@ use std::str::FromStr;
 
 use axum::http::StatusCode;
 use deadpool_postgres::{GenericClient, Manager, ManagerConfig, Pool, RecyclingMethod};
+use native_tls::TlsConnector;
+use postgres_native_tls::MakeTlsConnector;
 use postgres_types::ToSql;
 use tokio_postgres::{NoTls, Row};
 
@@ -117,11 +119,21 @@ pub fn create_pool() -> Pool {
         create_config_from_url(PG_URL)
     };
 
+    let connector = MakeTlsConnector::new(
+        TlsConnector::builder()
+            .build()
+            .expect("Failed to create TlsConnector"),
+    );
+
     let manager_config = ManagerConfig {
         recycling_method: RecyclingMethod::Fast,
     };
 
-    let manager = Manager::from_config(pg_config, NoTls, manager_config);
+    let manager = if ENV == "dev" {
+        Manager::from_config(pg_config, NoTls, manager_config)
+    } else {
+        Manager::from_config(pg_config, connector, manager_config)
+    };
 
     Pool::builder(manager).max_size(16).build().unwrap()
 }
