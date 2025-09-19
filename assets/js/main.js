@@ -13,6 +13,7 @@ window.addEventListener("htmx:afterRequest", function (event) {
 
   if (event?.detail?.failed && event?.detail?.xhr?.responseText) {
     // handler error
+    console.error(event.detail.xhr.responseText);
   }
 });
 
@@ -24,10 +25,10 @@ window.addEventListener("htmx:configRequest", function (event) {
 
 window.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
-    if (window.snakeState.isRunning) {
+    if (window.canvasRunning.includes("Snake")) {
       window.stopSnake();
     }
-    if (window.flappyBirdState.isRunning) {
+    if (window.canvasRunning.includes("Flappy Bird")) {
       window.stopFlappyBird();
     }
   }

@@ -1,7 +1,7 @@
 export function setupGlobalFunctions() {
   window.loadSnakeModule = function () {
-    if (window.snakeState.isRunning) {
-      console.log("Snake already running");
+    if (window.canvasRunning.length > 0) {
+      document.getElementById("snake-canvas-container").remove();
       return;
     }
     const script = document.createElement("script");
@@ -10,7 +10,7 @@ export function setupGlobalFunctions() {
       SnakeModule({ canvas: document.getElementById("canvas") }).then(
         (instance) => {
           window.snakeState.wasmModule = instance;
-          window.snakeState.isRunning = true;
+          window.canvasRunning.push("Snake");
           window.snakeState.canvasContainer = document.getElementById(
             "snake-canvas-container"
           );
@@ -24,7 +24,9 @@ export function setupGlobalFunctions() {
   window.stopSnake = function () {
     if (window.snakeState.canvasContainer) {
       window.snakeState.canvasContainer.remove();
-      window.snakeState.isRunning = false;
+      window.canvasRunning = window.canvasRunning.filter(
+        (item) => item !== "Snake"
+      );
       window.snakeState.wasmModule = null;
       window.snakeState.canvasContainer = null;
 
@@ -33,14 +35,16 @@ export function setupGlobalFunctions() {
         window.gc();
       }
 
+      document.getElementById("taskbar-snake-canvas-container").remove();
+
       console.log("Snake stopped");
     }
   };
 
   window.loadFlappyBirdModule = async function () {
     // Prevent multiple instances
-    if (window.flappyBirdState.isRunning) {
-      console.log("Flappy bird already running");
+    if (window.canvasRunning.length > 0) {
+      document.getElementById("flappy-canvas-container").remove();
       return;
     }
 
@@ -75,21 +79,25 @@ export function setupGlobalFunctions() {
       await wasm.default();
 
       // Update state
-      window.flappyBirdState.isRunning = true;
+      window.canvasRunning.push("Flappy Bird");
       window.flappyBirdState.wasmModule = wasm;
       window.flappyBirdState.canvasContainer = canvasContainer;
 
       console.log("Flappy Bird loaded successfully");
     } catch (error) {
       console.error("Failed to load Flappy Bird:", error);
-      window.flappyBirdState.isRunning = false;
+      window.canvasRunning = window.canvasRunning.filter(
+        (item) => item !== "Flappy Bird"
+      );
     }
   };
 
   window.stopFlappyBird = function () {
     if (window.flappyBirdState.canvasContainer) {
       window.flappyBirdState.canvasContainer.remove();
-      window.flappyBirdState.isRunning = false;
+      window.canvasRunning = window.canvasRunning.filter(
+        (item) => item !== "Flappy Bird"
+      );
       window.flappyBirdState.wasmModule = null;
       window.flappyBirdState.canvasContainer = null;
 
@@ -97,6 +105,8 @@ export function setupGlobalFunctions() {
       if (window.gc) {
         window.gc();
       }
+
+      document.getElementById("taskbar-flappy-canvas-container").remove();
 
       console.log("Flappy Bird stopped");
     }

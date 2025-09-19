@@ -19,9 +19,17 @@ pub fn render_taskbar() -> impl Renderable {
           </script>
       "#))
       footer class="right-0 bottom-0 left-0 absolute flex justify-between items-center bg-zinc-800 px-6 border-t border-t-zinc-700 h-12 text-white" {
-        div id="taskbar-menu-icon" {
-          img src="/assets/images/menu.svg" alt="menu" class="hover:opacity-80 w-6.5 h-6.5 cursor-pointer" draggable="false";
+        div class="flex items-center gap-4" {
+          div id="taskbar-menu-icon" {
+            img src="/assets/images/menu.svg" alt="menu" class="hover:opacity-80 w-6.5 h-6.5 cursor-pointer" draggable="false";
+          }
+          div class="relative" {
+            input type="test" class="bg-zinc-700 pr-3 pl-10 rounded-2xl w-50 h-8";
+            img src="/assets/images/search.svg" alt="search" class="top-1 left-3 absolute w-6 h-6" draggable="false";
+          }
+          div id="taskbar-minimize" class="flex gap-3" {}
         }
+
         div class="flex flex-col justify-center items-center h-full text-sm" {
           div id="clock-time" {}
           div id="clock-date" {}

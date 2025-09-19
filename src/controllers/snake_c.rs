@@ -1,8 +1,22 @@
-use axum::{extract::Path, response::IntoResponse};
+use axum::{Extension, extract::Path, response::IntoResponse};
 use hypertext::Renderable;
 
-use crate::views::snake_v::render_snake_window;
+use crate::{
+    middlewares::session_mw::UserId, models::error::AppError, utilities::user_utils::parse_user_id,
+    views::snake_v::render_snake_window,
+};
 
-pub async fn get_snake_window(Path((height, width)): Path<(i32, i32)>) -> impl IntoResponse {
-    render_snake_window(height, width).render()
+pub async fn get_snake_window(
+    Path((height, width)): Path<(i32, i32)>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let _ = parse_user_id(user_id)?;
+
+    Ok((
+        [(
+            "HX-Trigger",
+            r#"{"openFile":{"image":"/assets/images/snake.svg", "window_id": "snake-canvas-container"}}"#,
+        )],
+        render_snake_window(height, width).render(),
+    ))
 }
