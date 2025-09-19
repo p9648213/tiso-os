@@ -23,6 +23,7 @@ export function setupGlobalFunctions() {
 
   window.stopSnake = function () {
     if (window.snakeState.canvasContainer) {
+      window.snakeState.wasmModule.pauseMainLoop();
       window.snakeState.canvasContainer.remove();
       window.canvasRunning = window.canvasRunning.filter(
         (item) => item !== "Snake"

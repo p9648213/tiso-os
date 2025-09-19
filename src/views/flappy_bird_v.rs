@@ -22,7 +22,11 @@ pub fn render_flappy_bird_window(parent_height: i32, parent_width: i32) -> impl 
                 setupFlappyToolBar();
             </script>
         "#))
-        div id="flappy-canvas-container" class="absolute" style={ "top:" (top) "px; left:" (left) "px;" } {
+        div 
+            id="flappy-canvas-container" 
+            class="absolute" 
+            style={ "top:" (top) "px; left:" (left) "px; width: 800px; height: 512px;" } 
+        {
             div class="flex justify-between items-center bg-zinc-950 px-3 h-12 select-none" {
                 div class="flex items-center gap-2" {
                     img class="w-5 h-5" src="/assets/images/flappy_bird.png" draggable="false";
