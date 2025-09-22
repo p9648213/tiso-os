@@ -27,6 +27,17 @@ export function setupTxtWindowGrab(txtId) {
   });
 }
 
+export function setupTxtToolBar(txt_id) {
+  const txtToolBar = document.getElementById(`txt-header-${txt_id}`);
+
+  const close = txtToolBar.querySelector(".close");
+
+  close.addEventListener("click", function () {
+    document.getElementById(`txt-window-${txt_id}`).remove();
+    document.getElementById(`taskbar-txt-window-${txt_id}`).remove();
+  });
+}
+
 export function setupTxtEditor(txtId) {
   const txtEditor = document.getElementById(`txt-editor-${txtId}`);
   const txtButtons = document.getElementById(`txt-buttons-${txtId}`);

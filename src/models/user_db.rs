@@ -132,6 +132,27 @@ impl User {
         )
         .await?;
 
+        let row = txn
+            .query_one(
+                "SELECT id FROM folder WHERE user_id = $1 AND folder_type = $2",
+                &[&user_id, &FolderType::Desktop],
+            )
+            .await?;
+
+        let desktop_folder = Folder::try_from(&row, None);
+
+        let desktop_folder_id = desktop_folder.id.ok_or_else(|| {
+            tracing::error!("No id column or value is null");
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        txn.execute(
+            "INSERT INTO file (user_id, folder_id, file_name, file_type) VALUES 
+                ($1, $2, 'This PC', 'ThisPC')",
+            &[&user_id, &desktop_folder_id],
+        )
+        .await?;
+
         txn.commit().await.map_err(|err| {
             tracing::error!("Couldn't commit transaction: {:?}", err);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")

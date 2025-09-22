@@ -6,10 +6,15 @@ use crate::{
     controllers::account_c::AccountForm,
     models::{
         desktop::{DesktopItem, ItemType},
+        file_db::FileType,
         folder_db::FolderSortType,
     },
     utilities::screen_utils::parse_position,
-    views::{folder_v::render_folder, taskbar_v::render_taskbar, txt_v::render_txt_file},
+    views::{
+        calculator_v::render_calculator_file, flappy_bird_v::render_flappy_bird_file,
+        folder_v::render_folder, snake_v::render_snake_file, taskbar_v::render_taskbar,
+        thispc_v::render_thispc_file, txt_v::render_txt_file,
+    },
 };
 
 pub fn render_welcome_screen() -> impl Renderable {
@@ -203,7 +208,13 @@ pub fn render_screen_grid(
                             @if let Some(item) = item_map.get(&(row, col)) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
                                     ItemType::File => {
-                                        (render_txt_file(item.id.expect("No id column or value is null"), &item.name))
+                                        @match item.file_type.as_ref().expect("No file_type column or value is null") {
+                                            FileType::Calculator => {(render_calculator_file())},
+                                            FileType::Snake => {(render_snake_file())},
+                                            FileType::FlappyBird => {(render_flappy_bird_file())},
+                                            FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name))},
+                                            FileType::ThisPC => {(render_thispc_file(item.id.expect("No id column or value is null"), &item.name))},
+                                        }
                                     }
                                     ItemType::Folder => {
                                         (render_folder(item.id.expect("No id column or value is null"), &item.name))
@@ -226,7 +237,13 @@ pub fn render_screen_grid(
                             @if let Some(item) = items.get((col * rows + row) as usize) {
                                 @match item.item_type.as_ref().expect("No item_type column or value is null") {
                                     ItemType::File => {
-                                        (render_txt_file(item.id.expect("No id column or value is null"), &item.name))
+                                        @match item.file_type.as_ref().expect("No file_type column or value is null") {
+                                            FileType::Calculator => {(render_calculator_file())},
+                                            FileType::Snake => {(render_snake_file())},
+                                            FileType::FlappyBird => {(render_flappy_bird_file())},
+                                            FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name))},
+                                            FileType::ThisPC => {(render_thispc_file(item.id.expect("No id column or value is null"), &item.name))},
+                                        }
                                     }
                                     ItemType::Folder => {
                                         (render_folder(item.id.expect("No id column or value is null"), &item.name))

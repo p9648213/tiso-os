@@ -3,7 +3,7 @@ use deadpool_postgres::Pool;
 use time::OffsetDateTime;
 use tokio_postgres::Row;
 
-use crate::models::{error::AppError, folder_db::FolderSortType};
+use crate::models::{error::AppError, file_db::FileType, folder_db::FolderSortType};
 
 #[derive(Debug)]
 pub enum ItemType {
@@ -17,6 +17,7 @@ pub struct DesktopItem {
     pub user_id: Option<i32>,
     pub name: Option<String>,
     pub item_type: Option<ItemType>,
+    pub file_type: Option<FileType>,
     pub desktop_position: Option<String>,
     pub created_at: Option<OffsetDateTime>,
 }
@@ -37,6 +38,9 @@ impl DesktopItem {
         let item_type: Option<String> = row
             .try_get(format!("{prefix}item_type").as_str())
             .unwrap_or(None);
+        let file_type: Option<FileType> = row
+            .try_get(format!("{prefix}file_type").as_str())
+            .unwrap_or(None);
         let desktop_position: Option<String> = row
             .try_get(format!("{prefix}desktop_position").as_str())
             .unwrap_or(None);
@@ -54,6 +58,7 @@ impl DesktopItem {
             id,
             user_id,
             name,
+            file_type,
             item_type,
             desktop_position,
             created_at,

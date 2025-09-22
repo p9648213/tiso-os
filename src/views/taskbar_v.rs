@@ -59,6 +59,7 @@ pub fn render_taskbar_menu_files(files: &Vec<File>) -> impl Renderable {
           Some(FileType::Snake) => {(render_snake_file())},
           Some(FileType::FlappyBird) => {(render_flappy_bird_file())},
           Some(FileType::Txt) => {},
+          Some(FileType::ThisPC) => {},
           None => {},
         }
       }

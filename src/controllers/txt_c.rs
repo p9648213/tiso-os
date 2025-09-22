@@ -96,5 +96,14 @@ pub async fn get_txt_window(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    Ok(render_txt_window(&file_name, txt_id, height, width).render())
+    Ok((
+        [(
+            "HX-Trigger",
+            format!(
+                r#"{{"openFile":{{"image":"/assets/images/text-editor.svg", "window_id": "txt-window-{}"}}}}"#,
+                txt_id
+            ),
+        )],
+        render_txt_window(&file_name, txt_id, height, width).render(),
+    ))
 }

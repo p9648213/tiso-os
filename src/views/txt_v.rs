@@ -9,7 +9,7 @@ pub fn render_txt_file(file_id: i32, file_name: &Option<String>) -> impl Rendera
             data-file-type="txt"
             class="absolute inset-0 flex justify-center py-2"
         {
-            div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit h-fit cursor-pointer" {
+            div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit min-w-[70px] h-fit cursor-pointer" {
                 img class="w-9 h-9 select-none" src="/assets/images/text-editor.svg" draggable="false";
                 div class="max-w-[75px] overflow-ellipsis text-white text-sm text-center line-clamp-2 select-none" {
                     (file_name)
@@ -70,7 +70,7 @@ pub fn render_txt_window(
         (Raw::dangerously_create(format!(
             r#"
                 <script type="module">
-                    import {{setupTxtWindowGrab, setupTxtEditor}} from "/assets/js/txt.js";
+                    import {{setupTxtWindowGrab, setupTxtEditor, setupTxtToolBar}} from "/assets/js/txt.js";
                     setupTxtWindowGrab({txt_id});
                     setupTxtEditor({txt_id});
                     const txtEditor = document.getElementById("txt-editor-{txt_id}");
@@ -81,8 +81,10 @@ pub fn render_txt_window(
                     const selection = window.getSelection();
                     selection.removeAllRanges();
                     selection.addRange(range);
+                    setupTxtToolBar({})
                 </script>
-            "#
+            "#,
+            txt_id
         )))
         div
             id={ "txt-window-" (txt_id) }

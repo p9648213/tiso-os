@@ -19,6 +19,7 @@ pub enum FileType {
     Calculator,
     Snake,
     FlappyBird,
+    ThisPC,
 }
 
 pub struct File {
