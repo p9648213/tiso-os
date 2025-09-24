@@ -1,5 +1,6 @@
 use axum::http::StatusCode;
 use deadpool_postgres::Pool;
+use serde::Deserialize;
 use time::OffsetDateTime;
 use tokio_postgres::{
     Row,
@@ -8,7 +9,7 @@ use tokio_postgres::{
 
 use crate::{models::error::AppError, utilities::postgres::DbExecutor};
 
-#[derive(Debug, ToSql, FromSql, Clone)]
+#[derive(Debug, ToSql, FromSql, Clone, Deserialize)]
 #[postgres(name = "foldertype")]
 pub enum FolderType {
     Normal,
@@ -101,7 +102,7 @@ impl Folder {
             .await
     }
 
-    pub async fn get_desktop_folders(
+    pub async fn get_desktop_folder(
         user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
@@ -117,6 +118,26 @@ impl Folder {
             .query_one(
                 &format!("SELECT {columns} FROM folder WHERE user_id = $1 AND folder_type = $2"),
                 &[&user_id, &FolderType::Desktop],
+            )
+            .await
+    }
+
+    pub async fn get_root_folder(
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Row, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let columns = columns.join(",");
+
+        client
+            .query_one(
+                &format!("SELECT {columns} FROM folder WHERE user_id = $1 AND folder_type = $2"),
+                &[&user_id, &FolderType::Root],
             )
             .await
     }

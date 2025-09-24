@@ -356,6 +356,23 @@ export function setupGridItemOpen() {
             removeSelectedItem();
           });
       }
+
+      if (itemType === "folder") {
+        const folderType = window.selectedItem.getAttribute("data-folder-type");
+
+        htmx
+          .ajax(
+            "GET",
+            `/read/folder/explorer/${folderType}/${itemId}/${main.clientHeight}/${main.clientWidth}`,
+            {
+              target: "body",
+              swap: "beforeend",
+            }
+          )
+          .then(() => {
+            removeSelectedItem();
+          });
+      }
     }
   });
 }

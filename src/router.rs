@@ -8,6 +8,7 @@ use crate::{
             get_display_setting_window, update_background_color, update_background_type,
             upload_background_picture,
         },
+        explorer_c::get_explorer,
         file_c::{delete_file, rename_file, update_file_desktop_position},
         flappy_bird_c::get_flappy_bird_window,
         folder_c::{
@@ -51,8 +52,7 @@ fn response_log(response: &Response<Body>, latency: std::time::Duration, _: &Spa
 }
 
 pub async fn create_router(pool: Pool) -> Router {
-    let memory_router =
-        MemoryServe::new(load_assets!("assets")).into_router();
+    let memory_router = MemoryServe::new(load_assets!("assets")).into_router();
 
     let compression_layer = CompressionLayer::new()
         .quality(CompressionLevel::Fastest)
@@ -126,6 +126,10 @@ pub async fn create_router(pool: Pool) -> Router {
             .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))
             .route("/folder/input/{folder_id}", get(get_folder_input))
+            .route(
+                "/folder/explorer/{folder_type}/{folder_id}/{height}/{width}",
+                get(get_explorer),
+            )
             .route(
                 "/setting/display/{height}/{width}",
                 get(get_display_setting_window),

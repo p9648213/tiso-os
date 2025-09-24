@@ -1,5 +1,6 @@
 pub mod account_c;
 pub mod display_setting_c;
+pub mod explorer_c;
 pub mod file_c;
 pub mod flappy_bird_c;
 pub mod folder_c;

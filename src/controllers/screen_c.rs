@@ -80,7 +80,7 @@ pub async fn create_screen_grid(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let rows = Folder::get_desktop_folders(user_id, vec!["id", "sort_type"], &pool).await?;
+    let rows = Folder::get_desktop_folder(user_id, vec!["id", "sort_type"], &pool).await?;
 
     let desktop_folder = Folder::try_from(&rows, None);
 
