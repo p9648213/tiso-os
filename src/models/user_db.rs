@@ -95,7 +95,7 @@ impl User {
                 &user_id,
                 &"Desktop",
                 &FolderType::Desktop,
-                &"Root",
+                &"This PC",
                 &FolderType::Root,
                 &"Taskbar",
                 &FolderType::Taskbar,
