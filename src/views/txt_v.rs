@@ -88,10 +88,10 @@ pub fn render_txt_window(
         )))
         div
             id={ "txt-window-" (txt_id) }
-            class="absolute flex flex-col bg-zinc-800 rounded-sm overflow-hidden text-white"
+            class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
             style={ "top:" (top) "px; left:" (left) "px; width:" (window_width) "px; height:" (window_height) "px;" }
         {
-            div id={ "txt-header-" (txt_id) } class="flex justify-between items-center bg-zinc-950 px-3 h-12 select-none" {
+            div id={ "txt-header-" (txt_id) } class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none" {
                 div class="flex items-center gap-2" {
                     img class="w-5 h-5" src="/assets/images/text-editor.svg" draggable="false";
                     (file_name)
@@ -102,7 +102,7 @@ pub fn render_txt_window(
                     img class="hover:opacity-70 w-5 h-5 cursor-pointer close" src="/assets/images/x.svg" draggable="false";
                 }
             }
-            div id={"txt-buttons-" (txt_id)} class="flex gap-3 bg-zinc-900 px-3 py-2" {
+            div id={"txt-buttons-" (txt_id)} class="flex gap-3 bg-zinc-900 px-3 py-2 border-zinc-700 border-t border-b" {
                 img class="hover:opacity-70 w-5 h-5 cursor-pointer bold" src="/assets/images/bold.svg" draggable="false";
                 img class="hover:opacity-70 w-5 h-5 italic cursor-pointer" src="/assets/images/italic.svg" draggable="false";
                 img class="hover:opacity-70 w-5 h-5 underline cursor-pointer" src="/assets/images/underline.svg" draggable="false";

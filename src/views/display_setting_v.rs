@@ -25,10 +25,10 @@ pub fn render_display_setting_window(
         "#))
         div
             id={"display-setting"}
-            class="absolute flex flex-col bg-zinc-900 rounded-sm overflow-hidden text-white"
+            class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
             style={ "top:" (top) "px; left:" (left) "px; width:" (window_width) "px; height:" (window_height) "px;" }
         {
-            div id={"display-setting-header"} class="flex justify-between items-center bg-zinc-950 px-3 h-12 select-none" {
+            div id={"display-setting-header"} class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none" {
                 div class="flex items-center" {
                     "Display Setting"
                 }
