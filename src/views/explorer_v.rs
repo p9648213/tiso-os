@@ -48,7 +48,7 @@ pub fn render_explorer(
                 div class="flex gap-4 w-full items-center" {
                     div class="flex h-full flex-2 bg-zinc-700 px-4 py-1 rounded-sm gap-3 items-center" {
                         "This PC"
-                        img class="h-5 w-5 cursor-pointer hover:opacity-70" src="/assets/images/chevron-right.svg" draggable="false";
+                        img class="h-5 w-5" src="/assets/images/chevron-right.svg" draggable="false";
                     }
                     div class="relative flex-1" {
                         input class="w-full h-8  bg-zinc-700 text-white text-sm rounded-sm px-3" type="text" placeholder="Search This PC";
@@ -90,18 +90,38 @@ pub fn render_explorer(
                 }
                 div class="flex h-full gap-2" {
                     div class="flex-1 px-3 py-4 flex flex-col gap-4" {
-                        div class="flex border-b border-zinc-700 pb-4 gap-2 items-center" {
-                            img src="/assets/images/chevron-right.svg" class="h-5 w-5" draggable="false";
-                            img src="/assets/images/thispc.svg" class="h-5 w-5" draggable="false";
-                            "This PC" 
+                        div class="border-b border-zinc-700 pb-4" {
+                            div class="flex gap-2 items-center hover:opacity-70 cursor-pointer px-2" {
+                                img src="/assets/images/thispc.svg" class="h-5 w-5" draggable="false";
+                                "This PC"
+                                img src="/assets/images/chevron-right.svg" class="h-6 w-6" draggable="false";
+                            }
                         }
-                        div class="flex gap-3 flex-col" {
-                            div class="px-2" { "Desktop" }
-                            div class="px-2" { "Documents" }
-                            div class="px-2" { "Downloads" }
-                            div class="px-2" { "Pictures" }
-                            div class="px-2" { "Music" }
-                            div class="px-2" { "Videos" }
+                        div class="flex gap-5 flex-col" {
+                            div class="px-2 flex gap-2 items-center cursor-pointer hover:opacity-70" { 
+                                img src="/assets/images/rust-1.svg" class="h-6 w-6" draggable="false";
+                                "Desktop"
+                            }
+                            div class="px-2 flex gap-2 items-center cursor-pointer hover:opacity-70" { 
+                                img src="/assets/images/google_docs-1.svg" class="h-6 w-6" draggable="false";
+                                "Documents"
+                            }
+                            div class="px-2 flex gap-2 items-center cursor-pointer hover:opacity-70" { 
+                                img src="/assets/images/video_download.svg" class="h-6 w-6" draggable="false";
+                                "Downloads"
+                            }
+                            div class="px-2 flex gap-2 items-center cursor-pointer hover:opacity-70" { 
+                                img src="/assets/images/pictures.svg" class="h-6 w-6" draggable="false";
+                                "Pictures"
+                            }
+                            div class="px-2 flex gap-2 items-center cursor-pointer hover:opacity-70" { 
+                                img src="/assets/images/apple_music-1.svg" class="h-6 w-6" draggable="false";
+                                "Music"
+                            }
+                            div class="px-2 flex gap-2 items-center cursor-pointer hover:opacity-70" { 
+                                img src="/assets/images/movie-1.svg" class="h-6 w-6" draggable="false";
+                                "Movies"
+                            }
                         }
                     }
                     div class="flex-5 border-l border-zinc-700" {}
