@@ -4,6 +4,7 @@ use crate::{
     constant::MIN_COMPRESS_SIZE,
     controllers::{
         account_c::create_account,
+        calculator_c::get_calculator_window,
         display_setting_c::{
             get_display_setting_window, update_background_color, update_background_type,
             upload_background_picture,
@@ -117,6 +118,10 @@ pub async fn create_router(pool: Pool) -> Router {
     let read_routes = Router::new().nest(
         "/read",
         Router::new()
+            .route(
+                "/file/calculator/{height}/{width}",
+                get(get_calculator_window),
+            )
             .route("/file/snake/{height}/{width}", get(get_snake_window))
             .route(
                 "/file/flappybird/{height}/{width}",
