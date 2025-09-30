@@ -1,11 +1,10 @@
-// assets/js/music.js
 export function setupMusicPlayer() {
   const audio = new Audio();
   let currentSongIndex = 0;
   let playlist = [];
   let isPlaying = false;
   let isShuffle = false;
-  let repeatMode = "none"; // 'none', 'one', 'all'
+  let repeatMode = "none";
   let audioContext;
   let analyser;
   let source;
@@ -13,7 +12,6 @@ export function setupMusicPlayer() {
   let canvas;
   let canvasContext;
 
-  // DOM elements
   const playPauseBtn = document.getElementById("play-pause-btn");
   const playIcon = document.getElementById("play-icon");
   const pauseIcon = document.getElementById("pause-icon");
@@ -50,7 +48,6 @@ export function setupMusicPlayer() {
         createVisualizationCanvas();
       } else {
         console.warn("Web Audio API is not supported in this browser");
-        // Keep the default album art
       }
     }
   }
