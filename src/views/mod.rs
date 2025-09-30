@@ -3,6 +3,7 @@ pub mod display_setting_v;
 pub mod explorer_v;
 pub mod flappy_bird_v;
 pub mod folder_v;
+pub mod music_v;
 pub mod screen_v;
 pub mod snake_v;
 pub mod taskbar_v;

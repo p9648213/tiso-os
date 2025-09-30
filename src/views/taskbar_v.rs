@@ -4,7 +4,7 @@ use crate::{
     models::file_db::{File, FileType},
     views::{
         calculator_v::render_calculator_file, flappy_bird_v::render_flappy_bird_file,
-        snake_v::render_snake_file,
+        music_v::render_music_file, snake_v::render_snake_file,
     },
 };
 
@@ -58,6 +58,7 @@ pub fn render_taskbar_menu_files(files: &Vec<File>) -> impl Renderable {
           Some(FileType::Calculator) => {(render_calculator_file())},
           Some(FileType::Snake) => {(render_snake_file())},
           Some(FileType::FlappyBird) => {(render_flappy_bird_file())},
+          Some(FileType::Music) => {(render_music_file())},
           Some(FileType::Txt) => {},
           Some(FileType::ThisPC) => {},
           None => {},

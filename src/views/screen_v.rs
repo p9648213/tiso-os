@@ -12,8 +12,8 @@ use crate::{
     utilities::screen_utils::parse_position,
     views::{
         calculator_v::render_calculator_file, flappy_bird_v::render_flappy_bird_file,
-        folder_v::render_folder, snake_v::render_snake_file, taskbar_v::render_taskbar,
-        thispc_v::render_thispc_file, txt_v::render_txt_file,
+        folder_v::render_folder, music_v::render_music_file, snake_v::render_snake_file,
+        taskbar_v::render_taskbar, thispc_v::render_thispc_file, txt_v::render_txt_file,
     },
 };
 
@@ -214,6 +214,7 @@ pub fn render_screen_grid(
                                             FileType::FlappyBird => {(render_flappy_bird_file())},
                                             FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name))},
                                             FileType::ThisPC => {(render_thispc_file(item.id.expect("No id column or value is null"), &item.name))},
+                                            FileType::Music => {(render_music_file())},
                                         }
                                     }
                                     ItemType::Folder => {
@@ -243,6 +244,7 @@ pub fn render_screen_grid(
                                             FileType::FlappyBird => {(render_flappy_bird_file())},
                                             FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name))},
                                             FileType::ThisPC => {(render_thispc_file(item.id.expect("No id column or value is null"), &item.name))},
+                                            FileType::Music => {(render_music_file())},
                                         }
                                     }
                                     ItemType::Folder => {

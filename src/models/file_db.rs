@@ -20,6 +20,7 @@ pub enum FileType {
     Snake,
     FlappyBird,
     ThisPC,
+    Music,
 }
 
 pub struct File {

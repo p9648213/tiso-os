@@ -121,7 +121,8 @@ impl User {
             "INSERT INTO file (user_id, folder_id, file_name, file_type) VALUES 
                 ($1, $2, 'Calculator', 'Calculator'),
                 ($1, $2, 'Snake', 'Snake'),
-                ($1, $2, 'FlappyBird', 'FlappyBird')",
+                ($1, $2, 'FlappyBird', 'FlappyBird'),
+                ($1, $2, 'Music Player', 'Music')",
             &[&user_id, &taskbar_folder_id],
         )
         .await?;

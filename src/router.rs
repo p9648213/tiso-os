@@ -16,6 +16,7 @@ use crate::{
             create_folder, delete_folder, get_folder_input, rename_folder,
             update_folder_desktop_position,
         },
+        music_c::get_music_player_window,
         screen_c::{create_screen_grid, get_screen},
         snake_c::get_snake_window,
         taskbar_c::get_taskbar_menu_files,
@@ -127,6 +128,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 "/file/flappybird/{height}/{width}",
                 get(get_flappy_bird_window),
             )
+            .route("/file/music/{height}/{width}", get(get_music_player_window))
             .route("/taskbar/files", get(get_taskbar_menu_files))
             .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))
