@@ -74,7 +74,7 @@ pub async fn create_router(pool: Pool) -> Router {
         Router::new()
             .route("/txt/{folder_id}/{position_id}", post(create_txt))
             .route("/folder/{folder_id}/{position_id}", post(create_folder))
-            .route("/grid", post(create_screen_grid))
+            .route("/screen", post(create_screen_grid))
             .route("/account", post(create_account))
             .layer(from_fn(csrf_middleware)),
     );

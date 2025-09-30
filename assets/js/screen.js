@@ -6,10 +6,10 @@ const CONTEXT_MENU_SCREEN = [
 ];
 const CONTEXT_MENU_ITEM = ["Rename", "Delete"];
 
-export function setupGridDimensions() {
+export function setupScreenDimensions() {
   const main = document.querySelector("main");
 
-  htmx.ajax("POST", "/create/grid", {
+  htmx.ajax("POST", "/create/screen", {
     target: "main",
     values: {
       height: main.clientHeight,
@@ -18,7 +18,7 @@ export function setupGridDimensions() {
   });
 }
 
-export function setupGridResize() {
+export function setupScreenResize() {
   let resizeTimeout;
 
   window.addEventListener("resize", () => {
@@ -31,7 +31,7 @@ export function setupGridResize() {
 
     resizeTimeout = setTimeout(() => {
       htmx
-        .ajax("POST", `/create/grid`, {
+        .ajax("POST", `/create/screen`, {
           target: "main",
           values: {
             height: main.clientHeight,
@@ -45,7 +45,7 @@ export function setupGridResize() {
   });
 }
 
-export function setupGridContextMenu() {
+export function setupScreenContextMenu() {
   const main = document.querySelector("main");
 
   main.addEventListener("mouseup", (event) => {
@@ -250,7 +250,7 @@ export function setupGridContextMenu() {
   });
 }
 
-export function setupGridItemSingleSelect() {
+export function setupScreenItemSingleSelect() {
   const main = document.querySelector("main");
 
   main.addEventListener("click", (event) => {
@@ -280,7 +280,7 @@ export function setupGridItemSingleSelect() {
   });
 }
 
-export function setupGridItemDrag() {
+export function setupScreenItemDrag() {
   let main = document.querySelector("main");
 
   let draggedItem = null;
@@ -331,7 +331,7 @@ export function setupGridItemDrag() {
   });
 }
 
-export function setupGridItemOpen() {
+export function setupScreenItemOpen() {
   const main = document.querySelector("main");
 
   main.addEventListener("dblclick", () => {

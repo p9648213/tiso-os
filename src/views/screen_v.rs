@@ -146,22 +146,22 @@ pub fn render_screen_section() -> impl Renderable {
                 import {setupGlobalFunctions} from "/assets/js/global_func.js";
                 import {setupGlobalEvents} from "/assets/js/global_event.js";
                 import {
-                    setupGridDimensions, 
-                    setupGridResize,
-                    setupGridContextMenu, 
-                    setupGridItemSingleSelect, 
-                    setupGridItemDrag, 
-                    setupGridItemOpen
-                } from "/assets/js/grid.js";
+                    setupScreenDimensions, 
+                    setupScreenResize,
+                    setupScreenContextMenu, 
+                    setupScreenItemSingleSelect, 
+                    setupScreenItemDrag, 
+                    setupScreenItemOpen
+                } from "/assets/js/screen.js";
                 setupGlobalVariables();
                 setupGlobalFunctions();
                 setupGlobalEvents();
-                setupGridContextMenu();
-                setupGridDimensions();
-                setupGridResize();
-                setupGridItemSingleSelect();
-                setupGridItemOpen();
-                setupGridItemDrag();
+                setupScreenContextMenu();
+                setupScreenDimensions();
+                setupScreenResize();
+                setupScreenItemSingleSelect();
+                setupScreenItemOpen();
+                setupScreenItemDrag();
             </script>
         "#))
         main class="flex flex-wrap h-[calc(100%-theme('spacing.12'))]" {}

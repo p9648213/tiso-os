@@ -2,7 +2,7 @@ use hypertext::{Raw, prelude::*};
 
 pub fn render_flappy_bird_file() -> impl Renderable {
     maud! {
-        div data-file-type="flappybird" class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-18 h-fit cursor-pointer file" {
+        div data-file-type="flappybird" class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-21 h-fit cursor-pointer file" {
             img class="w-9 h-9 select-none" src="/assets/images/flappy_bird.png" draggable="false";
             div class="text-white text-sm text-center select-none" {
                 "Flappy Bird"
@@ -22,10 +22,10 @@ pub fn render_flappy_bird_window(parent_height: i32, parent_width: i32) -> impl 
                 setupFlappyToolBar();
             </script>
         "#))
-        div 
-            id="flappy-canvas-container" 
-            class="absolute" 
-            style={ "top:" (top) "px; left:" (left) "px; width: 800px; height: 512px;" } 
+        div
+            id="flappy-canvas-container"
+            class="absolute"
+            style={ "top:" (top) "px; left:" (left) "px; width: 800px; height: 512px;" }
         {
             div class="flex justify-between items-center bg-zinc-950 px-3 h-12 select-none" {
                 div class="flex items-center gap-2" {
