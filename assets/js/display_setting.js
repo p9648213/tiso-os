@@ -55,7 +55,11 @@ export function setupBackgroundColorList() {
           }
         )
         .then(() => {
-          document.body.style.background = event.target.dataset.color;
+          const backgroundContainer = document.getElementById(
+            "background-container"
+          );
+          backgroundContainer.childNodes[0].style.background =
+            event.target.dataset.color;
         });
     }
   });
