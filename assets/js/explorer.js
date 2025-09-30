@@ -27,3 +27,14 @@ export function setupExplorerWindow(folderId) {
     }
   });
 }
+
+export function setupExplorerToolBar(folderId) {
+  const explorerToolbar = document.getElementById("explorer-toolbar");
+
+  const close = explorerToolbar.querySelector(".close");
+
+  close.addEventListener("click", function () {
+    document.getElementById(`explorer-window-${folderId}`).remove();
+    document.getElementById(`taskbar-explorer-window-${folderId}`).remove();
+  });
+}

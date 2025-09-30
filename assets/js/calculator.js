@@ -119,7 +119,6 @@ export function setupCalculatorWindow() {
     }
   });
 
-  // Keyboard support
   document.addEventListener("keydown", (event) => {
     const calculatorWindow = document.getElementById("calculator-window");
     if (!calculatorWindow) return;

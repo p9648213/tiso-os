@@ -1,6 +1,6 @@
 use hypertext::{Raw, prelude::*};
 
-pub fn render_explorer(
+pub fn render_explorer_window(
     folder_id: i32,
     folder_name: String,
     parent_width: i32,
@@ -16,10 +16,12 @@ pub fn render_explorer(
         (Raw::dangerously_create(format!(
             r#"
                 <script type="module">
-                    import {{setupExplorerWindow}} from "/assets/js/explorer.js";
+                    import {{setupExplorerWindow, setupExplorerToolBar}} from "/assets/js/explorer.js";
                     setupExplorerWindow({});
+                    setupExplorerToolBar({});
                 </script>
             "#,
+            folder_id,
             folder_id
         )))
         div

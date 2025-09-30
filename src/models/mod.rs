@@ -3,6 +3,7 @@ pub mod display_setting_db;
 pub mod error;
 pub mod file_db;
 pub mod folder_db;
+pub mod folder_item;
 pub mod state;
 pub mod txt_db;
 pub mod txt_window;

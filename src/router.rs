@@ -9,7 +9,7 @@ use crate::{
             get_display_setting_window, update_background_color, update_background_type,
             upload_background_picture,
         },
-        explorer_c::get_explorer,
+        explorer_c::get_explorer_window,
         file_c::{delete_file, rename_file, update_file_desktop_position},
         flappy_bird_c::get_flappy_bird_window,
         folder_c::{
@@ -133,7 +133,7 @@ pub async fn create_router(pool: Pool) -> Router {
             .route("/folder/input/{folder_id}", get(get_folder_input))
             .route(
                 "/folder/explorer/{folder_type}/{folder_id}/{height}/{width}",
-                get(get_explorer),
+                get(get_explorer_window),
             )
             .route(
                 "/setting/display/{height}/{width}",

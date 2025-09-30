@@ -12,10 +12,10 @@ use crate::{
     middlewares::session_mw::UserId,
     models::{
         error::AppError,
-        folder_db::{Folder, FolderType},
+        folder_db::{Folder, FolderType}, folder_item::FolderItem,
     },
     utilities::user_utils::parse_user_id,
-    views::explorer_v::render_explorer,
+    views::explorer_v::render_explorer_window,
 };
 
 #[derive(Deserialize, Debug)]
@@ -26,8 +26,7 @@ pub struct ExplorerPath {
     pub width: i32,
 }
 
-#[axum::debug_handler]
-pub async fn get_explorer(
+pub async fn get_explorer_window(
     Path(explorer_path): Path<ExplorerPath>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
@@ -50,13 +49,22 @@ pub async fn get_explorer(
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
             })?;
 
-            Ok(render_explorer(
-                folder_id,
-                folder_name,
-                explorer_path.width,
-                explorer_path.height,
-            )
-            .render())
+            Ok((
+                [(
+                    "HX-Trigger",
+                    format!(
+                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}"}}}}"#,
+                        folder_id
+                    ),
+                )],
+                render_explorer_window(
+                    folder_id,
+                    folder_name,
+                    explorer_path.width,
+                    explorer_path.height,
+                )
+                .render(),
+            ))
         }
         FolderType::Desktop => {
             let row = Folder::get_desktop_folder(user_id, vec!["id", "folder_name"], &pool).await?;
@@ -73,13 +81,22 @@ pub async fn get_explorer(
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
             })?;
 
-            Ok(render_explorer(
-                folder_id,
-                folder_name,
-                explorer_path.width,
-                explorer_path.height,
-            )
-            .render())
+            Ok((
+                [(
+                    "HX-Trigger",
+                    format!(
+                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}"}}}}"#,
+                        folder_id
+                    ),
+                )],
+                render_explorer_window(
+                    folder_id,
+                    folder_name,
+                    explorer_path.width,
+                    explorer_path.height,
+                )
+                .render(),
+            ))
         }
         FolderType::Normal => {
             let row = Folder::get_folder(
@@ -101,13 +118,22 @@ pub async fn get_explorer(
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
             })?;
 
-            Ok(render_explorer(
-                folder_id,
-                folder_name,
-                explorer_path.width,
-                explorer_path.height,
-            )
-            .render())
+            Ok((
+                [(
+                    "HX-Trigger",
+                    format!(
+                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}"}}}}"#,
+                        folder_id
+                    ),
+                )],
+                render_explorer_window(
+                    folder_id,
+                    folder_name,
+                    explorer_path.width,
+                    explorer_path.height,
+                )
+                .render(),
+            ))
         }
         _ => Err(AppError::new(StatusCode::NOT_FOUND, "Folder not found")),
     }
