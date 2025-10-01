@@ -5,9 +5,8 @@ use crate::{
     constant::MIN_RECTANGLE_WIDTH,
     controllers::account_c::AccountForm,
     models::{
-        desktop::{DesktopItem, ItemType},
         file_db::FileType,
-        folder_db::FolderSortType,
+        folder_db::FolderSortType, folder_item::{FolderItem, ItemType},
     },
     utilities::screen_utils::parse_position,
     views::{
@@ -174,7 +173,7 @@ pub fn render_screen_grid(
     width: u16,
     desktop_id: i32,
     sort_type: &FolderSortType,
-    items: Vec<DesktopItem>,
+    items: Vec<FolderItem>,
 ) -> impl Renderable {
     let rows = height / MIN_RECTANGLE_WIDTH;
     let cols = width / MIN_RECTANGLE_WIDTH;
@@ -187,7 +186,7 @@ pub fn render_screen_grid(
 
         @match *sort_type {
             FolderSortType::Custom => {
-                @let item_map: HashMap<(u16, u16), &DesktopItem> = items
+                @let item_map: HashMap<(u16, u16), &FolderItem> = items
                     .iter()
                     .filter_map(|item| {
                         item.desktop_position

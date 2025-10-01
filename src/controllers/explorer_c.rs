@@ -12,7 +12,8 @@ use crate::{
     middlewares::session_mw::UserId,
     models::{
         error::AppError,
-        folder_db::{Folder, FolderType}, folder_item::FolderItem,
+        folder_db::{Folder, FolderType},
+        folder_item::FolderItem,
     },
     utilities::user_utils::parse_user_id,
     views::explorer_v::render_explorer_window,

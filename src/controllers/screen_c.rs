@@ -9,10 +9,9 @@ use serde::Deserialize;
 use crate::{
     middlewares::session_mw::UserId,
     models::{
-        desktop::DesktopItem,
         display_setting_db::{BackgroundType, DisplaySetting},
         error::AppError,
-        folder_db::Folder,
+        folder_db::Folder, folder_item::FolderItem,
     },
     utilities::user_utils::parse_user_id,
     views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
@@ -94,9 +93,9 @@ pub async fn create_screen_grid(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    let rows = DesktopItem::get_desktop_items(desktop_id, user_id, &sort_type, &pool).await?;
+    let rows = FolderItem::get_desktop_items(desktop_id, user_id, &sort_type, &pool).await?;
 
-    let items = DesktopItem::try_from_vec(rows, None);
+    let items = FolderItem::try_from_vec(rows, None);
 
     Ok(render_screen_grid(form.height, form.width, desktop_id, &sort_type, items).render())
 }

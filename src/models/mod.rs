@@ -1,4 +1,3 @@
-pub mod desktop;
 pub mod display_setting_db;
 pub mod error;
 pub mod file_db;
