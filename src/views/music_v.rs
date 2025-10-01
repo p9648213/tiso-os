@@ -31,7 +31,7 @@ pub fn render_music_player_window(parent_height: i32, parent_width: i32) -> impl
         {
             div id="music-player-header" class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none" {
                 div class="flex items-center gap-2" {
-                    img class="w-5 h-5" src="/assets/images/music.svg" draggable="false";
+                    img class="w-6 h-6" src="/assets/images/music.svg" draggable="false";
                     "Music Player"
                 }
                 div class="flex items-center gap-3" {

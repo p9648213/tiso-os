@@ -79,3 +79,16 @@ export function setupSelectBackgroundPicture() {
     }
   });
 }
+
+export function setupDisplaySettingToolBar() {
+  const displaySettingToolBar = document.getElementById(
+    "display-setting-header"
+  );
+
+  const close = displaySettingToolBar.querySelector(".close");
+
+  close.addEventListener("click", function () {
+    document.getElementById("display-setting-window").remove();
+    document.getElementById("taskbar-display-setting-window").remove();
+  });
+}

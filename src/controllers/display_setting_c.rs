@@ -43,7 +43,13 @@ pub async fn get_display_setting_window(
 
     let background_color = display_setting.background_color;
 
-    Ok(render_display_setting_window(height, width, background_type, background_color).render())
+    Ok((
+        [(
+            "HX-Trigger",
+            r#"{"openFile":{"image":"/assets/images/display-setting.svg", "window_id": "display-setting-window"}}"#,
+        )],
+        render_display_setting_window(height, width, background_type, background_color).render(),
+    ))
 }
 
 pub async fn update_background_type(

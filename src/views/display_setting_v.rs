@@ -17,19 +17,21 @@ pub fn render_display_setting_window(
     maud! {
         (Raw::dangerously_create(r#"
             <script type="module">
-                import {setupSelectBackgroundType, setupBackgroundColorList, setupSelectBackgroundPicture} from "/assets/js/display_setting.js";
+                import {setupSelectBackgroundType, setupBackgroundColorList, setupSelectBackgroundPicture, setupDisplaySettingToolBar} from "/assets/js/display_setting.js";
                 setupSelectBackgroundType();
                 setupBackgroundColorList();
                 setupSelectBackgroundPicture();
+                setupDisplaySettingToolBar();
             </script>
         "#))
         div
-            id={"display-setting"}
+            id="display-setting-window"
             class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
             style={ "top:" (top) "px; left:" (left) "px; width:" (window_width) "px; height:" (window_height) "px;" }
         {
             div id={"display-setting-header"} class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none" {
-                div class="flex items-center" {
+                div class="flex items-center gap-2" {
+                    img class="w-6 h-6" src="/assets/images/display-setting.svg" draggable="false";
                     "Display Setting"
                 }
                 div class="flex items-center gap-3" {

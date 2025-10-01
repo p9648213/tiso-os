@@ -54,7 +54,7 @@ pub async fn create_folder(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    Ok(render_folder(folder_id, &None, true).render())
+    Ok(render_folder(folder_id, &None, &None).render())
 }
 
 pub async fn update_folder_desktop_position(
@@ -134,5 +134,5 @@ pub async fn rename_folder(
 
     Folder::rename_folder(folder_id, user_id, &form.folder_name, &pool).await?;
 
-    Ok(render_folder(folder_id, &Some(form.folder_name), true).render())
+    Ok(render_folder(folder_id, &Some(form.folder_name), &None).render())
 }

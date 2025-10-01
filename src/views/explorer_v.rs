@@ -150,13 +150,17 @@ pub fn render_explorer_window(
                                 ItemType::File => {
                                     @match item.file_type.as_ref().expect("No file_type column or value is null") {
                                         FileType::Txt => {
-                                            (render_txt_file(item.id.expect("No id column or value is null"), &item.name, false))
+                                            div class="relative w-22 h-20" {
+                                                (render_txt_file(item.id.expect("No id column or value is null"), &item.name, &Some("explorer".to_string())))
+                                            }
                                         },
                                         _ => {}
                                     }
                                 }
                                 ItemType::Folder => {
-                                    (render_folder(item.id.expect("No id column or value is null"), &item.name, false))
+                                    div class="relative w-22 h-20" {
+                                        (render_folder(item.id.expect("No id column or value is null"), &item.name, &Some("explorer".to_string())))
+                                    }
                                 }
                             }
                         }
