@@ -1,10 +1,19 @@
 use hypertext::{Raw, prelude::*};
 
+use crate::{
+    models::{
+        file_db::FileType,
+        folder_item::{FolderItem, ItemType},
+    },
+    views::{folder_v::render_folder, txt_v::render_txt_file},
+};
+
 pub fn render_explorer_window(
     folder_id: i32,
     folder_name: String,
     parent_width: i32,
     parent_height: i32,
+    folder_items: &Vec<FolderItem>,
 ) -> impl Renderable {
     let window_width = 1320;
     let window_height = 800;
@@ -135,7 +144,23 @@ pub fn render_explorer_window(
                             }
                         }
                     }
-                    div class="flex-5 border-zinc-700 border-l" {}
+                    div class="flex flex-5 gap-4 p-4 border-zinc-700 border-l" {
+                        @for item in folder_items {
+                            @match item.item_type.as_ref().expect("No item_type column or value is null") {
+                                ItemType::File => {
+                                    @match item.file_type.as_ref().expect("No file_type column or value is null") {
+                                        FileType::Txt => {
+                                            (render_txt_file(item.id.expect("No id column or value is null"), &item.name, false))
+                                        },
+                                        _ => {}
+                                    }
+                                }
+                                ItemType::Folder => {
+                                    (render_folder(item.id.expect("No id column or value is null"), &item.name, false))
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

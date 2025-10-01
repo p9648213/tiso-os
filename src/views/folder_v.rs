@@ -1,13 +1,23 @@
 use hypertext::prelude::*;
 
-pub fn render_folder(folder_id: i32, folder_name: &Option<String>) -> impl Renderable {
+pub fn render_folder(
+    folder_id: i32,
+    folder_name: &Option<String>,
+    absolute: bool,
+) -> impl Renderable {
     let folder_name = folder_name.as_deref().unwrap_or("New Folder");
+
+    let class = if absolute {
+        "absolute inset-0 flex justify-center py-2"
+    } else {
+        "flex justify-center"
+    };
 
     maud! {
         div
             id={ "folder-" (folder_id) }
             data-folder-type="Normal"
-            class="absolute inset-0 flex justify-center py-2"
+            class=(class)
         {
             div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit min-w-[70px] h-fit cursor-pointer" {
                 img class="w-9 h-9 select-none" src="/assets/images/folder.svg" draggable="false";

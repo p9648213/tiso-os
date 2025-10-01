@@ -5,13 +5,13 @@ use tokio_postgres::Row;
 
 use crate::models::{error::AppError, file_db::FileType, folder_db::FolderSortType};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ItemType {
     File,
     Folder,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FolderItem {
     pub id: Option<i32>,
     pub user_id: Option<i32>,
@@ -112,7 +112,7 @@ impl FolderItem {
 
         let sql = 
             "SELECT * FROM (
-                SELECT id file_name AS name, 'file' AS item_type, file_type, created_at
+                SELECT id, file_name AS name, 'file' AS item_type, file_type, created_at
                 FROM file WHERE folder_id = $1 AND user_id = $2 AND file_type != $3
                 UNION
                 SELECT id, folder_name AS name, 'folder' AS item_type, NULL AS file_type, created_at

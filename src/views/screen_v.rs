@@ -6,7 +6,8 @@ use crate::{
     controllers::account_c::AccountForm,
     models::{
         file_db::FileType,
-        folder_db::FolderSortType, folder_item::{FolderItem, ItemType},
+        folder_db::FolderSortType,
+        folder_item::{FolderItem, ItemType},
     },
     utilities::screen_utils::parse_position,
     views::{
@@ -211,13 +212,13 @@ pub fn render_screen_grid(
                                             FileType::Calculator => {(render_calculator_file())},
                                             FileType::Snake => {(render_snake_file())},
                                             FileType::FlappyBird => {(render_flappy_bird_file())},
-                                            FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name))},
+                                            FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name, true))},
                                             FileType::ThisPC => {(render_thispc_file(item.id.expect("No id column or value is null"), &item.name))},
                                             FileType::Music => {(render_music_file())},
                                         }
                                     }
                                     ItemType::Folder => {
-                                        (render_folder(item.id.expect("No id column or value is null"), &item.name))
+                                        (render_folder(item.id.expect("No id column or value is null"), &item.name, true))
                                     }
                                 }
                             }
@@ -241,13 +242,13 @@ pub fn render_screen_grid(
                                             FileType::Calculator => {(render_calculator_file())},
                                             FileType::Snake => {(render_snake_file())},
                                             FileType::FlappyBird => {(render_flappy_bird_file())},
-                                            FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name))},
+                                            FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name, true))},
                                             FileType::ThisPC => {(render_thispc_file(item.id.expect("No id column or value is null"), &item.name))},
                                             FileType::Music => {(render_music_file())},
                                         }
                                     }
                                     ItemType::Folder => {
-                                        (render_folder(item.id.expect("No id column or value is null"), &item.name))
+                                        (render_folder(item.id.expect("No id column or value is null"), &item.name, true))
                                     }
                                 }
                             }

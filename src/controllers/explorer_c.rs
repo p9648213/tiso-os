@@ -12,7 +12,7 @@ use crate::{
     middlewares::session_mw::UserId,
     models::{
         error::AppError,
-        folder_db::{Folder, FolderType},
+        folder_db::{Folder, FolderSortType, FolderType},
         folder_item::FolderItem,
     },
     utilities::user_utils::parse_user_id,
@@ -50,6 +50,16 @@ pub async fn get_explorer_window(
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
             })?;
 
+            let rows = FolderItem::get_folder_items(
+                folder_id,
+                user_id,
+                &FolderSortType::DateCreated,
+                &pool,
+            )
+            .await?;
+
+            let folder_items = FolderItem::try_from_vec(rows, None);
+
             Ok((
                 [(
                     "HX-Trigger",
@@ -63,6 +73,7 @@ pub async fn get_explorer_window(
                     folder_name,
                     explorer_path.width,
                     explorer_path.height,
+                    &folder_items,
                 )
                 .render(),
             ))
@@ -82,6 +93,16 @@ pub async fn get_explorer_window(
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
             })?;
 
+            let rows = FolderItem::get_folder_items(
+                folder_id,
+                user_id,
+                &FolderSortType::DateCreated,
+                &pool,
+            )
+            .await?;
+
+            let folder_items = FolderItem::try_from_vec(rows, None);
+
             Ok((
                 [(
                     "HX-Trigger",
@@ -95,6 +116,7 @@ pub async fn get_explorer_window(
                     folder_name,
                     explorer_path.width,
                     explorer_path.height,
+                    &folder_items,
                 )
                 .render(),
             ))
@@ -119,6 +141,16 @@ pub async fn get_explorer_window(
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
             })?;
 
+            let rows = FolderItem::get_folder_items(
+                folder_id,
+                user_id,
+                &FolderSortType::DateCreated,
+                &pool,
+            )
+            .await?;
+
+            let folder_items = FolderItem::try_from_vec(rows, None);
+
             Ok((
                 [(
                     "HX-Trigger",
@@ -132,6 +164,7 @@ pub async fn get_explorer_window(
                     folder_name,
                     explorer_path.width,
                     explorer_path.height,
+                    &folder_items,
                 )
                 .render(),
             ))
