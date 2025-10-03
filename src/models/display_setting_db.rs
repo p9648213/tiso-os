@@ -74,7 +74,7 @@ impl DisplaySetting {
         user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<DisplaySetting, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -82,12 +82,14 @@ impl DisplaySetting {
 
         let columns = columns.join(",");
 
-        client
+        let row = client
             .query_one(
                 &format!(r#"SELECT {columns} FROM "display_setting" WHERE user_id = $1"#),
                 &[&user_id],
             )
-            .await
+            .await?;
+
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn update_background_picture_by_user_id(

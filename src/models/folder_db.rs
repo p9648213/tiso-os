@@ -25,6 +25,7 @@ pub enum FolderSortType {
     DateCreated,
 }
 
+#[derive(Debug)]
 pub struct Folder {
     pub id: Option<i32>,
     pub user_id: Option<i32>,
@@ -86,7 +87,7 @@ impl Folder {
         user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -94,19 +95,21 @@ impl Folder {
 
         let columns = columns.join(",");
 
-        client
+        let row = client
             .query_one(
                 &format!("SELECT {columns} FROM folder WHERE id = $1 AND user_id = $2"),
                 &[&folder_id, &user_id],
             )
-            .await
+            .await?;
+
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn get_desktop_folder(
         user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -114,19 +117,21 @@ impl Folder {
 
         let columns = columns.join(",");
 
-        client
+        let row = client
             .query_one(
                 &format!("SELECT {columns} FROM folder WHERE user_id = $1 AND folder_type = $2"),
                 &[&user_id, &FolderType::Desktop],
             )
-            .await
+            .await?;
+
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn get_root_folder(
         user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -134,19 +139,21 @@ impl Folder {
 
         let columns = columns.join(",");
 
-        client
+        let row = client
             .query_one(
                 &format!("SELECT {columns} FROM folder WHERE user_id = $1 AND folder_type = $2"),
                 &[&user_id, &FolderType::Root],
             )
-            .await
+            .await?;
+
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn get_taskbar_folder(
         user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -154,12 +161,14 @@ impl Folder {
 
         let columns = columns.join(",");
 
-        client
+        let row = client
             .query_one(
                 &format!("SELECT {columns} FROM folder WHERE user_id = $1 AND folder_type = $2"),
                 &[&user_id, &FolderType::Taskbar],
             )
-            .await
+            .await?;
+
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn create_folder(
@@ -169,18 +178,20 @@ impl Folder {
         parent_folder_id: Option<i32>,
         desktop_position: Option<String>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
-        client.query_one(
+        let row = client.query_one(
             "INSERT INTO folder (user_id, folder_name, folder_type, parent_folder_id, desktop_position) 
                     VALUES ($1, $2, $3, $4, $5) RETURNING id",
             &[&user_id, &folder_name, &folder_type, &parent_folder_id, &desktop_position],
         )
-        .await
+        .await?;
+
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn update_desktop_position(

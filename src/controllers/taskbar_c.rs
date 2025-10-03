@@ -15,8 +15,7 @@ pub async fn get_taskbar_menu_files(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let rows = File::get_taskbar_menu_files(user_id, vec!["file_type"], &pool).await?;
-    let files = File::try_from_vec(rows, None);
+    let files = File::get_taskbar_menu_files(user_id, vec!["file_type"], &pool).await?;
 
     Ok(render_taskbar_menu_files(&files).render())
 }

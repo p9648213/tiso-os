@@ -36,29 +36,19 @@ pub async fn get_explorer_window(
 
     match explorer_path.folder_type {
         FolderType::Root => {
-            let row = Folder::get_root_folder(user_id, vec!["id", "folder_name"], &pool).await?;
+            let folder = Folder::get_root_folder(user_id, vec!["id", "folder_name"], &pool).await?;
 
-            let folder = Folder::try_from(&row, None);
+            println!("{:?}", folder);
 
-            let folder_id = folder.id.ok_or_else(|| {
-                tracing::error!("No id column or value is null");
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })?;
+            let folder_id = folder.id.unwrap();
 
-            let folder_name = folder.folder_name.ok_or_else(|| {
-                tracing::error!("No folder_name column or value is null");
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })?;
-
-            let rows = FolderItem::get_folder_items(
+            let folder_items = FolderItem::get_folder_items(
                 folder_id,
                 user_id,
                 &FolderSortType::DateCreated,
                 &pool,
             )
             .await?;
-
-            let folder_items = FolderItem::try_from_vec(rows, None);
 
             Ok((
                 [(
@@ -70,7 +60,7 @@ pub async fn get_explorer_window(
                 )],
                 render_explorer_window(
                     folder_id,
-                    folder_name,
+                    folder.folder_name.unwrap(),
                     explorer_path.width,
                     explorer_path.height,
                     &folder_items,
@@ -79,29 +69,18 @@ pub async fn get_explorer_window(
             ))
         }
         FolderType::Desktop => {
-            let row = Folder::get_desktop_folder(user_id, vec!["id", "folder_name"], &pool).await?;
+            let folder =
+                Folder::get_desktop_folder(user_id, vec!["id", "folder_name"], &pool).await?;
 
-            let folder = Folder::try_from(&row, None);
+            let folder_id = folder.id.unwrap();
 
-            let folder_id = folder.id.ok_or_else(|| {
-                tracing::error!("No id column or value is null");
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })?;
-
-            let folder_name = folder.folder_name.ok_or_else(|| {
-                tracing::error!("No folder_name column or value is null");
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })?;
-
-            let rows = FolderItem::get_folder_items(
+            let folder_items = FolderItem::get_folder_items(
                 folder_id,
                 user_id,
                 &FolderSortType::DateCreated,
                 &pool,
             )
             .await?;
-
-            let folder_items = FolderItem::try_from_vec(rows, None);
 
             Ok((
                 [(
@@ -113,7 +92,7 @@ pub async fn get_explorer_window(
                 )],
                 render_explorer_window(
                     folder_id,
-                    folder_name,
+                    folder.folder_name.unwrap(),
                     explorer_path.width,
                     explorer_path.height,
                     &folder_items,
@@ -122,34 +101,23 @@ pub async fn get_explorer_window(
             ))
         }
         FolderType::Normal => {
-            let row = Folder::get_folder(
+            let folder = Folder::get_folder(
                 explorer_path.folder_id,
                 user_id,
                 vec!["id", "folder_name"],
                 &pool,
             )
             .await?;
-            let folder = Folder::try_from(&row, None);
 
-            let folder_id = folder.id.ok_or_else(|| {
-                tracing::error!("No id column or value is null");
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })?;
+            let folder_id = folder.id.unwrap();
 
-            let folder_name = folder.folder_name.ok_or_else(|| {
-                tracing::error!("No folder_name column or value is null");
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })?;
-
-            let rows = FolderItem::get_folder_items(
+            let folder_items = FolderItem::get_folder_items(
                 folder_id,
                 user_id,
                 &FolderSortType::DateCreated,
                 &pool,
             )
             .await?;
-
-            let folder_items = FolderItem::try_from_vec(rows, None);
 
             Ok((
                 [(
@@ -161,7 +129,7 @@ pub async fn get_explorer_window(
                 )],
                 render_explorer_window(
                     folder_id,
-                    folder_name,
+                    folder.folder_name.unwrap(),
                     explorer_path.width,
                     explorer_path.height,
                     &folder_items,

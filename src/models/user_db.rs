@@ -81,10 +81,7 @@ impl User {
 
         let user = User::try_from(&row, None);
 
-        let user_id = user.id.ok_or_else(|| {
-            tracing::error!("No id column or value is null");
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
+        let user_id = user.id.unwrap();
 
         txn.execute(
             "INSERT INTO folder (user_id, folder_name, folder_type) VALUES 
@@ -112,18 +109,13 @@ impl User {
 
         let taskbar_folder = Folder::try_from(&row, None);
 
-        let taskbar_folder_id = taskbar_folder.id.ok_or_else(|| {
-            tracing::error!("No id column or value is null");
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
-
         txn.execute(
             "INSERT INTO file (user_id, folder_id, file_name, file_type) VALUES 
                 ($1, $2, 'Calculator', 'Calculator'),
                 ($1, $2, 'Snake', 'Snake'),
                 ($1, $2, 'FlappyBird', 'FlappyBird'),
                 ($1, $2, 'Music Player', 'Music')",
-            &[&user_id, &taskbar_folder_id],
+            &[&user_id, &taskbar_folder.id.unwrap()],
         )
         .await?;
 
@@ -142,15 +134,10 @@ impl User {
 
         let desktop_folder = Folder::try_from(&row, None);
 
-        let desktop_folder_id = desktop_folder.id.ok_or_else(|| {
-            tracing::error!("No id column or value is null");
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
-
         txn.execute(
             "INSERT INTO file (user_id, folder_id, file_name, file_type) VALUES 
                 ($1, $2, 'This PC', 'ThisPC')",
-            &[&user_id, &desktop_folder_id],
+            &[&user_id, &desktop_folder.id.unwrap()],
         )
         .await?;
 

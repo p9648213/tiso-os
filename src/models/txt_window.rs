@@ -30,7 +30,7 @@ impl TxtWindow {
         txt_columns: Vec<&str>,
         file_columns: Vec<&str>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<TxtWindow, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -48,13 +48,15 @@ impl TxtWindow {
 
         let columns = columns.join(",");
 
-        client
+        let row = client
             .query_one(
                 &format!(
                     "SELECT {columns} FROM txt JOIN file ON txt.file_id = file.id WHERE file.id = $1 AND file.user_id = $2"
                 ),
                 &[&file_id, &user_id],
             )
-            .await
+            .await?;
+
+        Ok(Self::try_from(&row))
     }
 }

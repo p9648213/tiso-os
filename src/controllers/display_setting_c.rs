@@ -27,28 +27,25 @@ pub async fn get_display_setting_window(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let row = DisplaySetting::get_setting_by_user_id(
+    let display_setting = DisplaySetting::get_setting_by_user_id(
         user_id,
         vec!["background_type", "background_color"],
         &pool,
     )
     .await?;
 
-    let display_setting = DisplaySetting::try_from(&row, None);
-
-    let background_type = display_setting.background_type.ok_or_else(|| {
-        tracing::error!("No background_type column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let background_color = display_setting.background_color;
-
     Ok((
         [(
             "HX-Trigger",
             r#"{"openFile":{"image":"/assets/images/display-setting.svg", "window_id": "display-setting-window"}}"#,
         )],
-        render_display_setting_window(height, width, background_type, background_color).render(),
+        render_display_setting_window(
+            height,
+            width,
+            display_setting.background_type.unwrap(),
+            display_setting.background_color,
+        )
+        .render(),
     ))
 }
 
@@ -69,30 +66,27 @@ pub async fn update_background_type(
 
     let background = match background_type {
         BackgroundType::SolidColor => {
-            let row =
+            let display_setting =
                 DisplaySetting::get_setting_by_user_id(user_id, vec!["background_color"], &pool)
                     .await?;
 
-            DisplaySetting::try_from(&row, None)
-                .background_color
-                .unwrap_or_default()
+            display_setting.background_color.unwrap_or_default()
         }
         BackgroundType::Picture => {
-            let row = DisplaySetting::get_setting_by_user_id(
+            let display_setting = DisplaySetting::get_setting_by_user_id(
                 user_id,
                 vec!["background_picture", "background_content_type"],
                 &pool,
             )
             .await?;
 
-            let setting = DisplaySetting::try_from(&row, None);
-
-            let content_type = setting.background_content_type.unwrap_or_default();
+            let content_type = display_setting.background_content_type.unwrap_or_default();
 
             format!(
                 "url('data:{};base64,{}');",
                 content_type,
-                general_purpose::STANDARD.encode(setting.background_picture.unwrap_or_default())
+                general_purpose::STANDARD
+                    .encode(display_setting.background_picture.unwrap_or_default())
             )
         }
     };

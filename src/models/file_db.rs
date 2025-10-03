@@ -79,7 +79,7 @@ impl File {
         user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<File, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -94,14 +94,14 @@ impl File {
             )
             .await?;
 
-        Ok(row)
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn get_taskbar_menu_files(
         user_id: i32,
         columns: Vec<&str>,
         pool: &Pool,
-    ) -> Result<Vec<Row>, AppError> {
+    ) -> Result<Vec<File>, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -109,23 +109,16 @@ impl File {
 
         let taskbar_folder = Folder::get_taskbar_folder(user_id, vec!["id"], pool).await?;
 
-        let taskbar_folder = Folder::try_from(&taskbar_folder, None);
-
-        let taskbar_folder_id = taskbar_folder.id.ok_or_else(|| {
-            tracing::error!("No id column or value is null");
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })?;
-
         let columns = columns.join(",");
 
         let rows = client
             .query(
                 &format!("SELECT {columns} FROM file WHERE user_id = $1 AND folder_id = $2"),
-                &[&user_id, &taskbar_folder_id],
+                &[&user_id, &taskbar_folder.id.unwrap()],
             )
             .await?;
 
-        Ok(rows)
+        Ok(Self::try_from_vec(rows, None))
     }
 
     pub async fn create_file(
@@ -135,13 +128,13 @@ impl File {
         file_type: FileType,
         desktop_position: Option<String>,
         pool: &Pool,
-    ) -> Result<Row, AppError> {
+    ) -> Result<File, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
-        client
+        let row = client
             .query_one(
                 "INSERT INTO file (user_id, folder_id, file_name, file_type, desktop_position) 
                     VALUES ($1, $2, $3, $4, $5) RETURNING id",
@@ -153,7 +146,9 @@ impl File {
                     &desktop_position,
                 ],
             )
-            .await
+            .await?;
+
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn update_desktop_position(

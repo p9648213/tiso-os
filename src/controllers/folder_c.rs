@@ -1,7 +1,6 @@
 use axum::{
     Extension, Form,
     extract::{Path, State},
-    http::StatusCode,
     response::IntoResponse,
 };
 use deadpool_postgres::Pool;
@@ -37,7 +36,7 @@ pub async fn create_folder(
         Some(position_id)
     };
 
-    let row = Folder::create_folder(
+    let folder = Folder::create_folder(
         user_id,
         "New Folder",
         FolderType::Normal,
@@ -47,14 +46,7 @@ pub async fn create_folder(
     )
     .await?;
 
-    let folder = Folder::try_from(&row, None);
-
-    let folder_id = folder.id.ok_or_else(|| {
-        tracing::error!("No id column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    Ok(render_folder(folder_id, &None, &None).render())
+    Ok(render_folder(folder.id.unwrap(), &None, &None).render())
 }
 
 pub async fn update_folder_desktop_position(
@@ -112,16 +104,9 @@ pub async fn get_folder_input(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let row = Folder::get_folder(folder_id, user_id, vec!["folder_name"], &pool).await?;
+    let folder = Folder::get_folder(folder_id, user_id, vec!["folder_name"], &pool).await?;
 
-    let folder = Folder::try_from(&row, None);
-
-    let folder_name = folder.folder_name.ok_or_else(|| {
-        tracing::error!("No folder_name column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    Ok(render_folder_input(folder_id, &folder_name).render())
+    Ok(render_folder_input(folder_id, &folder.folder_name.unwrap()).render())
 }
 
 pub async fn rename_folder(

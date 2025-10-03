@@ -1,7 +1,6 @@
 use axum::{
     Extension,
     extract::{Path, State},
-    http::StatusCode,
     response::IntoResponse,
 };
 use deadpool_postgres::Pool;
@@ -32,7 +31,7 @@ pub async fn create_txt(
         Some(position_id)
     };
 
-    let row = File::create_file(
+    let file = File::create_file(
         user_id,
         folder_id,
         "New Text",
@@ -42,12 +41,7 @@ pub async fn create_txt(
     )
     .await?;
 
-    let file = File::try_from(&row, None);
-
-    let file_id = file.id.ok_or_else(|| {
-        tracing::error!("No id column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
+    let file_id = file.id.unwrap();
 
     Txt::create_txt(file_id, &pool).await?;
 
@@ -61,16 +55,9 @@ pub async fn get_txt_input(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let row = File::get_file(file_id, user_id, vec!["file_name"], &pool).await?;
+    let file = File::get_file(file_id, user_id, vec!["file_name"], &pool).await?;
 
-    let file = File::try_from(&row, None);
-
-    let file_name = file.file_name.ok_or_else(|| {
-        tracing::error!("No file_name column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    Ok(render_txt_input(file_id, &file_name).render())
+    Ok(render_txt_input(file_id, &file.file_name.unwrap()).render())
 }
 
 pub async fn get_txt_window(
@@ -80,21 +67,10 @@ pub async fn get_txt_window(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let row =
+    let txt_window =
         TxtWindow::get_txt_window(file_id, user_id, vec!["id"], vec!["id", "file_name"], &pool)
             .await?;
-
-    let txt_window = TxtWindow::try_from(&row);
-
-    let file_name = txt_window.file.file_name.ok_or_else(|| {
-        tracing::error!("No file_name column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let txt_id = txt_window.txt.id.ok_or_else(|| {
-        tracing::error!("No id column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
+    let txt_id = txt_window.txt.id.unwrap();
 
     Ok((
         [(
@@ -104,6 +80,6 @@ pub async fn get_txt_window(
                 txt_id
             ),
         )],
-        render_txt_window(&file_name, txt_id, height, width).render(),
+        render_txt_window(&txt_window.file.file_name.unwrap(), txt_id, height, width).render(),
     ))
 }

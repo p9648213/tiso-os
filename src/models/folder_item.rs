@@ -73,7 +73,7 @@ impl FolderItem {
         user_id: i32,
         sort_type: &FolderSortType,
         pool: &Pool,
-    ) -> Result<Vec<Row>, AppError> {
+    ) -> Result<Vec<FolderItem>, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -93,10 +93,12 @@ impl FolderItem {
             FolderSortType::DateCreated => &format!("{sql} ORDER BY created_at ASC"),
         };
 
-        client.query(sql, &[&desktop_id, &user_id]).await.map_err(|error| {
+        let row = client.query(sql, &[&desktop_id, &user_id]).await.map_err(|error| {
             tracing::error!("Couldn't query postgres: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-        })
+        })?;
+
+        Ok(Self::try_from_vec(row, None))
     }
 
     pub async fn get_folder_items(
@@ -104,7 +106,7 @@ impl FolderItem {
         user_id: i32,
         sort_type: &FolderSortType,
         pool: &Pool,
-    ) -> Result<Vec<Row>, AppError> {
+    ) -> Result<Vec<FolderItem>, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -124,12 +126,14 @@ impl FolderItem {
             FolderSortType::DateCreated => &format!("{sql} ORDER BY created_at ASC"),
         };
 
-        client
+        let row = client
             .query(sql, &[&folder_id, &user_id, &FileType::ThisPC])
             .await
             .map_err(|error| {
                 tracing::error!("Couldn't query postgres: {:?}", error);
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-            })
+            })?;
+
+        Ok(Self::try_from_vec(row, None))
     }
 }

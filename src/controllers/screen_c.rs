@@ -1,6 +1,6 @@
 use std::vec;
 
-use axum::{Extension, Form, extract::State, http::StatusCode, response::IntoResponse};
+use axum::{Extension, Form, extract::State, response::IntoResponse};
 use base64::{Engine, engine::general_purpose};
 use deadpool_postgres::Pool;
 use hypertext::Renderable;
@@ -34,7 +34,7 @@ pub async fn get_screen(
 
     let user_id = parse_user_id(user_id)?;
 
-    let row = DisplaySetting::get_setting_by_user_id(
+    let display_setting = DisplaySetting::get_setting_by_user_id(
         user_id,
         vec![
             "background_type",
@@ -46,24 +46,12 @@ pub async fn get_screen(
     )
     .await?;
 
-    let display_setting = DisplaySetting::try_from(&row, None);
-
-    let background_type = display_setting.background_type.ok_or_else(|| {
-        tracing::error!("No background_type column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let background_content_type = display_setting.background_content_type.ok_or_else(|| {
-        tracing::error!("No background_content_type column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let background = match background_type {
+    let background = match display_setting.background_type.unwrap() {
         BackgroundType::SolidColor => display_setting.background_color.unwrap_or_default(),
         BackgroundType::Picture => {
             format!(
                 "url('data:{};base64,{}');",
-                background_content_type,
+                display_setting.background_content_type.unwrap(),
                 general_purpose::STANDARD
                     .encode(display_setting.background_picture.unwrap_or_default())
             )
@@ -80,23 +68,21 @@ pub async fn create_screen_grid(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let rows = Folder::get_desktop_folder(user_id, vec!["id", "sort_type"], &pool).await?;
+    let desktop_folder =
+        Folder::get_desktop_folder(user_id, vec!["id", "sort_type"], &pool).await?;
 
-    let desktop_folder = Folder::try_from(&rows, None);
+    let desktop_id = desktop_folder.id.unwrap();
+    let sort_type = desktop_folder.sort_type.unwrap();
 
-    let desktop_id = desktop_folder.id.ok_or_else(|| {
-        tracing::error!("No id column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
+    let desktop_items =
+        FolderItem::get_desktop_items(desktop_id, user_id, &sort_type, &pool).await?;
 
-    let sort_type = desktop_folder.sort_type.ok_or_else(|| {
-        tracing::error!("No sort_type column or value is null");
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
-    })?;
-
-    let rows = FolderItem::get_desktop_items(desktop_id, user_id, &sort_type, &pool).await?;
-
-    let items = FolderItem::try_from_vec(rows, None);
-
-    Ok(render_screen_grid(form.height, form.width, desktop_id, &sort_type, items).render())
+    Ok(render_screen_grid(
+        form.height,
+        form.width,
+        desktop_id,
+        &sort_type,
+        desktop_items,
+    )
+    .render())
 }
