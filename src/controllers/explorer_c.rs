@@ -38,8 +38,6 @@ pub async fn get_explorer_window(
         FolderType::Root => {
             let folder = Folder::get_root_folder(user_id, vec!["id", "folder_name"], &pool).await?;
 
-            println!("{:?}", folder);
-
             let folder_id = folder.id.unwrap();
 
             let folder_items = FolderItem::get_folder_items(
