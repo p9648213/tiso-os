@@ -146,12 +146,12 @@ pub fn render_explorer_window(
                     }
                     div class="flex flex-5 gap-4 p-4 border-zinc-700 border-l" {
                         @for item in folder_items {
-                            @match item.item_type.as_ref().expect("No item_type column or value is null") {
+                            @match item.item_type.as_ref().unwrap() {
                                 ItemType::File => {
-                                    @match item.file_type.as_ref().expect("No file_type column or value is null") {
+                                    @match item.file_type.as_ref().unwrap() {
                                         FileType::Txt => {
                                             div class="relative w-22 h-20" {
-                                                (render_txt_file(item.id.expect("No id column or value is null"), &item.name, &Some("explorer".to_string())))
+                                                (render_txt_file(item.id.unwrap(), &item.name, &Some("explorer".to_string())))
                                             }
                                         },
                                         _ => {}
@@ -159,7 +159,7 @@ pub fn render_explorer_window(
                                 }
                                 ItemType::Folder => {
                                     div class="relative w-22 h-20" {
-                                        (render_folder(item.id.expect("No id column or value is null"), &item.name, &Some("explorer".to_string())))
+                                        (render_folder(item.id.unwrap(), &item.name, &Some("explorer".to_string())))
                                     }
                                 }
                             }

@@ -206,19 +206,19 @@ pub fn render_screen_grid(
                             draggable="true"
                         {
                             @if let Some(item) = item_map.get(&(row, col)) {
-                                @match item.item_type.as_ref().expect("No item_type column or value is null") {
+                                @match item.item_type.as_ref().unwrap() {
                                     ItemType::File => {
-                                        @match item.file_type.as_ref().expect("No file_type column or value is null") {
+                                        @match item.file_type.as_ref().unwrap() {
                                             FileType::Calculator => {(render_calculator_file())},
                                             FileType::Snake => {(render_snake_file())},
                                             FileType::FlappyBird => {(render_flappy_bird_file())},
-                                            FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name, &None))},
-                                            FileType::ThisPC => {(render_thispc_file(item.id.expect("No id column or value is null"), &item.name))},
+                                            FileType::Txt => {(render_txt_file(item.id.unwrap(), &item.name, &None))},
+                                            FileType::ThisPC => {(render_thispc_file(item.id.unwrap(), &item.name))},
                                             FileType::Music => {(render_music_file())},
                                         }
                                     }
                                     ItemType::Folder => {
-                                        (render_folder(item.id.expect("No id column or value is null"), &item.name, &None))
+                                        (render_folder(item.id.unwrap(), &item.name, &None))
                                     }
                                 }
                             }
@@ -236,19 +236,19 @@ pub fn render_screen_grid(
                             draggable="true"
                         {
                             @if let Some(item) = items.get((col * rows + row) as usize) {
-                                @match item.item_type.as_ref().expect("No item_type column or value is null") {
+                                @match item.item_type.as_ref().unwrap() {
                                     ItemType::File => {
-                                        @match item.file_type.as_ref().expect("No file_type column or value is null") {
+                                        @match item.file_type.as_ref().unwrap(){
                                             FileType::Calculator => {(render_calculator_file())},
                                             FileType::Snake => {(render_snake_file())},
                                             FileType::FlappyBird => {(render_flappy_bird_file())},
-                                            FileType::Txt => {(render_txt_file(item.id.expect("No id column or value is null"), &item.name, &None))},
-                                            FileType::ThisPC => {(render_thispc_file(item.id.expect("No id column or value is null"), &item.name))},
+                                            FileType::Txt => {(render_txt_file(item.id.unwrap(), &item.name, &None))},
+                                            FileType::ThisPC => {(render_thispc_file(item.id.unwrap(), &item.name))},
                                             FileType::Music => {(render_music_file())},
                                         }
                                     }
                                     ItemType::Folder => {
-                                        (render_folder(item.id.expect("No id column or value is null"), &item.name, &None))
+                                        (render_folder(item.id.unwrap(), &item.name, &None))
                                     }
                                 }
                             }
