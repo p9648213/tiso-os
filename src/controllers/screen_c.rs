@@ -11,9 +11,10 @@ use crate::{
     models::{
         display_setting_db::{BackgroundType, DisplaySetting},
         error::AppError,
-        folder_db::Folder, folder_item::FolderItem,
+        folder_db::Folder,
+        folder_item::FolderItem,
     },
-    utilities::user_utils::parse_user_id,
+    utilities::general::parse_user_id,
     views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
 };
 

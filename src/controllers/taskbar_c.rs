@@ -5,7 +5,7 @@ use hypertext::Renderable;
 use crate::{
     middlewares::session_mw::UserId,
     models::{error::AppError, file_db::File},
-    utilities::user_utils::parse_user_id,
+    utilities::general::parse_user_id,
     views::taskbar_v::render_taskbar_menu_files,
 };
 

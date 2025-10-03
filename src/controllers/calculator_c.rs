@@ -2,7 +2,7 @@ use axum::{Extension, extract::Path, response::IntoResponse};
 use hypertext::Renderable;
 
 use crate::{
-    middlewares::session_mw::UserId, models::error::AppError, utilities::user_utils::parse_user_id,
+    middlewares::session_mw::UserId, models::error::AppError, utilities::general::parse_user_id,
     views::calculator_v::render_calculator_window,
 };
 

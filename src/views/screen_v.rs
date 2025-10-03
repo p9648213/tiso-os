@@ -9,7 +9,7 @@ use crate::{
         folder_db::FolderSortType,
         folder_item::{FolderItem, ItemType},
     },
-    utilities::screen_utils::parse_position,
+    utilities::general::parse_position,
     views::{
         calculator_v::render_calculator_file, flappy_bird_v::render_flappy_bird_file,
         folder_v::render_folder, music_v::render_music_file, snake_v::render_snake_file,
