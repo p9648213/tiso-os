@@ -122,7 +122,10 @@ pub fn render_txt_window(
                     class="focus-visible:border-none focus-visible:outline-none w-full h-full"
                     contenteditable="true"
                 {
-                    "Hello World"
+                    "Hello Wo"
+                    u { "r"}
+                    em { "l" }
+                    strong { "d" }
                 }
             }
         }

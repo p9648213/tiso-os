@@ -41,7 +41,6 @@ export function setupTxtToolBar(txt_id) {
 export function setupTxtEditor(txtId) {
   const txtEditor = document.getElementById(`txt-editor-${txtId}`);
   const txtButtons = document.getElementById(`txt-buttons-${txtId}`);
-
   const boldButton = txtButtons.querySelector(".bold");
   const italicButton = txtButtons.querySelector(".italic");
   const underlineButton = txtButtons.querySelector(".underline");
@@ -83,6 +82,20 @@ function applyFormat(formatTag) {
       return selection.removeAllRanges();
     }
     recursiveParent = recursiveParent.parentElement;
+  }
+
+  if (
+    parentElement.innerHTML.includes(
+      `<${formatTag.toLowerCase()}>${selectedText}</${formatTag.toLowerCase()}>`
+    )
+  ) {
+    parentElement.innerHTML = parentElement.innerHTML.replace(
+      `<${formatTag.toLowerCase()}>${selectedText}</${formatTag.toLowerCase()}>`,
+      selectedText
+    );
+    return selection.removeAllRanges();
+  } else {
+    console.log(range);
   }
 
   const formatElement = document.createElement(formatTag);
