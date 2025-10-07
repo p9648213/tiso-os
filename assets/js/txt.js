@@ -73,30 +73,21 @@ function applyFormat(formatTag) {
 
   let parentElement = range.startContainer.parentElement;
 
-  let recursiveParentEl = parentElement;
-  let styledEl = null;
+  let recursiveParent = parentElement;
 
-  while (!recursiveParentEl.id.includes("txt-editor-")) {
-    if (recursiveParentEl.tagName === formatTag) {
-      styledEl = recursiveParentEl;
-      break;
+  while (recursiveParent && !recursiveParent.id.includes("txt-editor")) {
+    if (recursiveParent.tagName === formatTag) {
+      recursiveParent.outerHTML = recursiveParent.outerHTML
+        .replace("<" + formatTag.toLowerCase() + ">", "")
+        .replace("</" + formatTag.toLowerCase() + ">", "");
+      return selection.removeAllRanges();
     }
-    recursiveParentEl = recursiveParentEl.parentElement;
+    recursiveParent = recursiveParent.parentElement;
   }
 
-  if (styledEl) {
-    if (styledEl.children.length > 0) {
-      styledEl.parentElement.appendChild(styledEl.children[0]);
-      styledEl.parentElement.removeChild(styledEl);
-    } else {
-      // TODO - WHEN SELECT TEXT IN SAME ELEMENT
-    }
-  } else {
-    const formatElement = document.createElement(formatTag);
-    range.surroundContents(formatElement);
-  }
-
-  selection.removeAllRanges();
+  const formatElement = document.createElement(formatTag);
+  range.surroundContents(formatElement);
+  return selection.removeAllRanges();
 }
 
 function focusAfterChange(txtEditor) {
