@@ -95,7 +95,8 @@ function applyFormat(formatTag) {
     );
     return selection.removeAllRanges();
   } else {
-    console.log(range);
+    range.extractContents();
+    range.insertNode(document.createTextNode(selectedText));
   }
 
   const formatElement = document.createElement(formatTag);
