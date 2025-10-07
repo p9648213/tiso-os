@@ -1,3 +1,17 @@
+let quillLoaded = false;
+let quillLoadingPromise = null;
+
+export function setupTxtToolBar(txt_id) {
+  const txtToolBar = document.getElementById(`txt-header-${txt_id}`);
+
+  const close = txtToolBar.querySelector(".close");
+
+  close.addEventListener("click", function () {
+    document.getElementById(`txt-window-${txt_id}`).remove();
+    document.getElementById(`taskbar-txt-window-${txt_id}`).remove();
+  });
+}
+
 export function setupTxtWindowGrab(txtId) {
   const txtHeader = document.getElementById(`txt-header-${txtId}`);
   const txtWindow = document.getElementById(`txt-window-${txtId}`);
@@ -27,89 +41,32 @@ export function setupTxtWindowGrab(txtId) {
   });
 }
 
-export function setupTxtToolBar(txt_id) {
-  const txtToolBar = document.getElementById(`txt-header-${txt_id}`);
-
-  const close = txtToolBar.querySelector(".close");
-
-  close.addEventListener("click", function () {
-    document.getElementById(`txt-window-${txt_id}`).remove();
-    document.getElementById(`taskbar-txt-window-${txt_id}`).remove();
-  });
-}
-
-export function setupTxtEditor(txtId) {
-  const txtEditor = document.getElementById(`txt-editor-${txtId}`);
-  const txtButtons = document.getElementById(`txt-buttons-${txtId}`);
-  const boldButton = txtButtons.querySelector(".bold");
-  const italicButton = txtButtons.querySelector(".italic");
-  const underlineButton = txtButtons.querySelector(".underline");
-
-  boldButton.addEventListener("mousedown", () => {
-    applyFormat("STRONG");
-    focusAfterChange(txtEditor);
-  });
-
-  italicButton.addEventListener("mousedown", () => {
-    applyFormat("EM");
-    focusAfterChange(txtEditor);
-  });
-
-  underlineButton.addEventListener("mousedown", () => {
-    applyFormat("U");
-    focusAfterChange(txtEditor);
-  });
-}
-
-function applyFormat(formatTag) {
-  const selection = window.getSelection();
-  if (!selection.rangeCount) return;
-
-  const range = selection.getRangeAt(0);
-  const selectedText = range.toString();
-
-  if (selectedText.length === 0) return;
-
-  let parentElement = range.startContainer.parentElement;
-
-  let recursiveParent = parentElement;
-
-  while (recursiveParent && !recursiveParent.id.includes("txt-editor")) {
-    if (recursiveParent.tagName === formatTag) {
-      recursiveParent.outerHTML = recursiveParent.outerHTML
-        .replace("<" + formatTag.toLowerCase() + ">", "")
-        .replace("</" + formatTag.toLowerCase() + ">", "");
-      return selection.removeAllRanges();
+export async function setupTxtEditor(txtId) {
+  if (!quillLoaded) {
+    if (!quillLoadingPromise) {
+      quillLoadingPromise = new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "/assets/js/lib/quill.js";
+        script.onload = () => {
+          quillLoaded = true;
+          console.log("✅ Quill loaded");
+          resolve();
+        };
+        script.onerror = () => reject(new Error("Failed to load Quill"));
+        document.head.appendChild(script);
+      });
     }
-    recursiveParent = recursiveParent.parentElement;
+    await quillLoadingPromise;
   }
 
-  if (
-    parentElement.innerHTML.includes(
-      `<${formatTag.toLowerCase()}>${selectedText}</${formatTag.toLowerCase()}>`
-    )
-  ) {
-    parentElement.innerHTML = parentElement.innerHTML.replace(
-      `<${formatTag.toLowerCase()}>${selectedText}</${formatTag.toLowerCase()}>`,
-      selectedText
-    );
-    return selection.removeAllRanges();
-  } else {
-    range.extractContents();
-    range.insertNode(document.createTextNode(selectedText));
+  const selector = `#txt-editor-${txtId}`;
+  const txtEditor = document.querySelector(selector);
+  if (!txtEditor) {
+    console.error(`❌ Element ${selector} not found`);
+    return;
   }
 
-  const formatElement = document.createElement(formatTag);
-  range.surroundContents(formatElement);
-  return selection.removeAllRanges();
-}
-
-function focusAfterChange(txtEditor) {
-  txtEditor.focus();
-  const range = document.createRange();
-  range.selectNodeContents(txtEditor);
-  range.collapse(false);
-  const selection = window.getSelection();
-  selection.removeAllRanges();
-  selection.addRange(range);
+  new Quill(selector, {
+    theme: "snow",
+  });
 }

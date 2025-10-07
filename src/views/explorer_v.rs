@@ -15,8 +15,8 @@ pub fn render_explorer_window(
     parent_height: i32,
     folder_items: &Vec<FolderItem>,
 ) -> impl Renderable {
-    let window_width = 1320;
-    let window_height = 800;
+    let window_width = parent_width * 70 / 100;
+    let window_height = parent_height * 90 / 100;
 
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
     let top = ((parent_height / 2) - (window_height / 2)).max(0);

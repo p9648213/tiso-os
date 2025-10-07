@@ -313,8 +313,12 @@ export function setupScreenItemDrag() {
         const itemType = dragItemIdSplit[0];
         const itemId = dragItemIdSplit[1];
 
+        let isRoot = dragChild.getAttribute("data-folder-type") === "Root";
+
         const response = await fetch(
-          `/update/${itemType}/position/${itemId}/${destopId}/${dropPosition}`,
+          `/update/${
+            isRoot ? "file" : itemType
+          }/position/${itemId}/${destopId}/${dropPosition}`,
           {
             method: "POST",
             headers: {

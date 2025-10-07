@@ -69,8 +69,8 @@ pub fn render_txt_window(
     parent_height: i32,
     parent_width: i32,
 ) -> impl Renderable {
-    let window_width = 600;
-    let window_height = 500;
+    let window_width = parent_width * 40 / 100;
+    let window_height = parent_height * 75 / 100;
 
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
     let top = ((parent_height / 2) - (window_height / 2)).max(0);
@@ -78,23 +78,16 @@ pub fn render_txt_window(
     maud! {
         (Raw::dangerously_create(format!(
             r#"
+                <link href="/assets/css/lib/quill.snow.css" rel="stylesheet">
                 <script type="module">
                     import {{setupTxtWindowGrab, setupTxtEditor, setupTxtToolBar}} from "/assets/js/txt.js";
                     setupTxtWindowGrab({txt_id});
                     setupTxtEditor({txt_id});
-                    const txtEditor = document.getElementById("txt-editor-{txt_id}");
-                    txtEditor.focus();
-                    const range = document.createRange();
-                    range.selectNodeContents(txtEditor);
-                    range.collapse(false);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                    setupTxtToolBar({})
+                    setupTxtToolBar({txt_id});
                 </script>
-            "#,
-            txt_id
+            "#
         )))
+
         div
             id={ "txt-window-" (txt_id) }
             class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
@@ -111,21 +104,8 @@ pub fn render_txt_window(
                     img class="hover:opacity-70 w-5 h-5 cursor-pointer close" src="/assets/images/x.svg" draggable="false";
                 }
             }
-            div id={"txt-buttons-" (txt_id)} class="flex gap-3 bg-zinc-900 px-3 py-2 border-zinc-700 border-t border-b" {
-                img class="hover:opacity-70 w-5 h-5 cursor-pointer bold" src="/assets/images/bold.svg" draggable="false";
-                img class="hover:opacity-70 w-5 h-5 italic cursor-pointer" src="/assets/images/italic.svg" draggable="false";
-                img class="hover:opacity-70 w-5 h-5 underline cursor-pointer" src="/assets/images/underline.svg" draggable="false";
-            }
-            div class="px-3 py-2 h-full" {
-                div
-                    id={"txt-editor-" (txt_id)}
-                    class="focus-visible:border-none focus-visible:outline-none w-full h-full"
-                    contenteditable="true"
-                    spellcheck="false"
-                {
-                    "Hello World"
-                }
-            }
+
+           div id={"txt-editor-" (txt_id)} {}
         }
     }
 }

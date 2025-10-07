@@ -21,3 +21,15 @@ body {
 button.htmx-request {
   pointer-events: none;
 }
+
+.ql-toolbar.ql-snow {
+  border: none !important;
+  background-color: gainsboro;
+  border-bottom: 1px solid #222 !important;
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+  background-color: whitesmoke;
+  color: black;
+}

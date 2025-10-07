@@ -13,7 +13,19 @@ export function setupGlobalEvents() {
       }
     }
 
+    const duplicateWindow = document.getElementById(windowId);
+
+    if (duplicateWindow) {
+      duplicateWindow.remove();
+    }
+
     const taskbarItemId = `taskbar-${windowId}`;
+
+    const duplicateTaskbarItem = document.getElementById(taskbarItemId);
+
+    if (duplicateTaskbarItem) {
+      duplicateTaskbarItem.remove();
+    }
 
     const taskbarMinimize = document.getElementById("taskbar-minimize");
 
