@@ -1,3 +1,5 @@
+let musicCleanUpEvent = [];
+
 export function setupMusicPlayer() {
   const audio = new Audio();
   let currentSongIndex = 0;
@@ -31,20 +33,15 @@ export function setupMusicPlayer() {
   const artistName = document.getElementById("artist-name");
   const albumArtContainer = document.getElementById("album-art");
 
-  // Set initial volume
   audio.volume = 0.7;
 
-  // Initialize audio context and analyser
   function initAudioContext() {
     if (!audioContext) {
-      // Properly check for AudioContext support with fallback to prefixed version
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if (AudioContext) {
         audioContext = new AudioContext();
         analyser = audioContext.createAnalyser();
         analyser.fftSize = 256;
-
-        // Create canvas for visualization
         createVisualizationCanvas();
       } else {
         console.warn("Web Audio API is not supported in this browser");
@@ -52,9 +49,7 @@ export function setupMusicPlayer() {
     }
   }
 
-  // Create canvas for wave visualization
   function createVisualizationCanvas() {
-    // Clear the container and create a canvas element
     albumArtContainer.innerHTML = "";
     canvas = document.createElement("canvas");
     canvas.width = 128;
@@ -62,13 +57,10 @@ export function setupMusicPlayer() {
     canvas.className = "w-32 h-32 rounded-sm";
     albumArtContainer.appendChild(canvas);
     canvasContext = canvas.getContext("2d");
-
-    // Initialize with a dark background
     canvasContext.fillStyle = "#1e293b";
     canvasContext.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  // Event listeners
   playPauseBtn.addEventListener("click", togglePlayPause);
   prevBtn.addEventListener("click", playPreviousSong);
   nextBtn.addEventListener("click", playNextSong);
@@ -78,8 +70,6 @@ export function setupMusicPlayer() {
   repeatBtn.addEventListener("click", toggleRepeat);
   loadMusicBtn.addEventListener("click", () => musicFileInput.click());
   musicFileInput.addEventListener("change", loadMusicFiles);
-
-  // Audio event listeners
   audio.addEventListener("timeupdate", updateProgress);
   audio.addEventListener("loadedmetadata", updateDuration);
   audio.addEventListener("ended", handleSongEnd);
@@ -100,7 +90,6 @@ export function setupMusicPlayer() {
     }
   });
 
-  // Functions
   function togglePlayPause() {
     if (playlist.length === 0) return;
 
@@ -175,23 +164,20 @@ export function setupMusicPlayer() {
 
     if (files.length === 0) return;
 
-    // Clear existing playlist if this is a new load
     if (playlist.length === 0) {
       playlistContainer.innerHTML = "";
     }
 
-    // Add files to playlist
     files.forEach((file) => {
       const song = {
         file: file,
-        name: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
+        name: file.name.replace(/\.[^/.]+$/, ""),
         url: URL.createObjectURL(file),
       };
       playlist.push(song);
       addSongToPlaylist(song, playlist.length - 1);
     });
 
-    // If this is the first song loaded, play it
     if (playlist.length === files.length) {
       currentSongIndex = 0;
       loadSong(currentSongIndex);
@@ -227,13 +213,11 @@ export function setupMusicPlayer() {
     songTitle.textContent = song.name;
     artistName.textContent = "Local file";
 
-    // Reset visualization if canvas exists
     if (canvas && canvasContext) {
       canvasContext.fillStyle = "#1e293b";
       canvasContext.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Update active song in playlist
     document.querySelectorAll("#playlist-container > div").forEach((el, i) => {
       if (i === index) {
         el.classList.add("bg-zinc-700");
@@ -249,7 +233,6 @@ export function setupMusicPlayer() {
       progressBar.style.width = `${progressPercent}%`;
       seekBar.value = progressPercent;
 
-      // Update current time
       const currentMinutes = Math.floor(audio.currentTime / 60);
       const currentSeconds = Math.floor(audio.currentTime % 60);
       currentTimeEl.textContent = `${currentMinutes}:${currentSeconds
@@ -273,14 +256,12 @@ export function setupMusicPlayer() {
     } else if (repeatMode === "all" || currentSongIndex < playlist.length - 1) {
       playNextSong();
     } else {
-      // End of playlist
       isPlaying = false;
       playIcon.classList.remove("hidden");
       pauseIcon.classList.add("hidden");
     }
   }
 
-  // Visualize audio data with wave effect
   function visualize() {
     if (!analyser || !canvas || !canvasContext) return;
 
@@ -292,16 +273,13 @@ export function setupMusicPlayer() {
 
       analyser.getByteFrequencyData(dataArray);
 
-      // Clear canvas
       canvasContext.fillStyle = "#1e293b";
       canvasContext.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw wave
       const barWidth = (canvas.width / bufferLength) * 2.5;
       let barHeight;
       let x = 0;
 
-      // Create gradient for the bars
       const gradient = canvasContext.createLinearGradient(
         0,
         canvas.height,
@@ -315,7 +293,6 @@ export function setupMusicPlayer() {
       for (let i = 0; i < bufferLength; i++) {
         barHeight = (dataArray[i] / 255) * canvas.height * 0.8;
 
-        // Draw the bar
         canvasContext.fillStyle = gradient;
         canvasContext.fillRect(
           x,
@@ -324,18 +301,15 @@ export function setupMusicPlayer() {
           barHeight
         );
 
-        // Add a reflection effect
         canvasContext.fillStyle = `rgba(59, 130, 246, 0.2)`;
         canvasContext.fillRect(x, canvas.height - barHeight - 5, barWidth, 3);
 
         x += barWidth + 1;
       }
 
-      // Add a subtle glow effect
       canvasContext.shadowBlur = 10;
       canvasContext.shadowColor = "#3b82f6";
 
-      // Draw center line
       canvasContext.strokeStyle = "rgba(255, 255, 255, 0.2)";
       canvasContext.lineWidth = 1;
       canvasContext.beginPath();
@@ -343,27 +317,74 @@ export function setupMusicPlayer() {
       canvasContext.lineTo(canvas.width, canvas.height / 2);
       canvasContext.stroke();
 
-      // Reset shadow
       canvasContext.shadowBlur = 0;
     }
 
     draw();
   }
 
-  // Close button functionality
   const closeBtn = document.querySelector("#music-player-header .close");
   closeBtn.addEventListener("click", function () {
-    // Clean up audio context
     if (audioContext) {
       audioContext.close();
     }
 
-    // Cancel any animation frames
     if (animationId) {
       cancelAnimationFrame(animationId);
     }
 
     document.getElementById("music-player-window").remove();
     document.getElementById("taskbar-music-player-window").remove();
+    musicCleanUpEvent.forEach((event) => {
+      document.removeEventListener(event.event, event.handler);
+    });
+    musicCleanUpEvent = [];
   });
+}
+
+export function centerMusicWindow() {
+  const win = document.getElementById("music-player-window");
+  const rect = win.getBoundingClientRect();
+  const top = (window.innerHeight - rect.height) / 2;
+  const left = (window.innerWidth - rect.width) / 2;
+  win.style.top = `${top - 48}px`;
+  win.style.left = `${left}px`;
+}
+
+export function setupMusicWindowGrab() {
+  const musicHeader = document.getElementById(`music-player-header`);
+  const musicWindow = document.getElementById(`music-player-window`);
+
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  musicHeader.addEventListener("mousedown", (event) => {
+    isDragging = true;
+    const rect = musicWindow.getBoundingClientRect();
+    offsetX = event.clientX - rect.left;
+    offsetY = event.clientY - rect.top;
+
+    event.preventDefault();
+  });
+
+  function handleMouseMove(event) {
+    if (!isDragging) return;
+
+    musicWindow.style.left = `${event.clientX - offsetX}px`;
+    musicWindow.style.top = `${event.clientY - offsetY}px`;
+  }
+
+  function handleMouseUp() {
+    isDragging = false;
+  }
+
+  musicCleanUpEvent.push({
+    event: "mousemove",
+    handler: handleMouseMove,
+  });
+  musicCleanUpEvent.push({ event: "mouseup", handler: handleMouseUp });
+
+  document.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("mouseup", handleMouseUp);
 }

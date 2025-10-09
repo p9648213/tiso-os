@@ -22,6 +22,13 @@ export function setupTaskbarMenuFiles() {
     let fileType = file.getAttribute("data-file-type");
 
     file.addEventListener("click", () => {
+      if (
+        (fileType === "flappybird" || fileType === "snake") &&
+        window.canvasRunning.length > 0
+      ) {
+        return menu.classList.add("hidden");
+      }
+
       htmx
         .ajax(
           "GET",

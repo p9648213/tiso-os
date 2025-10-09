@@ -1,9 +1,5 @@
 export function setupGlobalFunctions() {
   window.loadSnakeModule = function () {
-    if (window.canvasRunning.length > 0) {
-      document.getElementById("snake-canvas-container").remove();
-      return;
-    }
     const script = document.createElement("script");
     script.src = "/assets/snake/snake.js";
     script.onload = () => {
@@ -43,12 +39,6 @@ export function setupGlobalFunctions() {
   };
 
   window.loadFlappyBirdModule = async function () {
-    // Prevent multiple instances
-    if (window.canvasRunning.length > 0) {
-      document.getElementById("flappy-canvas-container").remove();
-      return;
-    }
-
     try {
       // Create a fresh canvas each time
       const canvasContainer = document.getElementById(

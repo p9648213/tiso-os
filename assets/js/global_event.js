@@ -3,16 +3,6 @@ export function setupGlobalEvents() {
     const img = event.detail.image;
     const windowId = event.detail.window_id;
 
-    if (windowId.startsWith("explorer-window")) {
-      const elements = document.querySelectorAll(
-        '[id^="taskbar-explorer-window"]'
-      );
-
-      for (const element of elements) {
-        element.remove();
-      }
-    }
-
     const duplicateWindow = document.getElementById(windowId);
 
     if (duplicateWindow) {

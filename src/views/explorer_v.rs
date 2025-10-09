@@ -25,20 +25,19 @@ pub fn render_explorer_window(
         (Raw::dangerously_create(format!(
             r#"
                 <script type="module">
-                    import {{setupExplorerWindow, setupExplorerToolBar}} from "/assets/js/explorer.js";
-                    setupExplorerWindow({});
-                    setupExplorerToolBar({});
+                    import {{setupExplorerWindow, setupExplorerToolBar, setupExplorerWindowGrab}} from "/assets/js/explorer.js";
+                    setupExplorerWindow({folder_id});
+                    setupExplorerToolBar({folder_id});
+                    setupExplorerWindowGrab({folder_id});
                 </script>
-            "#,
-            folder_id,
-            folder_id
+            "#
         )))
         div
             id={ "explorer-window-" (folder_id) }
             class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
             style={ "top:" (top) "px; left:" (left) "px; width:" (window_width) "px; height:" (window_height) "px;" }
         {
-            div id={ "explorer-toolbar" } class="flex justify-between bg-zinc-900 px-3 h-12 select-none" {
+            div id={ "explorer-toolbar-" (folder_id) } class="flex justify-between bg-zinc-900 px-3 h-12 select-none" {
                 div class="flex gap-2" {
                     div class="flex gap-4 bg-zinc-800 mt-3 px-4 rounded-t-sm" {
                         div class="flex items-center gap-2" {
@@ -117,7 +116,7 @@ pub fn render_explorer_window(
                                 img src="/assets/images/chevron-right.svg" class="w-6 h-6" draggable="false";
                             }
                         }
-                        div id="explorer-sidebar" class="flex flex-col gap-5" {
+                        div id={ "explorer-sidebar-" (folder_id) } class="flex flex-col gap-5" {
                             div id="sidebar-Desktop" class="flex items-center gap-2 hover:opacity-70 px-2 cursor-pointer" {
                                 img src="/assets/images/rust-1.svg" class="w-6 h-6" draggable="false";
                                 "Desktop"

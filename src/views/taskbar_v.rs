@@ -35,7 +35,7 @@ pub fn render_taskbar() -> impl Renderable {
           div id="clock-date" {}
         }
       }
-      div id="taskbar-menu" class="hidden bottom-14 left-2 absolute bg-zinc-800 p-3 rounded-sm w-100 h-100" {
+      div id="taskbar-menu" class="hidden bottom-14 left-2 z-20 absolute bg-zinc-800 p-3 rounded-sm w-100 h-100" {
         div
           hx-get="/read/taskbar/files"
           hx-trigger="load"

@@ -1,3 +1,5 @@
+let calculatorCleanUpEvent = [];
+
 export function setupCalculatorWindow() {
   const display = document.getElementById("calculator-display");
   const buttonsContainer = document.getElementById("calculator-buttons");
@@ -119,7 +121,7 @@ export function setupCalculatorWindow() {
     }
   });
 
-  document.addEventListener("keydown", (event) => {
+  function handleKeyDown(event) {
     const calculatorWindow = document.getElementById("calculator-window");
     if (!calculatorWindow) return;
 
@@ -140,7 +142,52 @@ export function setupCalculatorWindow() {
       event.preventDefault();
       handleDelete();
     }
+  }
+
+  calculatorCleanUpEvent.push({ event: "keydown", handler: handleKeyDown });
+
+  document.addEventListener("keydown", handleKeyDown);
+}
+
+export function setupCalculatorWindowGrab() {
+  const calHeader = document.getElementById("calculator-header");
+  const calWindow = document.getElementById("calculator-window");
+
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  calHeader.addEventListener("mousedown", (event) => {
+    isDragging = true;
+    const rect = calWindow.getBoundingClientRect();
+    offsetX = event.clientX - rect.left;
+    offsetY = event.clientY - rect.top;
+
+    event.preventDefault();
   });
+
+  function handleMouseMove(event) {
+    if (!isDragging) return;
+
+    calWindow.style.left = `${event.clientX - offsetX}px`;
+    calWindow.style.top = `${event.clientY - offsetY}px`;
+  }
+
+  function handleMouseUp() {
+    isDragging = false;
+  }
+
+  calculatorCleanUpEvent.push({
+    event: "mousemove",
+    handler: handleMouseMove,
+  });
+  calculatorCleanUpEvent.push({
+    event: "mouseup",
+    handler: handleMouseUp,
+  });
+
+  document.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("mouseup", handleMouseUp);
 }
 
 export function setupCalculatorToolBar() {
@@ -151,5 +198,9 @@ export function setupCalculatorToolBar() {
   close.addEventListener("click", function () {
     document.getElementById("calculator-window").remove();
     document.getElementById("taskbar-calculator-window").remove();
+    calculatorCleanUpEvent.forEach((event) =>
+      document.removeEventListener(event.event, event.handler)
+    );
+    calculatorCleanUpEvent = [];
   });
 }

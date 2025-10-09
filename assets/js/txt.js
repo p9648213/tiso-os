@@ -1,16 +1,6 @@
+let txtCleanUpEvent = [];
 let quillLoaded = false;
 let quillLoadingPromise = null;
-
-export function setupTxtToolBar(txt_id) {
-  const txtToolBar = document.getElementById(`txt-header-${txt_id}`);
-
-  const close = txtToolBar.querySelector(".close");
-
-  close.addEventListener("click", function () {
-    document.getElementById(`txt-window-${txt_id}`).remove();
-    document.getElementById(`taskbar-txt-window-${txt_id}`).remove();
-  });
-}
 
 export function setupTxtWindowGrab(txtId) {
   const txtHeader = document.getElementById(`txt-header-${txtId}`);
@@ -29,16 +19,26 @@ export function setupTxtWindowGrab(txtId) {
     event.preventDefault();
   });
 
-  document.addEventListener("mousemove", (event) => {
+  function handleMouseMove(event) {
     if (!isDragging) return;
 
     txtWindow.style.left = `${event.clientX - offsetX}px`;
     txtWindow.style.top = `${event.clientY - offsetY}px`;
-  });
+  }
 
-  document.addEventListener("mouseup", () => {
+  function handleMouseUp() {
     isDragging = false;
+  }
+
+  txtCleanUpEvent.push({
+    event: "mousemove",
+    handler: handleMouseMove,
+    id: txtId,
   });
+  txtCleanUpEvent.push({ event: "mouseup", handler: handleMouseUp, id: txtId });
+
+  document.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("mouseup", handleMouseUp);
 }
 
 export async function setupTxtEditor(txtId) {
@@ -68,5 +68,22 @@ export async function setupTxtEditor(txtId) {
 
   new Quill(selector, {
     theme: "snow",
+  });
+}
+
+export function setupTxtToolBar(txt_id) {
+  const txtToolBar = document.getElementById(`txt-header-${txt_id}`);
+
+  const close = txtToolBar.querySelector(".close");
+
+  close.addEventListener("click", function () {
+    document.getElementById(`txt-window-${txt_id}`).remove();
+    document.getElementById(`taskbar-txt-window-${txt_id}`).remove();
+    txtCleanUpEvent.forEach((event) => {
+      if (event.id === txt_id) {
+        document.removeEventListener(event.event, event.handler);
+      }
+    });
+    txtCleanUpEvent = txtCleanUpEvent.filter((event) => event.id !== txt_id);
   });
 }

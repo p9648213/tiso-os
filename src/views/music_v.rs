@@ -11,23 +11,24 @@ pub fn render_music_file() -> impl Renderable {
     }
 }
 
-pub fn render_music_player_window(parent_height: i32, parent_width: i32) -> impl Renderable {
+pub fn render_music_player_window(_parent_height: i32, parent_width: i32) -> impl Renderable {
     let window_width = 400;
 
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
-    let top = (parent_height / 2).max(0);
 
     maud! {
         (Raw::dangerously_create(r#"
             <script type="module">
-                import {setupMusicPlayer} from "/assets/js/music.js";
+                import {setupMusicPlayer, setupMusicWindowGrab, centerMusicWindow} from "/assets/js/music.js";
                 setupMusicPlayer();
+                setupMusicWindowGrab();
+                centerMusicWindow();
             </script>
         "#))
         div
             id="music-player-window"
             class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
-            style={ "top:" (top) "px; left:" (left) "px; width:" (window_width) "px; height: fit-content; transform: translateY(-50%);" }
+            style={ "left:" (left) "px; width:" (window_width) "px; height: fit-content;" }
         {
             div id="music-player-header" class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none" {
                 div class="flex items-center gap-2" {

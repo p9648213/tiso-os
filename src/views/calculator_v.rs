@@ -22,9 +22,10 @@ pub fn render_calculator_window(parent_height: i32, parent_width: i32) -> impl R
         (Raw::dangerously_create(
            r#"
                 <script type="module">
-                    import {setupCalculatorWindow, setupCalculatorToolBar} from "/assets/js/calculator.js";
+                    import {setupCalculatorWindow, setupCalculatorToolBar, setupCalculatorWindowGrab} from "/assets/js/calculator.js";
                     setupCalculatorWindow();
                     setupCalculatorToolBar();
+                    setupCalculatorWindowGrab();
                 </script>
             "#
         ))

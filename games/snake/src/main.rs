@@ -193,7 +193,7 @@ fn main() {
     let video = ctx.video().unwrap();
 
     let window = video
-        .window("SDL2 Grid WASM", WIDTH, HEIGHT)
+        .window("TisoOS", WIDTH, HEIGHT)
         .position_centered()
         .build()
         .unwrap();
