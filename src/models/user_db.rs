@@ -1,5 +1,5 @@
 use crate::{
-    models::folder_db::{Folder, FolderType},
+    models::{file_db::File, folder_db::{Folder, FolderType}},
     utilities::postgres::DbExecutor,
 };
 
@@ -114,9 +114,23 @@ impl User {
                 ($1, $2, 'Calculator', 'Calculator'),
                 ($1, $2, 'Snake', 'Snake'),
                 ($1, $2, 'FlappyBird', 'FlappyBird'),
-                ($1, $2, 'Music Player', 'Music'),
-                ($1, $2, 'Web Builder', 'WebBuilder')",
+                ($1, $2, 'Music Player', 'Music')",
             &[&user_id, &taskbar_folder.id.unwrap()],
+        )
+        .await?;
+
+        let row = txn
+            .query_one(
+                r#"INSERT INTO "file" (user_id, folder_id, file_name, file_type) VALUES ($1, $2, 'Web Builder', 'WebBuilder') RETURNING id"#,
+                &[&user_id, &taskbar_folder.id.unwrap()],
+            )
+            .await?;
+
+        let web_builder_file = File::try_from(&row, None);
+
+        txn.execute(
+            "INSERT INTO web_builder (file_id) VALUES ($1)",
+            &[&web_builder_file.id.unwrap()],
         )
         .await?;
 

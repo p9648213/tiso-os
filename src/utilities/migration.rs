@@ -81,6 +81,14 @@ pub async fn init_database(pool: &Pool) {
 
     client.execute(sql, &[]).await.unwrap();
 
+    let sql = "CREATE TABLE IF NOT EXISTS web_builder (
+      id SERIAL PRIMARY KEY,
+      file_id INT UNIQUE,
+      FOREIGN KEY (file_id) REFERENCES file(id) ON DELETE CASCADE
+    );";
+
+    client.execute(sql, &[]).await.unwrap();
+
     let sql = "DO $$
       BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'backgroundtype') THEN
