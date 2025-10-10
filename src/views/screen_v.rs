@@ -14,6 +14,7 @@ use crate::{
         calculator_v::render_calculator_file, flappy_bird_v::render_flappy_bird_file,
         folder_v::render_folder, music_v::render_music_file, snake_v::render_snake_file,
         taskbar_v::render_taskbar, thispc_v::render_thispc_file, txt_v::render_txt_file,
+        web_builder_v::render_web_builder_file,
     },
 };
 
@@ -200,7 +201,7 @@ pub fn render_screen_grid(
                 @for row in 0..rows {
                     @for col in 0..cols {
                         div
-                            class = "flex justify-center items-center relative overflow-hidden"
+                            class = "flex justify-center items-center relative overflow-hidden group/item"
                             style={ "width:" (rectangle_width) "px;" }
                             id={ "item-" (row) "-" (col) }
                             draggable="true"
@@ -215,6 +216,7 @@ pub fn render_screen_grid(
                                             FileType::Txt => {(render_txt_file(item.id.unwrap(), &item.name, &None))},
                                             FileType::ThisPC => {(render_thispc_file(item.id.unwrap(), &item.name))},
                                             FileType::Music => {(render_music_file())},
+                                            FileType::WebBuilder => {(render_web_builder_file(item.id.unwrap()))},
                                         }
                                     }
                                     ItemType::Folder => {
@@ -230,7 +232,7 @@ pub fn render_screen_grid(
                 @for row in 0..rows {
                     @for col in 0..cols {
                         div
-                            class = "flex justify-center items-center relative overflow-hidden"
+                            class = "flex justify-center items-center relative overflow-hidden group/item"
                             style={ "width:" (rectangle_width) "px;" }
                             id={ "item-" (row) "-" (col) }
                             draggable="true"
@@ -245,6 +247,7 @@ pub fn render_screen_grid(
                                             FileType::Txt => {(render_txt_file(item.id.unwrap(), &item.name, &None))},
                                             FileType::ThisPC => {(render_thispc_file(item.id.unwrap(), &item.name))},
                                             FileType::Music => {(render_music_file())},
+                                            FileType::WebBuilder => {(render_web_builder_file(item.id.unwrap()))},
                                         }
                                     }
                                     ItemType::Folder => {

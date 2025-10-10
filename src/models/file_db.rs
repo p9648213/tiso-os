@@ -21,6 +21,7 @@ pub enum FileType {
     FlappyBird,
     ThisPC,
     Music,
+    WebBuilder,
 }
 
 pub struct File {

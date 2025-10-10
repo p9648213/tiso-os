@@ -114,7 +114,8 @@ impl User {
                 ($1, $2, 'Calculator', 'Calculator'),
                 ($1, $2, 'Snake', 'Snake'),
                 ($1, $2, 'FlappyBird', 'FlappyBird'),
-                ($1, $2, 'Music Player', 'Music')",
+                ($1, $2, 'Music Player', 'Music'),
+                ($1, $2, 'Web Builder', 'WebBuilder')",
             &[&user_id, &taskbar_folder.id.unwrap()],
         )
         .await?;

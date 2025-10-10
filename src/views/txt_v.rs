@@ -18,7 +18,7 @@ pub fn render_txt_file(
             data-file-type="txt"
             class="absolute inset-0 flex justify-center py-2"
         {
-            div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 p-1.5 rounded-xs w-fit min-w-[70px] h-fit cursor-pointer" {
+            div class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 group-hover/item:bg-blue-900 p-1.5 rounded-xs w-24 min-w-[70px] h-fit" {
                 img class="w-9 h-9 select-none" src="/assets/images/text-editor.svg" draggable="false";
                 div class="max-w-[75px] overflow-ellipsis text-white text-sm text-center line-clamp-2 select-none" {
                     (file_name)
@@ -44,7 +44,7 @@ pub fn render_txt_input(file_id: i32, value: &str) -> impl Renderable {
             data-file-type="txt"
             class="absolute inset-0 flex justify-center py-2"
         {
-            div class="flex flex-col justify-center items-center gap-1.5 p-1.5 rounded-xs w-fit h-fit cursor-pointer" {
+            div class="flex flex-col justify-center items-center gap-1.5 p-1.5 rounded-xs w-fit h-fit" {
                 img class="w-9 h-9" src="/assets/images/text-editor.svg" draggable="false";
                 textarea
                     hx-post={"/update/file/rename/txt/" (file_id)}
@@ -99,9 +99,9 @@ pub fn render_txt_window(
                     (file_name)
                 }
                 div class="flex items-center gap-3" {
-                    img class="hover:opacity-70 w-5 h-5 cursor-pointer hide" src="/assets/images/minus.svg" draggable="false";
-                    img class="hover:opacity-70 w-4 h-4 cursor-pointer maximize" src="/assets/images/square.svg" draggable="false";
-                    img class="hover:opacity-70 w-5 h-5 cursor-pointer close" src="/assets/images/x.svg" draggable="false";
+                    img class="hover:opacity-70 w-5 h-5 hide" src="/assets/images/minus.svg" draggable="false";
+                    img class="hover:opacity-70 w-4 h-4 maximize" src="/assets/images/square.svg" draggable="false";
+                    img class="hover:opacity-70 w-5 h-5 close" src="/assets/images/x.svg" draggable="false";
                 }
             }
 

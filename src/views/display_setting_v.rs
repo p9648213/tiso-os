@@ -35,9 +35,9 @@ pub fn render_display_setting_window(
                     "Display Setting"
                 }
                 div class="flex items-center gap-3" {
-                    img class="hover:opacity-70 w-5 h-5 cursor-pointer hide" src="/assets/images/minus.svg" draggable="false";
-                    img class="hover:opacity-70 w-4 h-4 cursor-pointer maximize" src="/assets/images/square.svg" draggable="false";
-                    img class="hover:opacity-70 w-5 h-5 cursor-pointer close" src="/assets/images/x.svg" draggable="false";
+                    img class="hover:opacity-70 w-5 h-5 hide" src="/assets/images/minus.svg" draggable="false";
+                    img class="hover:opacity-70 w-4 h-4 maximize" src="/assets/images/square.svg" draggable="false";
+                    img class="hover:opacity-70 w-5 h-5 close" src="/assets/images/x.svg" draggable="false";
                 }
             }
             div class="flex flex-col gap-2 px-3 py-2 h-full" {
@@ -71,7 +71,7 @@ pub fn render_display_setting_window(
                             @for color in EXAMPLE_COLORS {
                                 div
                                     data-color=(color)
-                                    class="rounded-sm w-6 h-6 cursor-pointer"
+                                    class="rounded-sm w-6 h-6"
                                     style={
                                         "background:" (color) ";"
                                         "outline:" (if background_color == color { "3px solid #155dfc" } else { "none" })
@@ -94,7 +94,7 @@ pub fn render_display_setting_window(
                         input type="file" id="background-picture" name="background-picture" accept="image/*" required="true" class="hidden";
                         div class="flex items-center gap-2" {
                             button type="button" class="bg-zinc-700 rounded-sm h-7" {
-                                label for="background-picture" class="px-3 cursor-pointer" { "Choose Image" }
+                                label for="background-picture" class="px-3" { "Choose Image" }
                             }
                             div class="max-w-40 truncate" id="background-picture-name" { "No image selected" }
                         }

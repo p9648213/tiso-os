@@ -22,13 +22,7 @@ export function setupGlobalEvents() {
     const imageContainer = document.createElement("div");
     imageContainer.id = taskbarItemId;
 
-    imageContainer.classList.add(
-      "p-1.5",
-      "bg-zinc-700",
-      "rounded-sm",
-      "flex",
-      "cursor-pointer"
-    );
+    imageContainer.classList.add("p-1.5", "bg-zinc-700", "rounded-sm", "flex");
     imageContainer.draggable = false;
 
     const imageEl = document.createElement("img");

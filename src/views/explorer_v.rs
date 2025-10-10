@@ -44,25 +44,25 @@ pub fn render_explorer_window(
                             img class="w-5 h-5" src="/assets/images/folder.svg" draggable="false";
                             (folder_name)
                         }
-                        img class="hover:opacity-70 m-auto w-5 h-5 cursor-pointer" src="/assets/images/x.svg" draggable="false";
+                        img class="hover:opacity-70 m-auto w-5 h-5" src="/assets/images/x.svg" draggable="false";
 
                     }
                     div class="mt-4" {
-                        img class="hover:opacity-70 w-5 h-5 cursor-pointer" src="/assets/images/plus.svg" draggable="false";
+                        img class="hover:opacity-70 w-5 h-5" src="/assets/images/plus.svg" draggable="false";
                     }
                 }
                 div class="flex items-center gap-3 h-full" {
-                    img class="hover:opacity-70 w-5 h-5 cursor-pointer hide" src="/assets/images/minus.svg" draggable="false";
-                    img class="hover:opacity-70 w-4 h-4 cursor-pointer maximize" src="/assets/images/square.svg" draggable="false";
-                    img class="hover:opacity-70 w-5 h-5 cursor-pointer close" src="/assets/images/x.svg" draggable="false";
+                    img class="hover:opacity-70 w-5 h-5 hide" src="/assets/images/minus.svg" draggable="false";
+                    img class="hover:opacity-70 w-4 h-4 maximize" src="/assets/images/square.svg" draggable="false";
+                    img class="hover:opacity-70 w-5 h-5 close" src="/assets/images/x.svg" draggable="false";
                 }
             }
             div class="flex justify-between items-center gap-6 bg-zinc-800 px-7 h-12 select-none" {
                 div class="flex gap-6 shrink-0" {
-                    img class="hover:opacity-70 w-4 h-4 cursor-pointer" src="/assets/images/arrow-left.svg" draggable="false";
-                    img class="hover:opacity-70 w-4 h-4 cursor-pointer" src="/assets/images/arrow-right.svg" draggable="false";
-                    img class="hover:opacity-70 w-4 h-4 cursor-pointer" src="/assets/images/arrow-up.svg" draggable="false";
-                    img class="hover:opacity-70 w-4 h-4 cursor-pointer" src="/assets/images/rotate-ccw.svg" draggable="false";
+                    img class="hover:opacity-70 w-4 h-4" src="/assets/images/arrow-left.svg" draggable="false";
+                    img class="hover:opacity-70 w-4 h-4" src="/assets/images/arrow-right.svg" draggable="false";
+                    img class="hover:opacity-70 w-4 h-4" src="/assets/images/arrow-up.svg" draggable="false";
+                    img class="hover:opacity-70 w-4 h-4" src="/assets/images/rotate-ccw.svg" draggable="false";
                 }
                 div class="flex items-center gap-4 w-full" {
                     div class="flex flex-2 items-center gap-3 bg-zinc-700 px-4 py-1 rounded-sm h-full" {
@@ -77,31 +77,31 @@ pub fn render_explorer_window(
             }
             div class="h-full" {
                 div class="flex items-center gap-8 px-7 border-zinc-700 border-b w-full h-12" {
-                    div class="flex items-center gap-2 hover:opacity-70 h-full cursor-pointer" {
+                    div class="flex items-center gap-2 hover:opacity-70 h-full" {
                         img src="/assets/images/plus.svg" class="w-5 h-5" draggable="false";
                         "New"
                         img src="/assets/images/chevron-down.svg" class="w-5 h-5" draggable="false";
                     }
                     div class="flex items-center gap-8 pl-8 border-zinc-700 border-l h-full shrink-0" {
-                        img src="/assets/images/scissors.svg" class="hover:opacity-70 w-5 h-5 cursor-pointer" draggable="false";
-                        img src="/assets/images/copy.svg" class="hover:opacity-70 w-5 h-5 cursor-pointer" draggable="false";
-                        img src="/assets/images/clipboard-paste.svg" class="hover:opacity-70 w-5 h-5 cursor-pointer" draggable="false";
-                        img src="/assets/images/trash-2.svg" class="hover:opacity-70 w-5 h-5 cursor-pointer" draggable="false";
+                        img src="/assets/images/scissors.svg" class="hover:opacity-70 w-5 h-5" draggable="false";
+                        img src="/assets/images/copy.svg" class="hover:opacity-70 w-5 h-5" draggable="false";
+                        img src="/assets/images/clipboard-paste.svg" class="hover:opacity-70 w-5 h-5" draggable="false";
+                        img src="/assets/images/trash-2.svg" class="hover:opacity-70 w-5 h-5" draggable="false";
                     }
                     div class="flex justify-between gap-4 w-full h-full" {
                         div class="flex items-center gap-8 pl-8 border-zinc-700 border-l h-full" {
-                            div class="flex items-center gap-2 hover:opacity-70 h-full cursor-pointer" {
+                            div class="flex items-center gap-2 hover:opacity-70 h-full" {
                                 img src="/assets/images/arrow-up-down.svg" class="w-5 h-5" draggable="false";
                                 "Sort"
                                 img src="/assets/images/chevron-down.svg" class="w-5 h-5" draggable="false";
                             }
-                            div class="flex items-center gap-2 hover:opacity-70 h-full cursor-pointer" {
+                            div class="flex items-center gap-2 hover:opacity-70 h-full" {
                                 img src="/assets/images/table-of-contents.svg" class="w-5 h-5" draggable="false";
                                 "View"
                                 img src="/assets/images/chevron-down.svg" class="w-5 h-5" draggable="false";
                             }
                         }
-                        div class="flex items-center gap-2 hover:opacity-70 h-full cursor-pointer" {
+                        div class="flex items-center gap-2 hover:opacity-70 h-full" {
                             img src="/assets/images/columns-2.svg" class="w-5 h-5" draggable="false";
                             "Preview"
                         }
@@ -110,34 +110,34 @@ pub fn render_explorer_window(
                 div class="flex gap-2 h-full" {
                     div class="flex flex-col flex-1 gap-4 px-3 py-4" {
                         div class="pb-4 border-zinc-700 border-b" {
-                            div class="flex items-center gap-2 hover:opacity-70 px-2 cursor-pointer" {
+                            div class="flex items-center gap-2 hover:opacity-70 px-2" {
                                 img src="/assets/images/thispc.svg" class="w-5 h-5" draggable="false";
                                 "This PC"
                                 img src="/assets/images/chevron-right.svg" class="w-6 h-6" draggable="false";
                             }
                         }
                         div id={ "explorer-sidebar-" (folder_id) } class="flex flex-col gap-5" {
-                            div id="sidebar-Desktop" class="flex items-center gap-2 hover:opacity-70 px-2 cursor-pointer" {
+                            div id="sidebar-Desktop" class="flex items-center gap-2 hover:opacity-70 px-2" {
                                 img src="/assets/images/rust-1.svg" class="w-6 h-6" draggable="false";
                                 "Desktop"
                             }
-                            div id="sidebar-Documents" class="flex items-center gap-2 hover:opacity-70 px-2 cursor-pointer" {
+                            div id="sidebar-Documents" class="flex items-center gap-2 hover:opacity-70 px-2" {
                                 img src="/assets/images/google_docs-1.svg" class="w-6 h-6" draggable="false";
                                 "Documents"
                             }
-                            div id="sidebar-Downloads" class="flex items-center gap-2 hover:opacity-70 px-2 cursor-pointer" {
+                            div id="sidebar-Downloads" class="flex items-center gap-2 hover:opacity-70 px-2" {
                                 img src="/assets/images/video_download.svg" class="w-6 h-6" draggable="false";
                                 "Downloads"
                             }
-                            div id="sidebar-Pictures" class="flex items-center gap-2 hover:opacity-70 px-2 cursor-pointer" {
+                            div id="sidebar-Pictures" class="flex items-center gap-2 hover:opacity-70 px-2" {
                                 img src="/assets/images/pictures.svg" class="w-6 h-6" draggable="false";
                                 "Pictures"
                             }
-                            div id="sidebar-Music" class="flex items-center gap-2 hover:opacity-70 px-2 cursor-pointer" {
+                            div id="sidebar-Music" class="flex items-center gap-2 hover:opacity-70 px-2" {
                                 img src="/assets/images/apple_music-1.svg" class="w-6 h-6" draggable="false";
                                 "Music"
                             }
-                            div id="sidebar-Movies" class="flex items-center gap-2 hover:opacity-70 px-2 cursor-pointer" {
+                            div id="sidebar-Movies" class="flex items-center gap-2 hover:opacity-70 px-2" {
                                 img src="/assets/images/movie-1.svg" class="w-6 h-6" draggable="false";
                                 "Movies"
                             }

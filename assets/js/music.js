@@ -187,7 +187,7 @@ export function setupMusicPlayer() {
   function addSongToPlaylist(song, index) {
     const songElement = document.createElement("div");
     songElement.className =
-      "flex items-center gap-3 p-2 rounded-sm hover:bg-zinc-700 cursor-pointer";
+      "flex items-center gap-3 p-2 rounded-sm hover:bg-zinc-700";
     songElement.dataset.index = index;
 
     songElement.innerHTML = `
