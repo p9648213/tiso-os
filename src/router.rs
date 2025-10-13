@@ -21,6 +21,7 @@ use crate::{
         snake_c::get_snake_window,
         taskbar_c::get_taskbar_menu_files,
         txt_c::{create_txt, get_txt_input, get_txt_window},
+        web_builder_c::get_web_builder_window,
     },
     middlewares::{csrf_mw::csrf_middleware, log_mw::request_log, session_mw::session_middleware},
     models::state::AppState,
@@ -119,6 +120,7 @@ pub async fn create_router(pool: Pool) -> Router {
     let read_routes = Router::new().nest(
         "/read",
         Router::new()
+            .route("/taskbar/files", get(get_taskbar_menu_files))
             .route(
                 "/file/calculator/{height}/{width}",
                 get(get_calculator_window),
@@ -129,7 +131,10 @@ pub async fn create_router(pool: Pool) -> Router {
                 get(get_flappy_bird_window),
             )
             .route("/file/music/{height}/{width}", get(get_music_player_window))
-            .route("/taskbar/files", get(get_taskbar_menu_files))
+            .route(
+                "/web_builder/{file_id}/{height}/{width}",
+                get(get_web_builder_window),
+            )
             .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))
             .route("/folder/input/{folder_id}", get(get_folder_input))

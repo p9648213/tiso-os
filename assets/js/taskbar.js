@@ -29,18 +29,34 @@ export function setupTaskbarMenuFiles() {
         return menu.classList.add("hidden");
       }
 
-      htmx
-        .ajax(
-          "GET",
-          `/read/file/${fileType}/${main.clientHeight}/${main.clientWidth}`,
-          {
-            target: "body",
-            swap: "beforeend",
-          }
-        )
-        .then(() => {
-          menu.classList.add("hidden");
-        });
+      if (fileType === "web_builder") {
+        let fileId = file.getAttribute("id").split("-")[1];
+        htmx
+          .ajax(
+            "GET",
+            `/read/${fileType}/${fileId}/${main.clientHeight}/${main.clientWidth}`,
+            {
+              target: "body",
+              swap: "beforeend",
+            }
+          )
+          .then(() => {
+            menu.classList.add("hidden");
+          });
+      } else {
+        htmx
+          .ajax(
+            "GET",
+            `/read/file/${fileType}/${main.clientHeight}/${main.clientWidth}`,
+            {
+              target: "body",
+              swap: "beforeend",
+            }
+          )
+          .then(() => {
+            menu.classList.add("hidden");
+          });
+      }
     });
   }
 }

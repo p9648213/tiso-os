@@ -10,3 +10,4 @@ pub mod screen_c;
 pub mod snake_c;
 pub mod taskbar_c;
 pub mod txt_c;
+pub mod web_builder_c;

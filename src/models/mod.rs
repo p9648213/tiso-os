@@ -8,3 +8,4 @@ pub mod txt_db;
 pub mod txt_window;
 pub mod user_db;
 pub mod web_builder_db;
+pub mod web_builder_window;
