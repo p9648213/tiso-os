@@ -1,5 +1,6 @@
 use axum::http::StatusCode;
 use deadpool_postgres::Pool;
+use serde_json::Value;
 use tokio_postgres::Row;
 
 use crate::{models::error::AppError, utilities::postgres::DbExecutor};
@@ -7,6 +8,8 @@ use crate::{models::error::AppError, utilities::postgres::DbExecutor};
 pub struct WebBuilder {
     pub id: Option<i32>,
     pub file_id: Option<i32>,
+    pub name: Option<String>,
+    pub data: Option<Value>,
 }
 
 impl WebBuilder {
@@ -17,8 +20,19 @@ impl WebBuilder {
         let file_id: Option<i32> = row
             .try_get(format!("{prefix}file_id").as_str())
             .unwrap_or(None);
+        let name: Option<String> = row
+            .try_get(format!("{prefix}name").as_str())
+            .unwrap_or(None);
+        let data: Option<Value> = row
+            .try_get(format!("{prefix}data").as_str())
+            .unwrap_or(None);
 
-        Self { id, file_id }
+        Self {
+            id,
+            file_id,
+            name,
+            data,
+        }
     }
 
     pub fn try_from_vec(rows: Vec<Row>, prefix: Option<&str>) -> Vec<Self> {
@@ -27,18 +41,21 @@ impl WebBuilder {
             .collect()
     }
 
-    pub async fn create_web_builder(file_id: i32, pool: &Pool) -> Result<(), AppError> {
+    pub async fn create_web_builder(file_id: i32, name: &str, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
         })?;
 
         let rows = client
-            .execute("INSERT INTO web_builder (file_id) VALUES ($1)", &[&file_id])
+            .execute(
+                "INSERT INTO web_builder (file_id, name) VALUES ($1, $2)",
+                &[&file_id, &name],
+            )
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error creating calculator");
+            tracing::error!("Error creating web builder");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Server Error",

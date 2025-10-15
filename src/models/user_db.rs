@@ -1,5 +1,8 @@
 use crate::{
-    models::{file_db::File, folder_db::{Folder, FolderType}},
+    models::{
+        file_db::File,
+        folder_db::{Folder, FolderType},
+    },
     utilities::postgres::DbExecutor,
 };
 
@@ -129,8 +132,8 @@ impl User {
         let web_builder_file = File::try_from(&row, None);
 
         txn.execute(
-            "INSERT INTO web_builder (file_id) VALUES ($1)",
-            &[&web_builder_file.id.unwrap()],
+            "INSERT INTO web_builder (file_id, name) VALUES ($1, $2)",
+            &[&web_builder_file.id.unwrap(), &"New Page"],
         )
         .await?;
 

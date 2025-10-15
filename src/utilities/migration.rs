@@ -84,6 +84,8 @@ pub async fn init_database(pool: &Pool) {
     let sql = "CREATE TABLE IF NOT EXISTS web_builder (
       id SERIAL PRIMARY KEY,
       file_id INT UNIQUE,
+      name VARCHAR(255) NOT NULL,
+      data JSONB DEFAULT '{}'::jsonb,
       FOREIGN KEY (file_id) REFERENCES file(id) ON DELETE CASCADE
     );";
 
