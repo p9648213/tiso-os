@@ -1,9 +1,25 @@
+use std::collections::HashMap;
+
 use axum::http::StatusCode;
 use deadpool_postgres::Pool;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tokio_postgres::Row;
 
 use crate::{models::error::AppError, utilities::postgres::DbExecutor};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Node {
+    pub tag: String,
+    pub children: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DomTree {
+    pub main_node: String,
+    pub root_node: String,
+    pub nodes: HashMap<String, Node>,
+}
 
 pub struct WebBuilder {
     pub id: Option<i32>,

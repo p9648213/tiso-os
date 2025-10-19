@@ -10,8 +10,10 @@ use super::error::AppError;
 
 use axum::http::StatusCode;
 use deadpool_postgres::Pool;
+use serde_json::json;
 use time::OffsetDateTime;
 use tokio_postgres::Row;
+use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 pub struct User {
@@ -131,9 +133,25 @@ impl User {
 
         let web_builder_file = File::try_from(&row, None);
 
+        let root_node = Uuid::new_v4().to_string();
+        let body_node = Uuid::new_v4().to_string();
+        let main_node = Uuid::new_v4().to_string();
+
         txn.execute(
-            "INSERT INTO web_builder (file_id, name) VALUES ($1, $2)",
-            &[&web_builder_file.id.unwrap(), &"New Page"],
+            "INSERT INTO web_builder (file_id, name, data) VALUES ($1, $2, $3)",
+            &[
+                &web_builder_file.id.unwrap(),
+                &"New Page",
+                &json!({
+                    "root_node": root_node,
+                    "main_node": main_node,
+                    "nodes": {
+                        root_node: { "tag": "html", "children": [body_node] },
+                        body_node: { "tag": "body", "children": [main_node] },
+                        main_node: { "tag": "main", "children": [] },
+                    }
+                }),
+            ],
         )
         .await?;
 
