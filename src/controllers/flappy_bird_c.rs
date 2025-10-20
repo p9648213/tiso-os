@@ -1,9 +1,8 @@
 use axum::{Extension, extract::Path, response::IntoResponse};
-use hypertext::Renderable;
 
 use crate::{
     middlewares::session_mw::UserId, models::error::AppError, utilities::general::parse_user_id,
-    views::flappy_bird_v::render_flappy_bird_window,
+    views::flappy_bird_v_2::render_flappy_bird_window,
 };
 
 pub async fn get_flappy_bird_window(
@@ -17,6 +16,6 @@ pub async fn get_flappy_bird_window(
             "HX-Trigger",
             r#"{"openFile":{"image":"/assets/images/flappy_bird.png", "window_id": "flappy-canvas-container"}}"#,
         )],
-        render_flappy_bird_window(height, width).render(),
+        render_flappy_bird_window(height, width),
     ))
 }

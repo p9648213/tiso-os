@@ -1,9 +1,8 @@
 use axum::{Extension, extract::Path, response::IntoResponse};
-use hypertext::Renderable;
 
 use crate::{
     middlewares::session_mw::UserId, models::error::AppError, utilities::general::parse_user_id,
-    views::calculator_v::render_calculator_window,
+    views::calculator_v_2::render_calculator_window,
 };
 
 pub async fn get_calculator_window(
@@ -17,6 +16,6 @@ pub async fn get_calculator_window(
             "HX-Trigger",
             r#"{"openFile":{"image":"/assets/images/calculator.svg", "window_id": "calculator-window"}}"#,
         )],
-        render_calculator_window(height, width).render(),
+        render_calculator_window(height, width),
     ))
 }

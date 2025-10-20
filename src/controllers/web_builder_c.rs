@@ -5,13 +5,12 @@ use axum::{
     response::IntoResponse,
 };
 use deadpool_postgres::Pool;
-use hypertext::Renderable;
 
 use crate::{
     middlewares::session_mw::UserId,
     models::{error::AppError, web_builder_db::DomTree, web_builder_window::WebBuilderWindow},
     utilities::general::parse_user_id,
-    views::web_builder_v::render_web_builder_window,
+    views::web_builder_v_2::render_web_builder_window,
 };
 
 pub async fn get_web_builder_window(
@@ -54,7 +53,6 @@ pub async fn get_web_builder_window(
             &dom_tree,
             height,
             width,
-        )
-        .render(),
+        ),
     ))
 }

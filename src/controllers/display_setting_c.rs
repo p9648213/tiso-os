@@ -17,7 +17,9 @@ use crate::{
         error::AppError,
     },
     utilities::general::parse_user_id,
-    views::{display_setting_v::render_display_setting_window, screen_v::render_screen_background},
+    views::{
+        display_setting_v::render_display_setting_window, screen_v_2::render_screen_background,
+    },
 };
 
 pub async fn get_display_setting_window(
@@ -91,7 +93,7 @@ pub async fn update_background_type(
         }
     };
 
-    Ok(render_screen_background(&background).render())
+    Ok(render_screen_background(&background))
 }
 
 pub async fn update_background_color(
@@ -164,6 +166,5 @@ pub async fn upload_background_picture(
         "url('data:{};base64,{}');",
         content_type,
         general_purpose::STANDARD.encode(file_bytes)
-    ))
-    .render())
+    )))
 }

@@ -3,21 +3,20 @@ use axum::{
     body::Body,
     extract::State,
     http::{HeaderMap, Response, StatusCode},
-    response::{Html, IntoResponse},
+    response::IntoResponse,
 };
 use axum_extra::extract::{
     CookieJar,
     cookie::{Cookie, SameSite},
 };
 use deadpool_postgres::Pool;
-use hypertext::Renderable;
 use rand::Rng;
 use serde::Deserialize;
 
 use crate::{
     models::{error::AppError, state::SessionMap, user_db::User},
     utilities::argon::{compare_password, hash_password},
-    views::screen_v::{render_comfirm_password, render_screen_section},
+    views::screen_v_2::{render_confirm_password, render_screen_section},
 };
 
 #[derive(Deserialize, Debug, Clone)]
@@ -50,17 +49,9 @@ pub async fn create_account(
             let row = User::get_user_by_username(&account_form.username, vec!["id"], &pool).await?;
 
             if row.is_some() {
-                Ok(
-                    render_comfirm_password(&account_form.confirm_password, false)
-                        .render()
-                        .into_response(),
-                )
+                Ok(render_confirm_password(account_form.confirm_password, false).into_response())
             } else {
-                Ok(
-                    render_comfirm_password(&account_form.confirm_password, true)
-                        .render()
-                        .into_response(),
-                )
+                Ok(render_confirm_password(account_form.confirm_password, true).into_response())
             }
         }
         "account_confirm_password" => {
@@ -68,9 +59,9 @@ pub async fn create_account(
             let confirm_password = account_form.confirm_password.unwrap_or_default();
 
             if password == confirm_password {
-                Ok(Html("").into_response())
+                Ok("".into_response())
             } else {
-                Ok(Html("Passwords do not match").into_response())
+                Ok("Passwords do not match".into_response())
             }
         }
         "account_form" => {
@@ -120,7 +111,7 @@ pub async fn create_account(
 
                     let cookie_jar = CookieJar::new().add(cookie);
 
-                    Ok((cookie_jar, render_screen_section().render()).into_response())
+                    Ok((cookie_jar, render_screen_section()).into_response())
                 } else {
                     let response = Response::builder()
                         .status(StatusCode::OK)
@@ -160,7 +151,7 @@ pub async fn create_account(
 
                     let cookie_jar = CookieJar::new().add(cookie);
 
-                    Ok((cookie_jar, render_screen_section().render()).into_response())
+                    Ok((cookie_jar, render_screen_section()).into_response())
                 } else {
                     let response = Response::builder()
                         .status(StatusCode::OK)

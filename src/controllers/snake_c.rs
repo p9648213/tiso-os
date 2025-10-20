@@ -1,9 +1,8 @@
 use axum::{Extension, extract::Path, response::IntoResponse};
-use hypertext::Renderable;
 
 use crate::{
     middlewares::session_mw::UserId, models::error::AppError, utilities::general::parse_user_id,
-    views::snake_v::render_snake_window,
+    views::snake_v_2::render_snake_window,
 };
 
 pub async fn get_snake_window(
@@ -17,6 +16,6 @@ pub async fn get_snake_window(
             "HX-Trigger",
             r#"{"openFile":{"image":"/assets/images/snake.svg", "window_id": "snake-canvas-container"}}"#,
         )],
-        render_snake_window(height, width).render(),
+        render_snake_window(height, width),
     ))
 }

@@ -1,0 +1,52 @@
+<script type="module">
+  import { setupWebBuilderToolBar } from "/assets/js/web_builder.js";
+  setupWebBuilderToolBar("{{ web_builder_id }}");
+</script>
+
+<div
+  id="web-builder-window-{{ web_builder_id }}"
+  class="absolute flex flex-col rounded-sm overflow-hidden"
+  style="top: {{ top }}px; left: {{ left }}px; width: {{ window_width }}px; height: {{ window_height }}px;"
+>
+  <div
+    id="web-builder-header-{{ web_builder_id }}"
+    class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none"
+  >
+    <div class="flex items-center gap-2 text-white">
+      <img
+        class="w-5 h-5"
+        src="/assets/images/web-builder.svg"
+        draggable="false"
+      />
+      {{ file_name }}
+    </div>
+    <div class="flex items-center gap-3">
+      <img
+        class="hover:opacity-70 w-5 h-5 hide"
+        src="/assets/images/minus.svg"
+        draggable="false"
+      />
+      <img
+        class="hover:opacity-70 w-4 h-4 maximize"
+        src="/assets/images/square.svg"
+        draggable="false"
+      />
+      <img
+        class="hover:opacity-70 w-5 h-5 close"
+        src="/assets/images/x.svg"
+        draggable="false"
+      />
+    </div>
+  </div>
+
+  <div class="flex flex-col bg-zinc-100 h-full">
+    <div class="px-3 py-1.5 border-zinc-950 border-b">
+      Page: {{ builder_name }}
+    </div>
+
+    <div class="flex flex-1">
+      {% include "web_builder_structure.html" %} {% include
+      "web_builder_review.html" %} {% include "web_builder_setting.html" %}
+    </div>
+  </div>
+</div>

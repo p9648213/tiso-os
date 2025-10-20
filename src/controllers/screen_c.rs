@@ -1,6 +1,10 @@
 use std::vec;
 
-use axum::{Extension, Form, extract::State, response::IntoResponse};
+use axum::{
+    Extension, Form,
+    extract::State,
+    response::{Html, IntoResponse},
+};
 use base64::{Engine, engine::general_purpose};
 use deadpool_postgres::Pool;
 use hypertext::Renderable;
@@ -15,7 +19,10 @@ use crate::{
         folder_item::FolderItem,
     },
     utilities::general::parse_user_id,
-    views::screen_v::{render_screen, render_screen_grid, render_welcome_screen},
+    views::{
+        screen_v::render_screen_grid,
+        screen_v_2::{render_main_screen, render_welcome_screen},
+    },
 };
 
 #[derive(Deserialize)]
@@ -29,7 +36,7 @@ pub async fn get_screen(
     Extension(user_id): Extension<UserId>,
 ) -> Result<impl IntoResponse, AppError> {
     if user_id.0.is_none() {
-        return Ok(render_welcome_screen().render());
+        return Ok(Html(render_welcome_screen()));
     }
 
     let user_id = parse_user_id(user_id)?;
@@ -58,7 +65,7 @@ pub async fn get_screen(
         }
     };
 
-    Ok(render_screen(background).render())
+    Ok(Html(render_main_screen(&background)))
 }
 
 pub async fn create_screen_grid(
