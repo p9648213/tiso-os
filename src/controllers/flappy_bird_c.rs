@@ -2,7 +2,7 @@ use axum::{Extension, extract::Path, response::IntoResponse};
 
 use crate::{
     middlewares::session_mw::UserId, models::error::AppError, utilities::general::parse_user_id,
-    views::flappy_bird_v_2::render_flappy_bird_window,
+    views::flappy_bird_v::render_flappy_bird_window,
 };
 
 pub async fn get_flappy_bird_window(

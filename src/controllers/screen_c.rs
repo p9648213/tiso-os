@@ -7,7 +7,6 @@ use axum::{
 };
 use base64::{Engine, engine::general_purpose};
 use deadpool_postgres::Pool;
-use hypertext::Renderable;
 use serde::Deserialize;
 
 use crate::{
@@ -19,10 +18,7 @@ use crate::{
         folder_item::FolderItem,
     },
     utilities::general::parse_user_id,
-    views::{
-        screen_v::render_screen_grid,
-        screen_v_2::{render_main_screen, render_welcome_screen},
-    },
+    views::screen_v::{render_main_screen, render_screen_grid, render_welcome_screen},
 };
 
 #[derive(Deserialize)]
@@ -90,6 +86,5 @@ pub async fn create_screen_grid(
         desktop_id,
         &sort_type,
         desktop_items,
-    )
-    .render())
+    ))
 }

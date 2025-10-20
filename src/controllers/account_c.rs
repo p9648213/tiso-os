@@ -16,7 +16,7 @@ use serde::Deserialize;
 use crate::{
     models::{error::AppError, state::SessionMap, user_db::User},
     utilities::argon::{compare_password, hash_password},
-    views::screen_v_2::{render_confirm_password, render_screen_section},
+    views::screen_v::{render_confirm_password, render_screen_section},
 };
 
 #[derive(Deserialize, Debug, Clone)]

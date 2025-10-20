@@ -3,14 +3,14 @@
     "tw": "npx @tailwindcss/cli -i ./tailwind.css -o ./assets/css/lib/tailwind.css --watch",
     "minify:css": "npx @tailwindcss/cli -i ./assets/css/lib/taiwind.css -o ./assets/css/lib/tailwind.css --minify",
     "minify:js": "node minify.js",
-    "dev": "concurrently \"nodemon --watch './tailwind.css' --watch ./templates/*.{html} --watch './src/**/*.{html,rs}' --ext '*' --exec 'npx @tailwindcss/cli -i ./tailwind.css -o ./assets/css/lib/tailwind.css'\" \"cargo watch -c -w src -x run\""
+    "dev": "concurrently \"nodemon --watch './tailwind.css' --watch './src/**/*.{html,rs}' --ext '*' --exec 'npx @tailwindcss/cli -i ./tailwind.css -o ./assets/css/lib/tailwind.css'\" \"cargo watch -c -w src -x run\""
   },
   "devDependencies": {
-    "@tailwindcss/cli": "4.1.14",
-    "@tailwindcss/postcss": "4.1.14",
+    "@tailwindcss/cli": "4.1.15",
+    "@tailwindcss/postcss": "4.1.15",
     "concurrently": "9.2.1",
     "nodemon": "^3.1.10",
     "postcss": "8.5.6",
-    "tailwindcss": "4.1.14"
+    "tailwindcss": "4.1.15"
   }
 }

@@ -1,6 +1,5 @@
 use axum::{Extension, extract::State, response::IntoResponse};
 use deadpool_postgres::Pool;
-use hypertext::Renderable;
 
 use crate::{
     middlewares::session_mw::UserId,
@@ -17,5 +16,5 @@ pub async fn get_taskbar_menu_files(
 
     let files = File::get_taskbar_menu_files(user_id, vec!["id", "file_type"], &pool).await?;
 
-    Ok(render_taskbar_menu_files(&files).render())
+    Ok(render_taskbar_menu_files(&files))
 }

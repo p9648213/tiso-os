@@ -16,9 +16,7 @@ use crate::{
         error::AppError,
     },
     utilities::general::parse_user_id,
-    views::{
-        display_setting_v_2::render_display_setting_window, screen_v_2::render_screen_background,
-    },
+    views::{display_setting_v::render_display_setting_window, screen_v::render_screen_background},
 };
 
 pub async fn get_display_setting_window(

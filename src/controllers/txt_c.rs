@@ -13,7 +13,8 @@ use crate::{
         txt_db::Txt,
         txt_window::TxtWindow,
     },
-    utilities::general::parse_user_id, views::txt_v_2::{render_txt_file, render_txt_input, render_txt_window},
+    utilities::general::parse_user_id,
+    views::txt_v::{render_txt_file, render_txt_input, render_txt_window},
 };
 
 pub async fn create_txt(

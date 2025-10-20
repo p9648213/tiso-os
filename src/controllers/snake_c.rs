@@ -2,7 +2,7 @@ use axum::{Extension, extract::Path, response::IntoResponse};
 
 use crate::{
     middlewares::session_mw::UserId, models::error::AppError, utilities::general::parse_user_id,
-    views::snake_v_2::render_snake_window,
+    views::snake_v::render_snake_window,
 };
 
 pub async fn get_snake_window(

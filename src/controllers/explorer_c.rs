@@ -15,7 +15,7 @@ use crate::{
         folder_item::FolderItem,
     },
     utilities::general::parse_user_id,
-    views::explorer_v_2::render_explorer_window,
+    views::explorer_v::render_explorer_window,
 };
 
 #[derive(Deserialize, Debug)]

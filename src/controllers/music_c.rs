@@ -2,7 +2,7 @@ use axum::{Extension, extract::Path, response::IntoResponse};
 
 use crate::{
     middlewares::session_mw::UserId, models::error::AppError, utilities::general::parse_user_id,
-    views::music_v_2::render_music_player_window,
+    views::music_v::render_music_player_window,
 };
 
 pub async fn get_music_player_window(

@@ -4,7 +4,6 @@ use axum::{
     response::IntoResponse,
 };
 use deadpool_postgres::Pool;
-use hypertext::Renderable;
 use serde::Deserialize;
 
 use crate::{
@@ -46,7 +45,7 @@ pub async fn create_folder(
     )
     .await?;
 
-    Ok(render_folder(folder.id.unwrap(), &None, &None).render())
+    Ok(render_folder(folder.id.unwrap(), None, None))
 }
 
 pub async fn update_folder_desktop_position(
@@ -106,7 +105,7 @@ pub async fn get_folder_input(
 
     let folder = Folder::get_folder(folder_id, user_id, vec!["folder_name"], &pool).await?;
 
-    Ok(render_folder_input(folder_id, &folder.folder_name.unwrap()).render())
+    Ok(render_folder_input(folder_id, &folder.folder_name.unwrap()))
 }
 
 pub async fn rename_folder(
@@ -119,5 +118,5 @@ pub async fn rename_folder(
 
     Folder::rename_folder(folder_id, user_id, &form.folder_name, &pool).await?;
 
-    Ok(render_folder(folder_id, &Some(form.folder_name), &None).render())
+    Ok(render_folder(folder_id, Some(form.folder_name), None))
 }

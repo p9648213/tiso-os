@@ -1,173 +1,85 @@
-use hypertext::{Raw, prelude::*};
-use std::collections::HashMap;
-
 use crate::{
     constant::MIN_RECTANGLE_WIDTH,
-    controllers::account_c::AccountForm,
     models::{
         file_db::FileType,
         folder_db::FolderSortType,
         folder_item::{FolderItem, ItemType},
     },
     utilities::general::parse_position,
-    views::{
-        calculator_v::render_calculator_file, flappy_bird_v::render_flappy_bird_file,
-        folder_v::render_folder, music_v::render_music_file, snake_v::render_snake_file,
-        taskbar_v::render_taskbar, thispc_v::render_thispc_file, txt_v::render_txt_file,
-        web_builder_v::render_web_builder_file,
-    },
 };
+use askama::Template;
+use std::collections::HashMap;
 
-pub fn render_welcome_screen() -> impl Renderable {
-    let account_form = AccountForm {
-        username: "".to_string(),
-        password: "".to_string(),
+#[derive(Template)]
+#[template(path = "screen/welcome_screen.html")]
+struct WelcomeScreen {
+    confirm_password: Option<String>,
+    register_mode: bool,
+}
+
+pub fn render_welcome_screen() -> String {
+    WelcomeScreen {
         confirm_password: None,
-    };
-
-    maud!(
-        (Raw::dangerously_create(r#"<!DOCTYPE html>"#))
-        html lang="en" {
-            head {
-                meta charset="UTF-8";
-                meta name="viewport" content="width=device-width,initial-scale=1";
-                link rel="stylesheet" href="/assets/css/lib/tailwind.css";
-                link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico";
-                script src="/assets/js/lib/htmx.js" defer {}
-                script src="/assets/js/main.js" type="module" defer {}
-            }
-            title { "TisoOS" }
-            body style="background: radial-gradient(ellipse at top left, #070f2b, #1b1a55, #535c91);" class="relative overflow-hidden" {
-                main class="relative flex flex-col justify-center items-center min-h-screen text-white text-center" {
-                    div class="mb-8" {
-                        div class="flex justify-center items-center bg-white bg-opacity-20 backdrop-blur-sm mx-auto mb-6 rounded-2xl w-24 h-24" {
-                            div class="flex justify-center items-center bg-white rounded-lg w-12 h-12" {
-                                div class="bg-blue-600 rounded-sm w-6 h-6" {}
-                            }
-                        }
-                        h1 class="mb-2 font-light text-4xl" { "TisoOS" }
-                        p class="font-light text-lg" { "Your gateway to productivity" }
-                    }
-                    div class="mb-8 max-w-md" {
-                        h2 class="mb-4 font-light text-3xl" { "Welcome" }
-                        p class="text-lg leading-relaxed" {
-                            "Let's get you set up and ready to go. This will only take a few minutes."
-                        }
-                    }
-                    (render_account_form(&account_form, true))
-                }
-            }
-        }
-    )
+        register_mode: true,
+    }
+    .render()
+    .unwrap()
 }
 
-pub fn render_account_form(account_form: &AccountForm, register_mode: bool) -> impl Renderable {
-    maud! {
-        form
-            id="account_form"
-            hx-post="/create/account"
-            hx-trigger="submit"
-            hx-target="body"
-            class="relative flex flex-col space-y-2 text-black"
-        {
-
-            input
-                class="bg-white px-3 rounded-sm h-8"
-                id="account_username"
-                name="username"
-                placeholder="Username"
-                value=(account_form.username)
-                autofocus="true"
-                autocomplete="off"
-                hx-post="/create/account"
-                hx-swap=(if register_mode { "outerHTML" } else { "none" })
-                hx-target=(if register_mode { "#account_confirm_password" } else { "" })
-                hx-trigger="input delay:300ms";
-            input
-                class="bg-white px-3 rounded-sm h-8"
-                name="password" placeholder="Password"
-                type="password"
-                value=(account_form.password);
-            (render_comfirm_password(&account_form.confirm_password, register_mode))
-            div id="account_error" class="-bottom-6.5 absolute text-red-400" {}
-            button type="submit" class="hidden" {}
-        }
-    }
+#[derive(Template)]
+#[template(path = "screen/confirm_password.html")]
+struct ConfirmPassword {
+    confirm_password: Option<String>,
+    register_mode: bool,
 }
 
-pub fn render_comfirm_password(value: &Option<String>, register_mode: bool) -> impl Renderable {
-    maud! {
-        input
-            class="bg-white px-3 rounded-sm h-8"
-            name="confirm_password"
-            id="account_confirm_password"
-            placeholder="Confirm Password"
-            type=(if register_mode { "password" } else { "hidden" })
-            value=(value)
-            hx-post="/create/account"
-            hx-target=(if register_mode { "#account_error" } else { "" })
-            hx-trigger="input delay:300ms";
+pub fn render_confirm_password(value: Option<String>, register_mode: bool) -> String {
+    ConfirmPassword {
+        confirm_password: value,
+        register_mode,
     }
+    .render()
+    .unwrap()
 }
 
-pub fn render_screen(background: String) -> impl Renderable {
-    maud! {
-        (Raw::dangerously_create(r#"<!DOCTYPE html>"#))
-        html lang="en" {
-            head {
-                meta charset="UTF-8";
-                meta name="viewport" content="width=device-width,initial-scale=1";
-                link rel="stylesheet" href="/assets/css/lib/tailwind.css";
-                link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico";
-                script src="/assets/js/lib/htmx.js" defer {}
-                script src="/assets/js/main.js" type="module" defer {}
-            }
-            title { "TisoOS" }
-            body class="relative overflow-hidden" {
-                (render_screen_section())
-                (render_screen_background(&background))
-            }
-        }
-    }
+#[derive(Template)]
+#[template(path = "screen/main_screen.html")]
+struct MainScreen<'a> {
+    background: &'a str,
 }
 
-pub fn render_screen_background(background: &str) -> impl Renderable {
-    maud! {
-        div id="background-container" class="-z-10 absolute inset-0"  {
-            div class="w-full h-full" style={"background: " (background)} {}
-        }
-    }
+pub fn render_main_screen(background: &str) -> String {
+    MainScreen { background }.render().unwrap()
 }
 
-pub fn render_screen_section() -> impl Renderable {
-    maud! {
-        (Raw::dangerously_create(r#"
-            <script type="module">
-                import {setupGlobalVariables} from "/assets/js/global_vars.js";
-                import {setupGlobalFunctions} from "/assets/js/global_func.js";
-                import {setupGlobalEvents} from "/assets/js/global_event.js";
-                import {
-                    setupScreenDimensions, 
-                    setupScreenResize,
-                    setupScreenContextMenu, 
-                    setupScreenItemSingleSelect, 
-                    setupScreenItemDrag, 
-                    setupScreenItemOpen
-                } from "/assets/js/screen.js";
-                setupGlobalVariables();
-                setupGlobalFunctions();
-                setupGlobalEvents();
-                setupScreenContextMenu();
-                setupScreenDimensions();
-                setupScreenResize();
-                setupScreenItemSingleSelect();
-                setupScreenItemOpen();
-                setupScreenItemDrag();
-            </script>
-        "#))
-        main class="flex flex-wrap h-[calc(100%-theme('spacing.12'))]" {}
-        (render_taskbar())
-    }
+#[derive(Template)]
+#[template(path = "screen/screen_background.html")]
+struct ScreenBackground<'a> {
+    background: &'a str,
+}
+
+pub fn render_screen_background(background: &str) -> String {
+    ScreenBackground { background }.render().unwrap()
+}
+
+#[derive(Template)]
+#[template(path = "screen/screen_section.html")]
+struct ScreenSection {}
+
+pub fn render_screen_section() -> String {
+    ScreenSection {}.render().unwrap()
+}
+
+#[derive(Template)]
+#[template(path = "screen/screen_grid.html")]
+struct ScreenGrid<'a> {
+    desktop_id: i32,
+    sort_type: &'a FolderSortType,
+    items: &'a Vec<FolderItem>,
+    item_map: HashMap<(u16, u16), &'a FolderItem>,
+    rows: u16,
+    cols: u16,
+    rectangle_width: f32,
 }
 
 pub fn render_screen_grid(
@@ -176,89 +88,30 @@ pub fn render_screen_grid(
     desktop_id: i32,
     sort_type: &FolderSortType,
     items: Vec<FolderItem>,
-) -> impl Renderable {
+) -> String {
     let rows = height / MIN_RECTANGLE_WIDTH;
     let cols = width / MIN_RECTANGLE_WIDTH;
     let rectangle_width = width as f32 / cols as f32 - 0.1;
 
-    maud! {
-        input id="screen_rows" type="hidden" value=(rows);
-        input id="screen_cols" type="hidden" value=(cols);
-        input id="desktop_id" type="hidden" value=(desktop_id);
+    let item_map: HashMap<(u16, u16), &FolderItem> = items
+        .iter()
+        .filter_map(|item| {
+            item.desktop_position
+                .as_deref()
+                .and_then(parse_position)
+                .map(|pos| (pos, item))
+        })
+        .collect();
 
-        @match *sort_type {
-            FolderSortType::Custom => {
-                @let item_map: HashMap<(u16, u16), &FolderItem> = items
-                    .iter()
-                    .filter_map(|item| {
-                        item.desktop_position
-                            .as_deref()
-                            .and_then(parse_position)
-                            .map(|pos| (pos, item))
-                    })
-                    .collect();
-
-                @for row in 0..rows {
-                    @for col in 0..cols {
-                        div
-                            class = "flex justify-center items-center relative overflow-hidden group/item"
-                            style={ "width:" (rectangle_width) "px;" }
-                            id={ "item-" (row) "-" (col) }
-                            draggable="true"
-                        {
-                            @if let Some(item) = item_map.get(&(row, col)) {
-                                @match item.item_type.as_ref().unwrap() {
-                                    ItemType::File => {
-                                        @match item.file_type.as_ref().unwrap() {
-                                            FileType::Calculator => {(render_calculator_file())},
-                                            FileType::Snake => {(render_snake_file())},
-                                            FileType::FlappyBird => {(render_flappy_bird_file())},
-                                            FileType::Txt => {(render_txt_file(item.id.unwrap(), &item.name, &None))},
-                                            FileType::ThisPC => {(render_thispc_file(item.id.unwrap(), &item.name))},
-                                            FileType::Music => {(render_music_file())},
-                                            FileType::WebBuilder => {(render_web_builder_file(item.id.unwrap()))},
-                                        }
-                                    }
-                                    ItemType::Folder => {
-                                        (render_folder(item.id.unwrap(), &item.name, &None))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            FolderSortType::DateCreated => {
-                @for row in 0..rows {
-                    @for col in 0..cols {
-                        div
-                            class = "flex justify-center items-center relative overflow-hidden group/item"
-                            style={ "width:" (rectangle_width) "px;" }
-                            id={ "item-" (row) "-" (col) }
-                            draggable="true"
-                        {
-                            @if let Some(item) = items.get((col * rows + row) as usize) {
-                                @match item.item_type.as_ref().unwrap() {
-                                    ItemType::File => {
-                                        @match item.file_type.as_ref().unwrap(){
-                                            FileType::Calculator => {(render_calculator_file())},
-                                            FileType::Snake => {(render_snake_file())},
-                                            FileType::FlappyBird => {(render_flappy_bird_file())},
-                                            FileType::Txt => {(render_txt_file(item.id.unwrap(), &item.name, &None))},
-                                            FileType::ThisPC => {(render_thispc_file(item.id.unwrap(), &item.name))},
-                                            FileType::Music => {(render_music_file())},
-                                            FileType::WebBuilder => {(render_web_builder_file(item.id.unwrap()))},
-                                        }
-                                    }
-                                    ItemType::Folder => {
-                                        (render_folder(item.id.unwrap(), &item.name, &None))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    ScreenGrid {
+        desktop_id,
+        sort_type,
+        items: &items,
+        item_map,
+        rows,
+        cols,
+        rectangle_width,
     }
+    .render()
+    .unwrap()
 }
