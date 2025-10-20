@@ -5,7 +5,6 @@ use axum::{
     response::IntoResponse,
 };
 use deadpool_postgres::Pool;
-use hypertext::Renderable;
 use serde::Deserialize;
 
 use crate::{
@@ -16,7 +15,7 @@ use crate::{
         folder_item::FolderItem,
     },
     utilities::general::parse_user_id,
-    views::explorer_v::render_explorer_window,
+    views::explorer_v_2::render_explorer_window,
 };
 
 #[derive(Deserialize, Debug)]
@@ -25,6 +24,8 @@ pub struct ExplorerPath {
     pub folder_id: i32,
     pub height: i32,
     pub width: i32,
+    pub open_new_task: bool,
+    pub previous_folder_id: i32,
 }
 
 pub async fn get_explorer_window(
@@ -52,8 +53,8 @@ pub async fn get_explorer_window(
                 [(
                     "HX-Trigger",
                     format!(
-                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}"}}}}"#,
-                        folder_id
+                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
+                        folder_id, explorer_path.open_new_task, explorer_path.previous_folder_id
                     ),
                 )],
                 render_explorer_window(
@@ -62,8 +63,7 @@ pub async fn get_explorer_window(
                     explorer_path.width,
                     explorer_path.height,
                     &folder_items,
-                )
-                .render(),
+                ),
             ))
         }
         FolderType::Desktop => {
@@ -84,8 +84,8 @@ pub async fn get_explorer_window(
                 [(
                     "HX-Trigger",
                     format!(
-                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}"}}}}"#,
-                        folder_id
+                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
+                        folder_id, explorer_path.open_new_task, explorer_path.previous_folder_id
                     ),
                 )],
                 render_explorer_window(
@@ -94,8 +94,7 @@ pub async fn get_explorer_window(
                     explorer_path.width,
                     explorer_path.height,
                     &folder_items,
-                )
-                .render(),
+                ),
             ))
         }
         FolderType::Normal => {
@@ -121,8 +120,8 @@ pub async fn get_explorer_window(
                 [(
                     "HX-Trigger",
                     format!(
-                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}"}}}}"#,
-                        folder_id
+                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
+                        folder_id, explorer_path.open_new_task, explorer_path.previous_folder_id
                     ),
                 )],
                 render_explorer_window(
@@ -131,8 +130,7 @@ pub async fn get_explorer_window(
                     explorer_path.width,
                     explorer_path.height,
                     &folder_items,
-                )
-                .render(),
+                ),
             ))
         }
         _ => Err(AppError::new(StatusCode::NOT_FOUND, "Folder not found")),

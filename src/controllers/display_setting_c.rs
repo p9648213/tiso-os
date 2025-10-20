@@ -7,7 +7,6 @@ use axum::{
 };
 use base64::{Engine, engine::general_purpose};
 use deadpool_postgres::Pool;
-use hypertext::Renderable;
 
 use crate::{
     constant::MAX_BACKGROUND_PICTURE_SIZE,
@@ -18,7 +17,7 @@ use crate::{
     },
     utilities::general::parse_user_id,
     views::{
-        display_setting_v::render_display_setting_window, screen_v_2::render_screen_background,
+        display_setting_v_2::render_display_setting_window, screen_v_2::render_screen_background,
     },
 };
 
@@ -46,8 +45,7 @@ pub async fn get_display_setting_window(
             width,
             display_setting.background_type.unwrap(),
             display_setting.background_color,
-        )
-        .render(),
+        ),
     ))
 }
 

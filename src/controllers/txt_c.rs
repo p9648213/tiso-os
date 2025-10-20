@@ -4,7 +4,6 @@ use axum::{
     response::IntoResponse,
 };
 use deadpool_postgres::Pool;
-use hypertext::Renderable;
 
 use crate::{
     middlewares::session_mw::UserId,
@@ -14,8 +13,7 @@ use crate::{
         txt_db::Txt,
         txt_window::TxtWindow,
     },
-    utilities::general::parse_user_id,
-    views::txt_v::{render_txt_file, render_txt_input, render_txt_window},
+    utilities::general::parse_user_id, views::txt_v_2::{render_txt_file, render_txt_input, render_txt_window},
 };
 
 pub async fn create_txt(
@@ -45,7 +43,7 @@ pub async fn create_txt(
 
     Txt::create_txt(file_id, &pool).await?;
 
-    Ok(render_txt_file(file_id, &None, &None).render())
+    Ok(render_txt_file(file_id, None, None))
 }
 
 pub async fn get_txt_input(
@@ -57,7 +55,7 @@ pub async fn get_txt_input(
 
     let file = File::get_file(file_id, user_id, vec!["file_name"], &pool).await?;
 
-    Ok(render_txt_input(file_id, &file.file_name.unwrap()).render())
+    Ok(render_txt_input(file_id, &file.file_name.unwrap()))
 }
 
 pub async fn get_txt_window(
@@ -80,6 +78,6 @@ pub async fn get_txt_window(
                 txt_id
             ),
         )],
-        render_txt_window(&txt_window.file.file_name.unwrap(), txt_id, height, width).render(),
+        render_txt_window(&txt_window.file.file_name.unwrap(), txt_id, height, width),
     ))
 }

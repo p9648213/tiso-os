@@ -5,11 +5,11 @@ use crate::models::web_builder_db::DomTree;
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_file.html")]
 struct WebBuilderFile {
-    pub file_id: i32,
+    pub id: i32,
 }
 
 pub fn render_web_builder_file(file_id: i32) -> String {
-    WebBuilderFile { file_id }.render().unwrap()
+    WebBuilderFile { id: file_id }.render().unwrap()
 }
 
 #[derive(Template)]

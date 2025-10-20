@@ -367,7 +367,7 @@ export function setupScreenItemOpen() {
         htmx
           .ajax(
             "GET",
-            `/read/folder/explorer/${folderType}/${itemId}/${main.clientHeight}/${main.clientWidth}`,
+            `/read/folder/explorer/${folderType}/${itemId}/${main.clientHeight}/${main.clientWidth}/true/-1`,
             {
               target: "body",
               swap: "beforeend",

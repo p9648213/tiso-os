@@ -3,7 +3,7 @@
     "tw": "npx @tailwindcss/cli -i ./tailwind.css -o ./assets/css/lib/tailwind.css --watch",
     "minify:css": "npx @tailwindcss/cli -i ./assets/css/lib/taiwind.css -o ./assets/css/lib/tailwind.css --minify",
     "minify:js": "node minify.js",
-    "dev": "concurrently \"nodemon --watch './tailwind.css' --watch './src/**/*.{html,rs}' --ext '*' --exec 'npx @tailwindcss/cli -i ./tailwind.css -o ./assets/css/lib/tailwind.css'\" \"cargo watch -c -w src -x run\""
+    "dev": "concurrently \"nodemon --watch './tailwind.css' --watch ./templates/*.{html} --watch './src/**/*.{html,rs}' --ext '*' --exec 'npx @tailwindcss/cli -i ./tailwind.css -o ./assets/css/lib/tailwind.css'\" \"cargo watch -c -w src -x run\""
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.1.14",

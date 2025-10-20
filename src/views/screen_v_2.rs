@@ -1,4 +1,14 @@
+use crate::{
+    constant::MIN_RECTANGLE_WIDTH,
+    models::{
+        file_db::FileType,
+        folder_db::FolderSortType,
+        folder_item::{FolderItem, ItemType},
+    },
+    utilities::general::parse_position,
+};
 use askama::Template;
+use std::collections::HashMap;
 
 #[derive(Template)]
 #[template(path = "screen/welcome_screen.html")]
@@ -58,4 +68,50 @@ struct ScreenSection {}
 
 pub fn render_screen_section() -> String {
     ScreenSection {}.render().unwrap()
+}
+
+#[derive(Template)]
+#[template(path = "screen/screen_grid.html")]
+struct ScreenGrid<'a> {
+    desktop_id: i32,
+    sort_type: &'a FolderSortType,
+    items: &'a Vec<FolderItem>,
+    item_map: HashMap<(u16, u16), &'a FolderItem>,
+    rows: u16,
+    cols: u16,
+    rectangle_width: f32,
+}
+
+pub fn render_screen_grid(
+    height: u16,
+    width: u16,
+    desktop_id: i32,
+    sort_type: &FolderSortType,
+    items: Vec<FolderItem>,
+) -> String {
+    let rows = height / MIN_RECTANGLE_WIDTH;
+    let cols = width / MIN_RECTANGLE_WIDTH;
+    let rectangle_width = width as f32 / cols as f32 - 0.1;
+
+    let item_map: HashMap<(u16, u16), &FolderItem> = items
+        .iter()
+        .filter_map(|item| {
+            item.desktop_position
+                .as_deref()
+                .and_then(parse_position)
+                .map(|pos| (pos, item))
+        })
+        .collect();
+
+    ScreenGrid {
+        desktop_id,
+        sort_type,
+        items: &items,
+        item_map,
+        rows,
+        cols,
+        rectangle_width,
+    }
+    .render()
+    .unwrap()
 }

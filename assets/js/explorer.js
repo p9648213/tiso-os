@@ -24,7 +24,7 @@ export function setupExplorerWindow(folderId) {
 
       htmx.ajax(
         "GET",
-        `/read/folder/explorer/${folderType}/0/${main.clientHeight}/${main.clientWidth}`,
+        `/read/folder/explorer/${folderType}/0/${main.clientHeight}/${main.clientWidth}/false/${folderId}`,
         {
           target: `#explorer-window-${folderId}`,
           swap: "outerHTML",
@@ -61,8 +61,6 @@ export function setupExplorerWindowGrab(folderId) {
   }
 
   function handleMouseUp() {
-    console.log("here");
-
     isDragging = false;
   }
 

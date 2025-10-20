@@ -139,7 +139,7 @@ pub async fn create_router(pool: Pool) -> Router {
             .route("/txt/input/{file_id}", get(get_txt_input))
             .route("/folder/input/{folder_id}", get(get_folder_input))
             .route(
-                "/folder/explorer/{folder_type}/{folder_id}/{height}/{width}",
+                "/folder/explorer/{folder_type}/{folder_id}/{height}/{width}/{open_new_task}/{previous_folder_id}",
                 get(get_explorer_window),
             )
             .route(
