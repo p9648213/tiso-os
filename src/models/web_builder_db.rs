@@ -80,4 +80,65 @@ impl WebBuilder {
 
         Ok(())
     }
+
+    pub async fn insert_node(
+        builder_id: i32,
+        user_id: i32,
+        pool: &Pool,
+        insert_node_id: String,
+        parent_node_id: String,
+        update_node: Node,
+    ) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let node_json = serde_json::to_value(&update_node).map_err(|e| {
+            tracing::error!("Failed to serialize node: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
+        })?;
+
+        let rows = client
+            .execute(
+                "UPDATE web_builder
+                SET data = jsonb_set(
+                    jsonb_set(
+                        data,
+                        $1::text[],
+                        $2
+                    ),
+                    $3::text[],
+                    (data->'nodes'->$4->'children' || jsonb_build_array($5))
+                )
+                FROM file
+                WHERE web_builder.builder_id = file.builder_id
+                AND web_builder.id = $6
+                AND file.user_id = $7;",
+                &[
+                    &vec![format!("nodes"), insert_node_id.clone()],
+                    &node_json,
+                    &vec![
+                        format!("nodes"),
+                        parent_node_id.clone(),
+                        format!("children"),
+                    ],
+                    &parent_node_id,
+                    &insert_node_id,
+                    &builder_id,
+                    &user_id,
+                ],
+            )
+            .await?;
+
+        if rows == 0 {
+            tracing::error!("Error creating web builder");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
 }

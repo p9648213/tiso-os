@@ -21,7 +21,7 @@ use crate::{
         snake_c::get_snake_window,
         taskbar_c::get_taskbar_menu_files,
         txt_c::{create_txt, get_txt_input, get_txt_window},
-        web_builder_c::get_web_builder_window,
+        web_builder_c::{delete_node, edit_node, get_node, get_web_builder_window, insert_node},
     },
     middlewares::{csrf_mw::csrf_middleware, log_mw::request_log, session_mw::session_middleware},
     models::state::AppState,
@@ -78,6 +78,10 @@ pub async fn create_router(pool: Pool) -> Router {
             .route("/folder/{folder_id}/{position_id}", post(create_folder))
             .route("/screen", post(create_screen_grid))
             .route("/account", post(create_account))
+            .route(
+                "/web_builder/{builder_id}/node/insert/{parent_node_id}",
+                post(insert_node),
+            )
             .layer(from_fn(csrf_middleware)),
     );
 
@@ -106,6 +110,10 @@ pub async fn create_router(pool: Pool) -> Router {
                 "/setting/display/background_picture",
                 post(upload_background_picture),
             )
+            .route(
+                "/web_builder/{builder_id}/node/edit/{node_id}",
+                post(edit_node),
+            )
             .layer(from_fn(csrf_middleware)),
     );
 
@@ -114,6 +122,10 @@ pub async fn create_router(pool: Pool) -> Router {
         Router::new()
             .route("/file/{file_id}", post(delete_file))
             .route("/folder/{folder_id}", post(delete_folder))
+            .route(
+                "/web_builder/{builder_id}/node/delete/{node_id}",
+                post(delete_node),
+            )
             .layer(from_fn(csrf_middleware)),
     );
 
@@ -131,10 +143,6 @@ pub async fn create_router(pool: Pool) -> Router {
                 get(get_flappy_bird_window),
             )
             .route("/file/music/{height}/{width}", get(get_music_player_window))
-            .route(
-                "/web_builder/{file_id}/{height}/{width}",
-                get(get_web_builder_window),
-            )
             .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))
             .route("/folder/input/{folder_id}", get(get_folder_input))
@@ -145,7 +153,12 @@ pub async fn create_router(pool: Pool) -> Router {
             .route(
                 "/setting/display/{height}/{width}",
                 get(get_display_setting_window),
-            ),
+            )
+            .route(
+                "/web_builder/{file_id}/{height}/{width}",
+                get(get_web_builder_window),
+            )
+            .route("/web_builder/{builder_id}/node/{node_id}", get(get_node))
     );
 
     Router::new()

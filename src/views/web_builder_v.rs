@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash};
+use std::{collections::HashMap};
 
 use askama::Template;
 
@@ -19,21 +19,21 @@ pub fn render_web_builder_file(file_id: i32) -> String {
 struct WebBuilderWindow<'a> {
     pub web_builder_id: i32,
     pub file_name: &'a str,
-    pub builder_name: &'a str,
     pub data: &'a DomTree,
     pub window_width: i32,
     pub window_height: i32,
     pub top: i32,
     pub left: i32,
+    pub builder_list: &'a HashMap<i32, &'a str>,
 }
 
 pub fn render_web_builder_window(
     web_builder_id: i32,
     file_name: &str,
-    builder_name: &str,
     data: &DomTree,
     parent_height: i32,
     parent_width: i32,
+    builder_list: &HashMap<i32, &str>,
 ) -> String {
     let window_width = parent_width * 85 / 100;
     let window_height = parent_height * 96 / 100;
@@ -44,12 +44,12 @@ pub fn render_web_builder_window(
     WebBuilderWindow {
         web_builder_id,
         file_name,
-        builder_name,
         data,
         window_width,
         window_height,
         top,
         left,
+        builder_list
     }
     .render()
     .unwrap()
