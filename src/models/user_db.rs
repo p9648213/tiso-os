@@ -133,7 +133,7 @@ impl User {
 
         let web_builder_file = File::try_from(&row, None);
 
-        let root_node = Uuid::new_v4().to_string();
+        let html_node = Uuid::new_v4().to_string();
         let body_node = Uuid::new_v4().to_string();
         let main_node = Uuid::new_v4().to_string();
 
@@ -143,10 +143,10 @@ impl User {
                 &web_builder_file.id.unwrap(),
                 &"New Page",
                 &json!({
-                    "root_node": root_node,
-                    "main_node": main_node,
+                    "html_node": html_node,
+                    "body_node": body_node,
                     "nodes": {
-                        root_node: { "tag": "html", "children": [body_node] },
+                        html_node: { "tag": "html", "children": [body_node] },
                         body_node: { "tag": "body", "children": [main_node] },
                         main_node: { "tag": "main", "children": [] },
                     }

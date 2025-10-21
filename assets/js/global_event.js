@@ -3,6 +3,7 @@ export function setupGlobalEvents() {
     const img = event.detail.image;
     const windowId = event.detail.window_id;
     const openNewTask = event.detail.open_new_task;
+    
     const previousFolderId = event.detail.previous_folder_id;
 
     const duplicateWindow = document.getElementById(windowId);
@@ -11,7 +12,7 @@ export function setupGlobalEvents() {
       duplicateWindow.remove();
     }
 
-    if (!openNewTask) {
+    if (openNewTask == false) {
       const parentTaskbar = document.getElementById(`taskbar-explorer-window-${previousFolderId}`);
       parentTaskbar.id = `taskbar-explorer-window-${windowId.split("-")[2]}`;
       return;

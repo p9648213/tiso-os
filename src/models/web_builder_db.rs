@@ -16,8 +16,8 @@ pub struct Node {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DomTree {
-    pub main_node: String,
-    pub root_node: String,
+    pub html_node: String,
+    pub body_node: String,
     pub nodes: HashMap<String, Node>,
 }
 

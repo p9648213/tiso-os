@@ -1,6 +1,8 @@
+use std::{collections::HashMap, hash::Hash};
+
 use askama::Template;
 
-use crate::models::web_builder_db::DomTree;
+use crate::models::web_builder_db::{DomTree, Node};
 
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_file.html")]
@@ -63,10 +65,28 @@ pub fn render_web_builder_structure() -> String {
 
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_review.html")]
-struct WebBuilderReview {}
+struct WebBuilderReview<'a> {
+    nodes: &'a HashMap<String, Node>,
+    body_node: &'a Node,
+}
 
-pub fn render_web_builder_review() -> String {
-    WebBuilderReview {}.render().unwrap()
+pub fn render_web_builder_review(data: &DomTree) -> String {
+    WebBuilderReview {
+        nodes: &data.nodes,
+        body_node: data.nodes.get(&data.body_node).unwrap(),
+    }
+    .render()
+    .unwrap()
+}
+
+#[derive(Template)]
+#[template(path = "web_builder/web_builder_node.html")]
+struct WebBuilderNode<'a> {
+    node: &'a Node,
+}
+
+pub fn render_web_builder_node(node: &Node) -> String {
+    WebBuilderNode { node }.render().unwrap()
 }
 
 #[derive(Template)]
