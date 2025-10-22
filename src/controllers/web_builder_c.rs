@@ -81,7 +81,8 @@ pub async fn get_web_builder(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let web_builder = WebBuilderWindow::get_web_builder(builder_id, user_id, vec!["data"], vec![], &pool).await?;
+    let web_builder =
+        WebBuilderWindow::get_web_builder(builder_id, user_id, vec!["data"], vec![], &pool).await?;
 
     println!("{:?}", web_builder);
 
@@ -117,10 +118,10 @@ pub async fn insert_node(
     WebBuilder::insert_node(
         builder_id,
         user_id,
-        &pool,
         uuid::Uuid::new_v4().to_string(),
         parent_node_id,
         payload,
+        &pool,
     )
     .await?;
 
@@ -135,7 +136,7 @@ pub async fn edit_node(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    WebBuilder::edit_node(builder_id, user_id, &pool, node_id, &payload).await?;
+    WebBuilder::edit_node(builder_id, user_id, node_id, &payload, &pool).await?;
 
     Ok(())
 }
@@ -146,6 +147,8 @@ pub async fn delete_node(
     Extension(user_id): Extension<UserId>,
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
+
+    WebBuilder::delete_node(builder_id, user_id, node_id, &pool).await?;
 
     Ok(())
 }

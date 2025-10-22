@@ -88,10 +88,10 @@ impl WebBuilder {
     pub async fn insert_node(
         builder_id: i32,
         user_id: i32,
-        pool: &Pool,
         insert_node_id: String,
         parent_node_id: String,
         update_node: Node,
+        pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
@@ -113,7 +113,7 @@ impl WebBuilder {
                         $2
                     ),
                     $3::text[],
-                    (data->'nodes'->$4->'children' || jsonb_build_array($5))
+                    (data->'nodes'->$4->'children' || jsonb_build_array(to_jsonb($5::text)))
                 )
                 FROM file
                 WHERE web_builder.file_id = file.id
@@ -149,9 +149,9 @@ impl WebBuilder {
     pub async fn edit_node(
         builder_id: i32,
         user_id: i32,
-        pool: &Pool,
         edit_node_id: String,
         update_node: &Node,
+        pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
@@ -198,8 +198,8 @@ impl WebBuilder {
     pub async fn delete_node(
         builder_id: i32,
         user_id: i32,
-        pool: &Pool,
         delete_node_id: String,
+        pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
