@@ -24,6 +24,7 @@ pub enum FileType {
     WebBuilder,
 }
 
+#[derive(Debug)]
 pub struct File {
     pub id: Option<i32>,
     pub user_id: Option<i32>,

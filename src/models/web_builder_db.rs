@@ -6,7 +6,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tokio_postgres::Row;
 
-use crate::{models::error::AppError, utilities::postgres::DbExecutor};
+use crate::{
+    models::error::AppError,
+    utilities::{general::collect_descendants, postgres::DbExecutor},
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Node {
@@ -21,6 +24,7 @@ pub struct DomTree {
     pub nodes: HashMap<String, Node>,
 }
 
+#[derive(Debug)]
 pub struct WebBuilder {
     pub id: Option<i32>,
     pub file_id: Option<i32>,
@@ -112,11 +116,11 @@ impl WebBuilder {
                     (data->'nodes'->$4->'children' || jsonb_build_array($5))
                 )
                 FROM file
-                WHERE web_builder.builder_id = file.builder_id
+                WHERE web_builder.file_id = file.id
                 AND web_builder.id = $6
                 AND file.user_id = $7;",
                 &[
-                    &vec![format!("nodes"), insert_node_id.clone()],
+                    &vec![String::from("nodes"), insert_node_id.clone()],
                     &node_json,
                     &vec![
                         format!("nodes"),
@@ -132,7 +136,150 @@ impl WebBuilder {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error creating web builder");
+            tracing::error!("Error insert node");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
+
+    pub async fn edit_node(
+        builder_id: i32,
+        user_id: i32,
+        pool: &Pool,
+        edit_node_id: String,
+        update_node: &Node,
+    ) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let node_json = serde_json::to_value(update_node).map_err(|e| {
+            tracing::error!("Failed to serialize node: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
+        })?;
+
+        let rows = client
+            .execute(
+                "UPDATE web_builder
+            SET data = jsonb_set(
+                data,
+                $1::text[],
+                $2
+            )
+            FROM file
+            WHERE web_builder.file_id = file.id
+            AND web_builder.id = $3
+            AND file.user_id = $4;",
+                &[
+                    &vec![String::from("nodes"), edit_node_id.clone()],
+                    &node_json,
+                    &builder_id,
+                    &user_id,
+                ],
+            )
+            .await?;
+
+        if rows == 0 {
+            tracing::error!("Error edit node");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
+
+    pub async fn delete_node(
+        builder_id: i32,
+        user_id: i32,
+        pool: &Pool,
+        delete_node_id: String,
+    ) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let row = client
+            .query_one(
+                "SELECT data 
+                FROM web_builder JOIN file 
+                ON web_builder.file_id = file.id
+                WHERE web_builder.id = $1
+                AND file.user_id = $2;",
+                &[&builder_id, &user_id],
+            )
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to fetch builder data: {:?}", e);
+                AppError::new(StatusCode::NOT_FOUND, "Builder not found")
+            })?;
+
+        let data: Value = row.get("data");
+
+        let nodes = data
+            .get("nodes")
+            .and_then(|n| n.as_object())
+            .ok_or_else(|| {
+                tracing::error!("Invalid nodes structure");
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Invalid data structure")
+            })?;
+
+        if !nodes.contains_key(&delete_node_id) {
+            return Err(AppError::new(StatusCode::NOT_FOUND, "Not Found"));
+        }
+
+        let mut to_delete = std::collections::HashSet::new();
+        collect_descendants(&delete_node_id, nodes, &mut to_delete);
+        let all_ids: Vec<String> = to_delete.into_iter().collect();
+
+        let rows = client
+        .execute(
+            "UPDATE web_builder
+            SET data = jsonb_set(
+                data,
+                '{nodes}',
+                (
+                    SELECT jsonb_object_agg(key, value)
+                    FROM (
+                        SELECT key,
+                            CASE 
+                                WHEN value ? 'children' THEN jsonb_set(
+                                    value,
+                                    '{children}',
+                                    (
+                                        SELECT COALESCE(jsonb_agg(child_id), '[]'::jsonb)
+                                        FROM jsonb_array_elements_text(value->'children') AS child_id
+                                        WHERE child_id <> ALL($1::text[])
+                                    )
+                                )
+                                ELSE value
+                            END as value
+                        FROM jsonb_each(data->'nodes')
+                        WHERE key <> ALL($1::text[])
+                    ) AS filtered_nodes
+                )
+            )
+            FROM file
+            WHERE web_builder.file_id = file.id
+            AND web_builder.id = $2
+            AND file.user_id = $3",
+            &[&all_ids, &builder_id, &user_id],
+        )
+        .await
+        .map_err(|e| {
+            tracing::error!("Failed to delete node: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+
+        if rows == 0 {
+            tracing::error!("No rows updated when deleting node");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Server Error",

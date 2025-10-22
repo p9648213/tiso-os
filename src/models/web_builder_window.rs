@@ -12,6 +12,7 @@ use crate::{
     utilities::postgres::DbExecutor,
 };
 
+#[derive(Debug)]
 pub struct WebBuilderWindow {
     pub web_builder: WebBuilder,
     pub file: File,

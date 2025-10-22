@@ -36,7 +36,7 @@ pub async fn get_web_builder_window(
     )
     .await?;
 
-    let first_builder = web_builder_window.get(0).unwrap();
+    let first_builder = web_builder_window.first().unwrap();
     let data = first_builder.web_builder.data.as_ref().unwrap();
 
     let dom_tree: DomTree = DomTree::deserialize(data).map_err(|err| {
@@ -65,13 +65,27 @@ pub async fn get_web_builder_window(
         )],
         render_web_builder_window(
             web_builder_id,
-            &first_builder.file.file_name.as_ref().unwrap(),
+            first_builder.file.file_name.as_ref().unwrap(),
             &dom_tree,
             height,
             width,
             &builder_list,
         ),
     ))
+}
+
+pub async fn get_web_builder(
+    Path(builder_id): Path<i32>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    let web_builder = WebBuilderWindow::get_web_builder(builder_id, user_id, vec!["data"], vec![], &pool).await?;
+
+    println!("{:?}", web_builder);
+
+    Ok(())
 }
 
 pub async fn get_node(
@@ -95,8 +109,8 @@ pub async fn get_node(
 pub async fn insert_node(
     Path((builder_id, parent_node_id)): Path<(i32, String)>,
     State(pool): State<Pool>,
-    Json(payload): Json<Node>,
     Extension(user_id): Extension<UserId>,
+    Json(payload): Json<Node>,
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
@@ -113,6 +127,25 @@ pub async fn insert_node(
     Ok(())
 }
 
-pub async fn edit_node() {}
+pub async fn edit_node(
+    Path((builder_id, node_id)): Path<(i32, String)>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+    Json(payload): Json<Node>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
 
-pub async fn delete_node() {}
+    WebBuilder::edit_node(builder_id, user_id, &pool, node_id, &payload).await?;
+
+    Ok(())
+}
+
+pub async fn delete_node(
+    Path((builder_id, node_id)): Path<(i32, String)>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    Ok(())
+}
