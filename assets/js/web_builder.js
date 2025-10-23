@@ -22,3 +22,21 @@ export function setupWebBuilderToolBar(web_builder_id) {
     );
   });
 }
+
+export function setupAddSectionDialog() {
+  const sectionDialog = document.getElementById("builder-section");
+  const openSectionDialogBtn = document.getElementById(
+    "open-section-btn"
+  );
+  const closeSectionDialogBtn = document.getElementById(
+    "close-section-btn"
+  );
+
+  openSectionDialogBtn.addEventListener("click", function () {
+    sectionDialog.showModal();
+  });
+
+  closeSectionDialogBtn.addEventListener("click", function () {
+    sectionDialog.close();
+  });
+}

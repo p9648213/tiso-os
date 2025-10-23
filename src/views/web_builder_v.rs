@@ -35,8 +35,8 @@ pub fn render_web_builder_window(
     parent_width: i32,
     builder_list: &HashMap<i32, &str>,
 ) -> String {
-    let window_width = parent_width * 85 / 100;
-    let window_height = parent_height * 96 / 100;
+    let window_width = parent_width * 99 / 100;
+    let window_height = parent_height * 98 / 100;
 
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
     let top = ((parent_height / 2) - (window_height / 2)).max(0);
@@ -95,4 +95,12 @@ struct WebBuilderSetting {}
 
 pub fn render_web_builder_setting() -> String {
     WebBuilderSetting {}.render().unwrap()
+}
+
+#[derive(Template)]
+#[template(path = "web_builder/web_builder_section_dialog.html")]
+struct WebBuilderSectionDialog {}
+
+pub fn render_web_builder_section_dialog() -> String {
+    WebBuilderSectionDialog {}.render().unwrap()
 }
