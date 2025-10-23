@@ -115,9 +115,7 @@ impl WebBuilderWindow {
 
         let row = client
             .query_one(
-                &format!(
-                    "SELECT data->'nodes'->$1 AS node FROM web_builder JOIN file ON web_builder.file_id = file.id WHERE web_builder.id = $2 AND file.user_id = $3"
-                ),
+                "SELECT data->'nodes'->$1 AS node FROM web_builder JOIN file ON web_builder.file_id = file.id WHERE web_builder.id = $2 AND file.user_id = $3",
                 &[&node_id, &builder_id, &user_id],
             )
             .await?;
