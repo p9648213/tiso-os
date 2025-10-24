@@ -14,7 +14,7 @@ pub async fn get_music_player_window(
     Ok((
         [(
             "HX-Trigger",
-            r#"{"openFile":{"image":"/assets/images/music.svg", "window_id": "music-player-window"}}"#,
+            r#"{"openFile":{"image":"/assets/images/music/music.svg", "window_id": "music-player-window"}}"#,
         )],
         render_music_player_window(height, width),
     ))

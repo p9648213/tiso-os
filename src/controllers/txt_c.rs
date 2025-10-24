@@ -75,7 +75,7 @@ pub async fn get_txt_window(
         [(
             "HX-Trigger",
             format!(
-                r#"{{"openFile":{{"image":"/assets/images/text-editor.svg", "window_id": "txt-window-{}"}}}}"#,
+                r#"{{"openFile":{{"image":"/assets/images/txt/text-editor.svg", "window_id": "txt-window-{}"}}}}"#,
                 txt_id
             ),
         )],

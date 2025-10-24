@@ -59,7 +59,7 @@ pub async fn get_web_builder_window(
         [(
             "HX-Trigger",
             format!(
-                r#"{{"openFile":{{"image":"/assets/images/web-builder.svg", "window_id": "web-builder-window-{}"}}}}"#,
+                r#"{{"openFile":{{"image":"/assets/images/web-builder/web-builder.svg", "window_id": "web-builder-window-{}"}}}}"#,
                 web_builder_id
             ),
         )],

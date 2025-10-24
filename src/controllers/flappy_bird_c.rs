@@ -14,7 +14,7 @@ pub async fn get_flappy_bird_window(
     Ok((
         [(
             "HX-Trigger",
-            r#"{"openFile":{"image":"/assets/images/flappy_bird.png", "window_id": "flappy-canvas-container"}}"#,
+            r#"{"openFile":{"image":"/assets/images/flappybird/flappy_bird.png", "window_id": "flappy-canvas-container"}}"#,
         )],
         render_flappy_bird_window(height, width),
     ))

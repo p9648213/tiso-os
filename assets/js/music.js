@@ -142,20 +142,20 @@ export function setupMusicPlayer() {
   function toggleShuffle() {
     isShuffle = !isShuffle;
     shuffleBtn.querySelector("img").src = isShuffle
-      ? "/assets/images/shuffle-on.svg"
-      : "/assets/images/shuffle-off.svg";
+      ? "/assets/images/music/shuffle-on.svg"
+      : "/assets/images/music/shuffle-off.svg";
   }
 
   function toggleRepeat() {
     if (repeatMode === "none") {
       repeatMode = "one";
-      repeatBtn.querySelector("img").src = "/assets/images/repeat-one.svg";
+      repeatBtn.querySelector("img").src = "/assets/images/music/repeat-one.svg";
     } else if (repeatMode === "one") {
       repeatMode = "all";
-      repeatBtn.querySelector("img").src = "/assets/images/repeat.svg";
+      repeatBtn.querySelector("img").src = "/assets/images/music/repeat.svg";
     } else {
       repeatMode = "none";
-      repeatBtn.querySelector("img").src = "/assets/images/repeat-off.svg";
+      repeatBtn.querySelector("img").src = "/assets/images/music/repeat-off.svg";
     }
   }
 

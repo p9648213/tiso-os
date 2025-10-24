@@ -35,7 +35,7 @@ pub fn render_web_builder_window(
     parent_width: i32,
     builder_list: &HashMap<i32, &str>,
 ) -> String {
-    let window_width = parent_width * 99 / 100;
+    let window_width = parent_width * 90 / 100;
     let window_height = parent_height * 98 / 100;
 
     let left = ((parent_width / 2) - (window_width / 2)).max(0);

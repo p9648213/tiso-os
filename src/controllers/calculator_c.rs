@@ -14,7 +14,7 @@ pub async fn get_calculator_window(
     Ok((
         [(
             "HX-Trigger",
-            r#"{"openFile":{"image":"/assets/images/calculator.svg", "window_id": "calculator-window"}}"#,
+            r#"{"openFile":{"image":"/assets/images/calculator/calculator.svg", "window_id": "calculator-window"}}"#,
         )],
         render_calculator_window(height, width),
     ))

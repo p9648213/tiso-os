@@ -14,7 +14,7 @@ pub async fn get_snake_window(
     Ok((
         [(
             "HX-Trigger",
-            r#"{"openFile":{"image":"/assets/images/snake.svg", "window_id": "snake-canvas-container"}}"#,
+            r#"{"openFile":{"image":"/assets/images/snake/snake.svg", "window_id": "snake-canvas-container"}}"#,
         )],
         render_snake_window(height, width),
     ))

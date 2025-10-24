@@ -36,7 +36,7 @@ pub async fn get_display_setting_window(
     Ok((
         [(
             "HX-Trigger",
-            r#"{"openFile":{"image":"/assets/images/display-setting.svg", "window_id": "display-setting-window"}}"#,
+            r#"{"openFile":{"image":"/assets/images/display-setting/display-setting.svg", "window_id": "display-setting-window"}}"#,
         )],
         render_display_setting_window(
             height,

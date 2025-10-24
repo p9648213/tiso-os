@@ -53,7 +53,7 @@ pub async fn get_explorer_window(
                 [(
                     "HX-Trigger",
                     format!(
-                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
+                        r#"{{"openFile":{{"image":"/assets/images/explorer/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
                         folder_id, explorer_path.open_new_task, explorer_path.previous_folder_id
                     ),
                 )],
@@ -84,7 +84,7 @@ pub async fn get_explorer_window(
                 [(
                     "HX-Trigger",
                     format!(
-                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
+                        r#"{{"openFile":{{"image":"/assets/images/explorer/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
                         folder_id, explorer_path.open_new_task, explorer_path.previous_folder_id
                     ),
                 )],
@@ -120,7 +120,7 @@ pub async fn get_explorer_window(
                 [(
                     "HX-Trigger",
                     format!(
-                        r#"{{"openFile":{{"image":"/assets/images/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
+                        r#"{{"openFile":{{"image":"/assets/images/explorer/folder.svg", "window_id": "explorer-window-{}", "open_new_task": {}, "previous_folder_id": {}}}}}"#,
                         folder_id, explorer_path.open_new_task, explorer_path.previous_folder_id
                     ),
                 )],
