@@ -1,249 +1,21 @@
-<div class="flex flex-col bg-white shadow-2xl rounded-sm max-h-[90vh]">
+<div class="flex flex-col bg-white shadow-2xl rounded-sm h-[90vh]">
   <div
     class="flex justify-between items-center px-6 py-2 border-gray-200 border-b"
   >
-    <h2 class="font-bold text-gray-800 text-lg">Add Component to Website</h2>
+    <h2 class="font-bold text-gray-800 text-lg">Add Section to Website</h2>
     <button id="close-section-btn" class="hover:opacity-70">
       <img class="w-6 h-6" src="/assets/images/common/x-dark.svg" alt="x" />
     </button>
   </div>
   <div class="flex flex-1 gap-6 p-6 overflow-hidden">
-    <div class="min-w-80">
-      <h3 class="mb-4 font-semibold text-gray-700 text-lg">
-        Select Component Type
-      </h3>
-      <div class="gap-4 grid grid-cols-2">
-        <div
-          class="flex justify-center items-center bg-blue-50 p-4 border-2 border-blue-500 rounded-sm"
-        >
-          <div class="flex flex-col items-center text-center">
-            <svg
-              class="mb-2 w-9 h-9 text-blue-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              ></path>
-            </svg>
-            <span class="font-semibold text-blue-500">Header</span>
-          </div>
-        </div>
-        <div class="flex justify-center items-center p-4 border-2 border-gray-200 hover:border-blue-500 rounded-sm">
-          <div class="flex flex-col items-center text-center">
-            <svg
-              class="mb-2 w-9 h-9 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 18h16M4 12h16M4 6h16"
-              ></path>
-            </svg>
-            <span class="font-medium text-gray-600">Footer</span>
-          </div>
-        </div>
-        <div class="flex justify-center items-center p-4 border-2 border-gray-200 hover:border-blue-500 rounded-sm">
-          <div class="flex flex-col items-center text-center">
-            <svg
-              class="mb-2 w-9 h-9 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              ></path>
-            </svg>
-            <span class="font-medium text-gray-600">Hero Section</span>
-          </div>
-        </div>
-        <div class="flex justify-center items-center p-4 border-2 border-gray-200 hover:border-blue-500 rounded-sm">
-          <div class="flex flex-col items-center text-center">
-            <svg
-              class="mb-2 w-9 h-9 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              ></path>
-            </svg>
-            <span class="font-medium text-gray-600">Contact Form</span>
-          </div>
-        </div>
-      </div>
+    <div class="w-100">
+      {% set selected_section = "Header" %}
+      {% include "web_builder/web_builder_select_section.html" %}
     </div>
     <div class="pr-4 w-full overflow-scroll">
-      <h3 class="mb-4 font-semibold text-gray-700 text-lg">
-        Choose Header Template
-      </h3>
-      <div class="space-y-4">
-        <div
-          class="bg-blue-50 border-2 border-blue-500 rounded-sm overflow-hidden transition-all"
-        >
-          <div class="p-4">
-            <div class="flex justify-between items-start mb-3">
-              <div>
-                <h4 class="mb-1 font-semibold text-gray-800">
-                  Modern Navigation Header
-                </h4>
-                <p class="text-gray-600 text-sm">
-                  Clean and minimal header with logo and navigation menu
-                </p>
-              </div>
-            </div>
-            <div class="bg-white p-4 border border-gray-200 rounded">
-              <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                  <div
-                    class="bg-linear-to-br from-blue-500 to-purple-600 rounded w-10 h-10"
-                  ></div>
-                  <span class="font-bold text-gray-800">Brand</span>
-                </div>
-                <div class="hidden md:flex space-x-6">
-                  <span class="text-gray-600 text-sm">Home</span>
-                  <span class="text-gray-600 text-sm">About</span>
-                  <span class="text-gray-600 text-sm">Services</span>
-                  <span class="text-gray-600 text-sm">Contact</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <div
-                    class="hidden sm:block px-3 py-1 border border-gray-300 rounded text-gray-600 text-sm"
-                  >
-                    Login
-                  </div>
-                  <div class="bg-blue-500 px-3 py-1 rounded text-white text-sm">
-                    Sign Up
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="border-2 border-gray-200 hover:border-blue-500 rounded-sm overflow-hidden"
-        >
-          <div class="p-4">
-            <div class="flex justify-between items-start mb-3">
-              <div>
-                <h4 class="mb-1 font-semibold text-gray-800">
-                  Centered Logo Header
-                </h4>
-                <p class="text-gray-600 text-sm">
-                  Elegant header with centered logo and symmetric navigation
-                </p>
-              </div>
-            </div>
-            <div class="bg-white p-4 border border-gray-200 rounded">
-              <div class="flex flex-col items-center space-y-3">
-                <div
-                  class="bg-linear-to-br from-green-500 to-teal-600 rounded-full w-12 h-12"
-                ></div>
-                <div class="flex space-x-8">
-                  <span class="text-gray-600 text-sm">Products</span>
-                  <span class="text-gray-600 text-sm">Solutions</span>
-                  <span class="text-gray-600 text-sm">Pricing</span>
-                  <span class="text-gray-600 text-sm">Resources</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="border-2 border-gray-200 hover:border-blue-500 rounded-sm overflow-hidden"
-        >
-          <div class="p-4">
-            <div class="flex justify-between items-start mb-3">
-              <div>
-                <h4 class="mb-1 font-semibold text-gray-800">
-                  Full-Width Header with Search
-                </h4>
-                <p class="text-gray-600 text-sm">
-                  Professional header with integrated search bar and icons
-                </p>
-              </div>
-            </div>
-            <div
-              class="bg-linear-to-r from-purple-600 to-indigo-600 p-4 rounded"
-            >
-              <div class="flex justify-between items-center mb-3">
-                <div class="flex items-center space-x-2">
-                  <div class="bg-white rounded w-8 h-8"></div>
-                  <span class="font-bold text-white">Company</span>
-                </div>
-                <div class="flex items-center space-x-3">
-                  <div
-                    class="bg-white bg-opacity-20 rounded-full w-6 h-6"
-                  ></div>
-                  <div
-                    class="bg-white bg-opacity-20 rounded-full w-6 h-6"
-                  ></div>
-                </div>
-              </div>
-              <div class="bg-white bg-opacity-20 px-3 py-2 rounded">
-                <span class="text-white text-xs text-opacity-60"
-                  >Search products...</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="border-2 border-gray-200 hover:border-blue-500 rounded-sm overflow-hidden"
-        >
-          <div class="p-4">
-            <div class="flex justify-between items-start mb-3">
-              <div>
-                <h4 class="mb-1 font-semibold text-gray-800">
-                  Mega Menu Header
-                </h4>
-                <p class="text-gray-600 text-sm">
-                  Advanced header with dropdown menu support
-                </p>
-              </div>
-            </div>
-            <div class="bg-white p-4 border border-gray-200 rounded">
-              <div class="flex justify-between items-center">
-                <div class="font-bold text-gray-800 text-xl">LOGO</div>
-                <div class="flex space-x-6">
-                  <div class="font-medium text-gray-700 text-sm">Shop ▾</div>
-                  <div class="text-gray-600 text-sm">About</div>
-                  <div class="text-gray-600 text-sm">Blog</div>
-                  <div class="text-gray-600 text-sm">Contact</div>
-                </div>
-                <div class="flex space-x-3">
-                  <div
-                    class="flex justify-center items-center border border-gray-300 rounded w-8 h-8 text-xs"
-                  >
-                    🔍
-                  </div>
-                  <div
-                    class="flex justify-center items-center border border-gray-300 rounded w-8 h-8 text-xs"
-                  >
-                    🛒
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {% set selected_header = 1 %}
+      {% set swap_oob = "" %}
+      {% include "web_builder/web_builder_select_header.html" %}
     </div>
   </div>
   <div
@@ -258,7 +30,7 @@
       <button
         class="bg-blue-500 hover:opacity-70 px-6 py-1.5 rounded-sm font-medium text-white"
       >
-        Add Template
+        Add Section
       </button>
     </div>
   </div>

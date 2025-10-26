@@ -17,7 +17,9 @@ use crate::{
         web_builder_window::WebBuilderWindow,
     },
     utilities::general::parse_user_id,
-    views::web_builder_v::render_web_builder_window,
+    views::web_builder_v::{
+        render_web_builder_select_contact, render_web_builder_select_footer, render_web_builder_select_header, render_web_builder_select_hero, render_web_builder_select_section, render_web_builder_window
+    },
 };
 
 pub async fn get_web_builder_window(
@@ -151,4 +153,32 @@ pub async fn delete_node(
     WebBuilder::delete_node(builder_id, user_id, node_id, &pool).await?;
 
     Ok(())
+}
+
+pub async fn get_selected_section(
+    Path(section_type): Path<String>,
+) -> Result<impl IntoResponse, AppError> {
+    match section_type.as_str() {
+        "Header" => Ok(format!(
+            "{}{}",
+            render_web_builder_select_section(&section_type),
+            render_web_builder_select_header(1, "outerHTML")
+        )),
+        "Footer" => Ok(format!(
+            "{}{}",
+            render_web_builder_select_section(&section_type),
+            render_web_builder_select_footer(1, "outerHTML")
+        )),
+        "Hero Section" => Ok(format!(
+            "{}{}",
+            render_web_builder_select_section(&section_type),
+            render_web_builder_select_hero(1, "outerHTML")
+        )),
+        "Contact Form" => Ok(format!(
+            "{}{}",
+            render_web_builder_select_section(&section_type),
+            render_web_builder_select_contact(1, "outerHTML")
+        )),
+        _ => Err(AppError::new(StatusCode::NOT_FOUND, "Section not found")),
+    }
 }

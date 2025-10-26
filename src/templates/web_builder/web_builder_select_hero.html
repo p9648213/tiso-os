@@ -1,0 +1,11 @@
+<div id="builder_template" {% if swap_oob != "" %} hx-swap-oob={{swap_oob}} {% endif %}>
+  <h3 class="mb-4 font-semibold text-gray-700 text-lg">
+    Choose Hero Template
+  </h3>
+  <div class="space-y-4">
+    {% include "web_builder/hero_template/hero_template_1.html" %}
+    {% include "web_builder/hero_template/hero_template_2.html" %}
+    {% include "web_builder/hero_template/hero_template_3.html" %}
+    {% include "web_builder/hero_template/hero_template_4.html" %}
+  </div>
+</div>
