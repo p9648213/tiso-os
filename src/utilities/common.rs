@@ -1,8 +1,12 @@
 use std::collections::HashMap;
 
 use axum::http::StatusCode;
+use scraper::{Html, Selector};
 
-use crate::{middlewares::session_mw::UserId, models::{error::AppError, web_builder_db::Node}};
+use crate::{
+    middlewares::session_mw::UserId,
+    models::{error::AppError, web_builder_db::Node},
+};
 
 pub fn parse_position(pos: &str) -> Option<(u16, u16)> {
     let parts: Vec<&str> = pos.strip_prefix("item-")?.split('-').collect();
@@ -44,6 +48,16 @@ pub fn collect_descendants(
 }
 
 pub fn html_to_nodes(html: &str) -> HashMap<String, Node> {
-    println!("{}", html);
+    let document = Html::parse_document(html);
+    let body_selector = Selector::parse("body").unwrap();
+    let first_element = document
+        .select(&body_selector)
+        .next()
+        .unwrap()
+        .first_child()
+        .unwrap();
+
+    println!("{:#?}", first_element);
+
     todo!()
 }
