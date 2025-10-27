@@ -10,7 +10,7 @@ use serde::Deserialize;
 use crate::{
     middlewares::session_mw::UserId,
     models::{error::AppError, file_db::File, folder_db::FolderSortType, state::SessionMap},
-    utilities::general::parse_user_id,
+    utilities::common::parse_user_id,
     views::txt_v::render_txt_file,
 };
 

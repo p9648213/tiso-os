@@ -13,7 +13,7 @@ use crate::{
         folder_db::{Folder, FolderSortType, FolderType},
         state::SessionMap,
     },
-    utilities::general::parse_user_id,
+    utilities::common::parse_user_id,
     views::folder_v::{render_folder, render_folder_input},
 };
 

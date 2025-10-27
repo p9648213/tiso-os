@@ -15,7 +15,7 @@ use crate::{
         display_setting_db::{BackgroundType, DisplaySetting},
         error::AppError,
     },
-    utilities::general::parse_user_id,
+    utilities::common::parse_user_id,
     views::{display_setting_v::render_display_setting_window, screen_v::render_screen_background},
 };
 

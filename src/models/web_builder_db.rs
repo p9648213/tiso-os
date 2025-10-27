@@ -8,13 +8,22 @@ use tokio_postgres::Row;
 
 use crate::{
     models::error::AppError,
-    utilities::{general::collect_descendants, postgres::DbExecutor},
+    utilities::{common::collect_descendants, postgres::DbExecutor},
 };
+
+fn default_attributes() -> Value {
+    Value::Object(serde_json::Map::new())
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Node {
     pub tag: String,
+    #[serde(default)]
+    pub text: Option<String>,
+    #[serde(default)]
     pub children: Vec<String>,
+    #[serde(default = "default_attributes")]
+    pub attributes: Value,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

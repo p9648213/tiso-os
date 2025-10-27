@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use axum::http::StatusCode;
 
-use crate::{middlewares::session_mw::UserId, models::error::AppError};
+use crate::{middlewares::session_mw::UserId, models::{error::AppError, web_builder_db::Node}};
 
 pub fn parse_position(pos: &str) -> Option<(u16, u16)> {
     let parts: Vec<&str> = pos.strip_prefix("item-")?.split('-').collect();
@@ -25,17 +27,23 @@ pub fn parse_user_id(user_id: UserId) -> Result<i32, AppError> {
 }
 
 pub fn collect_descendants(
-        node_id: &str,
-        nodes: &serde_json::Map<String, serde_json::Value>,
-        acc: &mut std::collections::HashSet<String>,
-    ) {
-        acc.insert(node_id.to_string());
-        if let Some(node) = nodes.get(node_id)
-            && let Some(children) = node.get("children").and_then(|c| c.as_array()) {
-                for child in children {
-                    if let Some(child_id) = child.as_str() {
-                        collect_descendants(child_id, nodes, acc);
-                    }
-                }
+    node_id: &str,
+    nodes: &serde_json::Map<String, serde_json::Value>,
+    acc: &mut std::collections::HashSet<String>,
+) {
+    acc.insert(node_id.to_string());
+    if let Some(node) = nodes.get(node_id)
+        && let Some(children) = node.get("children").and_then(|c| c.as_array())
+    {
+        for child in children {
+            if let Some(child_id) = child.as_str() {
+                collect_descendants(child_id, nodes, acc);
             }
+        }
     }
+}
+
+pub fn html_to_nodes(html: &str) -> HashMap<String, Node> {
+    println!("{}", html);
+    todo!()
+}

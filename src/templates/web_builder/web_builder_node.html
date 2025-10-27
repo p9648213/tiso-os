@@ -1,1 +1,5 @@
-<{{node.tag}}></{{node.tag}}>
+<{{ node.tag }} {% for (k, v) in node.attributes.as_object().unwrap() %} {{ k }}="{{ v.as_str().unwrap_or("") }}" {% endfor %}>
+  {% if let Some(text) = node.text %}
+    {{ text }}
+  {% endif %}
+</{{ node.tag }}>

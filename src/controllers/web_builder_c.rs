@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap};
 
 use axum::{
     Extension, Json,
@@ -10,16 +10,15 @@ use deadpool_postgres::Pool;
 use serde::Deserialize;
 
 use crate::{
-    middlewares::session_mw::UserId,
-    models::{
+    constant::web_builder::{HEADER_TEMPLATE_1, HEADER_TEMPLATE_2, HEADER_TEMPLATE_3, HEADER_TEMPLATE_4}, middlewares::session_mw::UserId, models::{
         error::AppError,
         web_builder_db::{DomTree, Node, WebBuilder},
         web_builder_window::WebBuilderWindow,
-    },
-    utilities::general::parse_user_id,
-    views::web_builder_v::{
-        render_web_builder_select_contact, render_web_builder_select_footer, render_web_builder_select_header, render_web_builder_select_hero, render_web_builder_select_section, render_web_builder_window
-    },
+    }, utilities::common::{html_to_nodes, parse_user_id}, views::web_builder_v::{
+        render_web_builder_select_contact, render_web_builder_select_footer,
+        render_web_builder_select_header, render_web_builder_select_hero,
+        render_web_builder_select_section, render_web_builder_window,
+    }
 };
 
 pub async fn get_web_builder_window(
@@ -159,26 +158,79 @@ pub async fn get_selected_section(
     Path(section_type): Path<String>,
 ) -> Result<impl IntoResponse, AppError> {
     match section_type.as_str() {
-        "Header" => Ok(format!(
-            "{}{}",
-            render_web_builder_select_section(&section_type),
-            render_web_builder_select_header(1, "outerHTML")
+        "Header" => Ok((
+            [(
+                "HX-Trigger",
+                r#"{"changeSectionType":{"sectionType": "Header"}, "changeTemplateNumber":{"templateNumber": 1}}"#,
+            )],
+            format!(
+                "{}{}",
+                render_web_builder_select_section(&section_type),
+                render_web_builder_select_header(1, "outerHTML")
+            ),
         )),
-        "Footer" => Ok(format!(
-            "{}{}",
-            render_web_builder_select_section(&section_type),
-            render_web_builder_select_footer(1, "outerHTML")
+        "Footer" => Ok((
+            [(
+                "HX-Trigger",
+                r#"{"changeSectionType":{"sectionType": "Footer"}, "changeTemplateNumber":{"templateNumber": 1}}"#,
+            )],
+            format!(
+                "{}{}",
+                render_web_builder_select_section(&section_type),
+                render_web_builder_select_footer(1, "outerHTML")
+            ),
         )),
-        "Hero Section" => Ok(format!(
-            "{}{}",
-            render_web_builder_select_section(&section_type),
-            render_web_builder_select_hero(1, "outerHTML")
+        "Hero Section" => Ok((
+            [(
+                "HX-Trigger",
+                r#"{"changeSectionType":{"sectionType": "Hero Section"}, "changeTemplateNumber":{"templateNumber": 1}}"#,
+            )],
+            format!(
+                "{}{}",
+                render_web_builder_select_section(&section_type),
+                render_web_builder_select_hero(1, "outerHTML")
+            ),
         )),
-        "Contact Form" => Ok(format!(
-            "{}{}",
-            render_web_builder_select_section(&section_type),
-            render_web_builder_select_contact(1, "outerHTML")
+        "Contact Form" => Ok((
+            [(
+                "HX-Trigger",
+                r#"{"changeSectionType":{"sectionType": "Contact Form"}, "changeTemplateNumber":{"templateNumber": 1}}"#,
+            )],
+            format!(
+                "{}{}",
+                render_web_builder_select_section(&section_type),
+                render_web_builder_select_contact(1, "outerHTML")
+            ),
         )),
         _ => Err(AppError::new(StatusCode::NOT_FOUND, "Section not found")),
+    }
+}
+
+pub async fn add_section(
+    Path((builder_id, section_type, template_number)): Path<(i32, String, i32)>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    match section_type.as_str() {
+        "Header" => {
+            let template_html =  match template_number {
+                1 => HEADER_TEMPLATE_1,
+                2 => HEADER_TEMPLATE_2,
+                3 => HEADER_TEMPLATE_3,
+                4 => HEADER_TEMPLATE_4,
+                _ => {
+                    return Err(AppError::new(StatusCode::NOT_FOUND, "Template not found"));
+                }
+            };
+
+            let nodes = html_to_nodes(template_html);
+
+            Ok(())
+        },
+        _ => {
+            Ok(())
+        }
     }
 }

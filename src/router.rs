@@ -21,7 +21,7 @@ use crate::{
         snake_c::get_snake_window,
         taskbar_c::get_taskbar_menu_files,
         txt_c::{create_txt, get_txt_input, get_txt_window},
-        web_builder_c::{delete_node, edit_node, get_node, get_selected_section, get_web_builder, get_web_builder_window, insert_node},
+        web_builder_c::{add_section, delete_node, edit_node, get_node, get_selected_section, get_web_builder, get_web_builder_window, insert_node},
     },
     middlewares::{csrf_mw::csrf_middleware, log_mw::request_log, session_mw::session_middleware},
     models::state::AppState,
@@ -82,6 +82,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 "/web_builder/{builder_id}/node/insert/{parent_node_id}",
                 post(insert_node),
             )
+            .route("/web_builder/{builder_id}/section/add/{section_type}/{template_number}", post(add_section))
             .layer(from_fn(csrf_middleware)),
     );
 

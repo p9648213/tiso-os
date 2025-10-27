@@ -5,7 +5,7 @@ use crate::{
         folder_db::FolderSortType,
         folder_item::{FolderItem, ItemType},
     },
-    utilities::general::parse_position,
+    utilities::common::parse_position,
 };
 use askama::Template;
 use std::collections::HashMap;

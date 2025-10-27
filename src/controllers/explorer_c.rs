@@ -14,7 +14,7 @@ use crate::{
         folder_db::{Folder, FolderSortType, FolderType},
         folder_item::FolderItem,
     },
-    utilities::general::parse_user_id,
+    utilities::common::parse_user_id,
     views::explorer_v::render_explorer_window,
 };
 

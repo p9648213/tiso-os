@@ -1,11 +1,30 @@
-<div id="builder_template" {% if swap_oob != "" %} hx-swap-oob={{swap_oob}} {% endif %}>
+<div
+  id="builder_template"
+  {% if swap_oob !="" %} hx-swap-oob="{{swap_oob}}" {% endif %}
+>
   <h3 class="mb-4 font-semibold text-gray-700 text-lg">
     Choose Header Template
   </h3>
   <div class="space-y-4">
-    {% include "web_builder/header_template/header_template_1.html" %} {%
-    include "web_builder/header_template/header_template_2.html" %} {% include
-    "web_builder/header_template/header_template_3.html" %} {% include
-    "web_builder/header_template/header_template_4.html" %}
+    <div
+      class="bg-blue-50 border-2 rounded-sm overflow-hidden transition-all {%+ if selected_header == 1 %} border-blue-500 {% else %} border-gray-200 hover:border-blue-500 {% endif %}"
+    >
+      {% include "web_builder/header_template/header_template_1.html" %}
+    </div>
+    <div
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden {%+ if selected_header == 2 %} border-blue-500 {% else %} border-gray-200 hover:border-blue-500 {% endif %}"
+    >
+      {% include "web_builder/header_template/header_template_2.html" %}
+    </div>
+    <div
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden {%+ if selected_header == 3 %} border-blue-500 {% else %} border-gray-200 hover:border-blue-500 {% endif %}"
+    >
+      {% include "web_builder/header_template/header_template_3.html" %}
+    </div>
+    <div
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden {%+ if selected_header == 4 %} border-blue-500 {% else %} border-gray-200 hover:border-blue-500 {% endif %}"
+    >
+      {% include "web_builder/header_template/header_template_4.html" %}
+    </div>
   </div>
 </div>
