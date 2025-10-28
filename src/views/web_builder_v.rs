@@ -1,8 +1,11 @@
-use std::{collections::HashMap};
+use std::collections::HashMap;
 
 use askama::Template;
 
-use crate::{constant::web_builder::SECTIONS, models::web_builder_db::{DomTree, Node}};
+use crate::{
+    constant::web_builder::SECTIONS,
+    models::web_builder_db::{DomTree, Node},
+};
 
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_file.html")]
@@ -49,7 +52,7 @@ pub fn render_web_builder_window(
         window_height,
         top,
         left,
-        builder_list
+        builder_list,
     }
     .render()
     .unwrap()
@@ -108,67 +111,75 @@ pub fn render_web_builder_section_dialog() -> String {
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_select_section.html")]
 struct WebBuilderSelectSection<'a> {
-    selected_section: &'a str
+    selected_section: &'a str,
 }
 
 pub fn render_web_builder_select_section(selected_section: &str) -> String {
-    WebBuilderSelectSection {
-        selected_section
-    }.render().unwrap()
+    WebBuilderSelectSection { selected_section }
+        .render()
+        .unwrap()
 }
 
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_select_header.html")]
 struct WebBuilderSelectHeader<'a> {
     selected_header: i32,
-    swap_oob: &'a str
+    swap_oob: &'a str,
 }
 
 pub fn render_web_builder_select_header(selected_header: i32, swap_oob: &str) -> String {
     WebBuilderSelectHeader {
         selected_header,
-        swap_oob
-    }.render().unwrap()
+        swap_oob,
+    }
+    .render()
+    .unwrap()
 }
 
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_select_footer.html")]
 struct WebBuilderSelectFooter<'a> {
     selected_footer: i32,
-    swap_oob: &'a str
+    swap_oob: &'a str,
 }
 
 pub fn render_web_builder_select_footer(selected_footer: i32, swap_oob: &str) -> String {
     WebBuilderSelectFooter {
         selected_footer,
-        swap_oob
-    }.render().unwrap()
+        swap_oob,
+    }
+    .render()
+    .unwrap()
 }
 
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_select_hero.html")]
 struct WebBuilderSelectHero<'a> {
     selected_hero: i32,
-    swap_oob: &'a str
+    swap_oob: &'a str,
 }
 
 pub fn render_web_builder_select_hero(selected_hero: i32, swap_oob: &str) -> String {
     WebBuilderSelectHero {
         selected_hero,
-        swap_oob
-    }.render().unwrap()
+        swap_oob,
+    }
+    .render()
+    .unwrap()
 }
 
 #[derive(Template)]
 #[template(path = "web_builder/web_builder_select_contact.html")]
 struct WebBuilderSelectContact<'a> {
     selected_contact: i32,
-    swap_oob: &'a str
+    swap_oob: &'a str,
 }
 
 pub fn render_web_builder_select_contact(selected_contact: i32, swap_oob: &str) -> String {
     WebBuilderSelectContact {
         selected_contact,
-        swap_oob
-    }.render().unwrap()
+        swap_oob,
+    }
+    .render()
+    .unwrap()
 }

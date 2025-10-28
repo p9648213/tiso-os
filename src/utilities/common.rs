@@ -99,13 +99,14 @@ fn traverse_node(
     }
 }
 
-pub fn html_to_nodes(html: &str) -> HashMap<String, Node> {
+pub fn html_to_nodes(html: &str) -> (HashMap<String, Node>, Vec<String>) {
     let document = Html::parse_fragment(html);
     let mut nodes = HashMap::new();
+    let mut root_ids = vec![];
 
     for child in document.tree.root().first_child().unwrap().children() {
-        traverse_node(child, &mut nodes);
+        root_ids.push(traverse_node(child, &mut nodes));
     }
 
-    nodes
+    (nodes, root_ids.into_iter().filter_map(|mut id| id.take()).collect())
 }

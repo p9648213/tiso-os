@@ -155,6 +155,55 @@ impl WebBuilder {
         Ok(())
     }
 
+    pub async fn insert_nodes_to_body(
+        builder_id: i32,
+        user_id: i32,
+        insert_nodes: HashMap<String, Node>,
+        root_node_ids: Vec<String>,
+        pool: &Pool,
+    ) -> Result<(), AppError> {
+        let client = pool.get().await.map_err(|error| {
+            tracing::error!("Couldn't get postgres client: {:?}", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        })?;
+
+        let nodes_json = serde_json::to_value(&insert_nodes).map_err(|e| {
+            tracing::error!("Failed to serialize nodes: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
+        })?;
+
+        let root_node_ids_json = serde_json::to_value(&root_node_ids).map_err(|e| {
+            tracing::error!("Failed to serialize root_node_ids: {:?}", e);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
+        })?;
+
+        let rows = client
+            .execute(
+                "UPDATE web_builder 
+                SET data = jsonb_set(
+                    data || jsonb_build_object('nodes', data->'nodes' || $1::jsonb),
+                    array['nodes', data->>'body_node', 'children']::text[],
+                    (data#>array['nodes', data->>'body_node', 'children']::text[] || $2::jsonb)
+                )
+                FROM file
+                WHERE web_builder.file_id = file.id
+                AND web_builder.id = $3
+                AND file.user_id = $4;",
+                &[&nodes_json, &root_node_ids_json, &builder_id, &user_id],
+            )
+            .await?;
+
+        if rows == 0 {
+            tracing::error!("Error insert nodes");
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Server Error",
+            ));
+        }
+
+        Ok(())
+    }
+
     pub async fn edit_node(
         builder_id: i32,
         user_id: i32,

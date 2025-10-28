@@ -135,7 +135,6 @@ impl User {
 
         let html_node = Uuid::new_v4().to_string();
         let body_node = Uuid::new_v4().to_string();
-        let main_node = Uuid::new_v4().to_string();
 
         txn.execute(
             "INSERT INTO web_builder (file_id, name, data) VALUES ($1, $2, $3)",
@@ -147,8 +146,7 @@ impl User {
                     "body_node": body_node,
                     "nodes": {
                         html_node: { "tag": "html", "children": [body_node] },
-                        body_node: { "tag": "body", "children": [main_node] },
-                        main_node: { "tag": "main", "children": [] },
+                        body_node: { "tag": "body", "children": [] },
                     }
                 }),
             ],

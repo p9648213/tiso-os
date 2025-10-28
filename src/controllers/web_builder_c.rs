@@ -1,4 +1,4 @@
-use std::{collections::HashMap};
+use std::collections::HashMap;
 
 use axum::{
     Extension, Json,
@@ -10,15 +10,21 @@ use deadpool_postgres::Pool;
 use serde::Deserialize;
 
 use crate::{
-    constant::web_builder::{HEADER_TEMPLATE_1, HEADER_TEMPLATE_2, HEADER_TEMPLATE_3, HEADER_TEMPLATE_4}, middlewares::session_mw::UserId, models::{
+    constant::web_builder::{
+        HEADER_TEMPLATE_1, HEADER_TEMPLATE_2, HEADER_TEMPLATE_3, HEADER_TEMPLATE_4,
+    },
+    middlewares::session_mw::UserId,
+    models::{
         error::AppError,
         web_builder_db::{DomTree, Node, WebBuilder},
         web_builder_window::WebBuilderWindow,
-    }, utilities::common::{html_to_nodes, parse_user_id}, views::web_builder_v::{
+    },
+    utilities::common::{html_to_nodes, parse_user_id},
+    views::web_builder_v::{
         render_web_builder_select_contact, render_web_builder_select_footer,
         render_web_builder_select_header, render_web_builder_select_hero,
         render_web_builder_select_section, render_web_builder_window,
-    }
+    },
 };
 
 pub async fn get_web_builder_window(
@@ -215,7 +221,7 @@ pub async fn add_section(
 
     match section_type.as_str() {
         "Header" => {
-            let template_html =  match template_number {
+            let template_html = match template_number {
                 1 => HEADER_TEMPLATE_1,
                 2 => HEADER_TEMPLATE_2,
                 3 => HEADER_TEMPLATE_3,
@@ -225,14 +231,13 @@ pub async fn add_section(
                 }
             };
 
-            let nodes = html_to_nodes(template_html);
+            let (nodes, root_node_ids) = html_to_nodes(template_html);
 
-            println!("{:#?}", nodes);
+            WebBuilder::insert_nodes_to_body(builder_id, user_id, nodes, root_node_ids, &pool)
+                .await?;
 
-            Ok(())
-        },
-        _ => {
             Ok(())
         }
+        _ => Ok(()),
     }
 }
