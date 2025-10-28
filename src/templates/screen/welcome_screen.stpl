@@ -62,14 +62,17 @@
           hx-swap="outerHTML"
           hx-target="#account_confirm_password"
           hx-trigger="input delay:300ms"
-        /><input
+        />
+        <input
           class="bg-white px-3 rounded-sm h-8"
           name="password"
           placeholder="Password"
           type="password"
           value=""
         />
-        {% include "confirm_password.html" %}
+        <% let confirm_password: Option<String> = None; %>
+        <% let register_mode = true; %>
+        <% include!("confirm_password.stpl"); %>
         <div id="account_error" class="-bottom-6.5 absolute text-red-400"></div>
         <button type="submit" class="hidden"></button>
       </form>
