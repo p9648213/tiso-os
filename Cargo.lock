@@ -1725,6 +1725,7 @@ dependencies = [
  "base64",
  "deadpool-postgres",
  "dotenvy",
+ "ego-tree",
  "hypertext",
  "memory-serve",
  "papaya",

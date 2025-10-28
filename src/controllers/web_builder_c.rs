@@ -227,6 +227,8 @@ pub async fn add_section(
 
             let nodes = html_to_nodes(template_html);
 
+            println!("{:#?}", nodes);
+
             Ok(())
         },
         _ => {

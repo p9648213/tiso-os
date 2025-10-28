@@ -12,6 +12,7 @@ axum = { version = "0.8.6", features = ["macros", "multipart"] }
 axum-extra = { version = "0.10.3", features = ["cookie"] }
 base64 = "0.22.1"
 deadpool-postgres = "0.14.1"
+ego-tree = "0.10.0"
 hypertext = { version = "0.12.1", features = ["axum", "htmx"] }
 memory-serve = { version = "1.2.2" }
 papaya = "0.2.3"

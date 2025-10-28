@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use axum::http::StatusCode;
-use scraper::{Html, Selector};
+use ego_tree::NodeRef;
+use scraper::{Html, Node as ScrapperNode};
 
 use crate::{
     middlewares::session_mw::UserId,
@@ -47,17 +48,64 @@ pub fn collect_descendants(
     }
 }
 
+fn traverse_node(
+    scrapper_node: NodeRef<'_, ScrapperNode>,
+    nodes: &mut HashMap<String, Node>,
+) -> Option<String> {
+    match scrapper_node.value() {
+        ScrapperNode::Element(element) => {
+            let id = uuid::Uuid::new_v4().to_string();
+
+            // collect attributes
+            let mut attrs = HashMap::new();
+            for (name, value) in &element.attrs {
+                attrs.insert(name.local.to_string(), value.to_string());
+            }
+
+            // process children
+            let mut child_ids = vec![];
+            let mut text: Option<String> = None;
+
+            for child in scrapper_node.children() {
+                match child.value() {
+                    ScrapperNode::Text(t) => {
+                        let trimmed = t.trim();
+                        if !trimmed.is_empty() {
+                            text = Some(trimmed.to_string());
+                        }
+                    }
+                    ScrapperNode::Element(_) => {
+                        if let Some(cid) = traverse_node(child, nodes) {
+                            child_ids.push(cid);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            nodes.insert(
+                id.clone(),
+                Node {
+                    tag: element.name.local.to_string(),
+                    attributes: serde_json::to_value(attrs).unwrap(),
+                    text,
+                    children: child_ids,
+                },
+            );
+
+            Some(id)
+        }
+        _ => None,
+    }
+}
+
 pub fn html_to_nodes(html: &str) -> HashMap<String, Node> {
-    let document = Html::parse_document(html);
-    let body_selector = Selector::parse("body").unwrap();
-    let first_element = document
-        .select(&body_selector)
-        .next()
-        .unwrap()
-        .first_child()
-        .unwrap();
+    let document = Html::parse_fragment(html);
+    let mut nodes = HashMap::new();
 
-    println!("{:#?}", first_element);
+    for child in document.tree.root().first_child().unwrap().children() {
+        traverse_node(child, &mut nodes);
+    }
 
-    todo!()
+    nodes
 }
