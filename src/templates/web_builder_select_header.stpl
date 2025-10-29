@@ -16,7 +16,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_header_1.stpl"); %>
+      <% include!("web_builder_template_header_1_sample.stpl"); %>
     </div>
     <div
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
@@ -26,7 +26,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_header_2.stpl"); %>
+      <% include!("web_builder_template_header_2_sample.stpl"); %>
     </div>
     <div
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
@@ -36,7 +36,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_header_3.stpl"); %>
+      <% include!("web_builder_template_header_3_sample.stpl"); %>
     </div>
     <div
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
@@ -46,7 +46,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_header_4.stpl"); %>
+      <% include!("web_builder_template_header_4_sample.stpl"); %>
     </div>
   </div>
 </div>
