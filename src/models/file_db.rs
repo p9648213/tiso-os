@@ -12,7 +12,7 @@ use crate::{
     utilities::postgres::DbExecutor,
 };
 
-#[derive(Debug, ToSql, FromSql, Clone)]
+#[derive(Debug, ToSql, FromSql, Clone, PartialEq, Eq)]
 #[postgres(name = "filetype")]
 pub enum FileType {
     Txt,

@@ -1,8 +1,8 @@
 use crate::{constant::EXAMPLE_COLORS, models::display_setting_db::BackgroundType};
-use sailfish::TemplateOnce;
+use sailfish::TemplateSimple;
 
-#[derive(TemplateOnce)]
-#[template(path = "display_setting/display_setting_window.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "display_setting_window.stpl")]
 pub struct DisplaySettingWindow<'a> {
     pub top: i32,
     pub left: i32,

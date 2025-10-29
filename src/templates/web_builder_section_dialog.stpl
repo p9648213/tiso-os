@@ -1,0 +1,38 @@
+<div class="flex flex-col bg-white shadow-2xl rounded-sm h-[90vh] max-w-7xl">
+  <div
+    class="flex justify-between items-center px-6 py-2 border-gray-200 border-b"
+  >
+    <h2 class="font-bold text-gray-800 text-lg">Add Section to Website</h2>
+    <button id="close-section-btn" class="hover:opacity-70">
+      <img class="w-6 h-6" src="/assets/images/common/x-dark.svg" alt="x" />
+    </button>
+  </div>
+  <div class="flex flex-1 gap-6 p-6 overflow-hidden">
+    <div class="w-100">
+      <% let selected_section = "Header"; %>
+      <% include!("web_builder_select_section.stpl"); %>
+    </div>
+    <div class="pr-4 w-full overflow-auto">
+      <% let selected_header = 1; %>
+      <% let swap_oob = ""; %>
+      <% include!("web_builder_select_header.stpl"); %>
+    </div>
+  </div>
+  <div
+    class="flex justify-end items-center bg-gray-50 px-6 py-2 border-gray-200 border-t"
+  >
+    <div class="flex space-x-3">
+      <button
+        class="hover:opacity-70 px-6 py-1.5 border border-blue-500 rounded-sm font-medium text-blue-500"
+      >
+        Preview
+      </button>
+      <button
+        class="bg-blue-500 hover:opacity-70 px-6 py-1.5 rounded-sm font-medium text-white"
+        id="builder-add-section-btn"
+      >
+        Add Section
+      </button>
+    </div>
+  </div>
+</div>

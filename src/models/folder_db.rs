@@ -9,7 +9,7 @@ use tokio_postgres::{
 
 use crate::{models::error::AppError, utilities::postgres::DbExecutor};
 
-#[derive(Debug, ToSql, FromSql, Clone, Deserialize)]
+#[derive(Debug, ToSql, FromSql, Clone, Deserialize, PartialEq, Eq)]
 #[postgres(name = "foldertype")]
 pub enum FolderType {
     Normal,

@@ -1,0 +1,28 @@
+<div id="builder_select_section">
+  <h3 class="mb-4 font-semibold text-gray-700 text-lg">Select Section Type</h3>
+  <div class="gap-4 grid grid-cols-2 select-none">
+    <% for section in SECTIONS { %> 
+      <% if section == selected_section { %>
+        <div
+          class="flex justify-center items-center bg-blue-50 p-4 border-2 border-blue-500 rounded-sm"
+        >
+          <div class="flex items-center text-center">
+            <span class="font-semibold text-blue-500"><%= section %></span>
+          </div>
+        </div>
+      <% } else { %>
+        <div
+          class="flex justify-center items-center p-4 border-2 border-gray-200 hover:border-blue-500 rounded-sm"
+          hx-get="read/web_builder/section/<%= section %>"
+          hx-trigger="click"
+          hx-target="#builder_select_section"
+          hx-swap="outerHTML"
+        >
+          <div class="flex items-center text-center">
+            <span class="font-medium text-gray-600"><%= section %></span>
+          </div>
+        </div>
+      <% } %> 
+    <% } %>
+  </div>
+</div>

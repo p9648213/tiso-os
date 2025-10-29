@@ -1,6 +1,0 @@
-<div class="flex-1 px-3 py-2">
-  {% for child in body_node.children %}
-    {% set node = nodes.get(*child).unwrap() %}
-    {% include "web_builder/web_builder_node.html" %}
-  {% endfor %}
-</div>

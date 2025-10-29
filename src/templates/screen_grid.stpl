@@ -1,0 +1,77 @@
+<input id="screen_rows" type="hidden" value="<%= rows %>" /><input
+  id="screen_cols"
+  type="hidden"
+  value="<%= cols %>"
+/>
+<input id="desktop_id" type="hidden" value="<%= desktop_id %>" />
+<% if *sort_type == FolderSortType::Custom { %> 
+  <% for row in 0..rows { %> 
+    <% for col in 0..cols { %>
+      <div
+        class="group/item relative flex justify-center items-center overflow-hidden"
+        style="width: <%= rectangle_width %>px;"
+        id="item-<%= row %>-<%= col %>"
+        draggable="true"
+      >
+        <% if let Some(item) = item_map.get(&(row, col)) { %> 
+          <% let id = item.id.unwrap(); %> 
+          <% let name = item.name.as_ref().unwrap(); %>
+          <% if *item.item_type.as_ref().unwrap() == ItemType::File { %> 
+            <% if *item.file_type.as_ref().unwrap() == FileType::Calculator { %> 
+              <% include!("calculator_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Snake { %> 
+              <% include!("snake_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::FlappyBird { %> 
+              <% include!("flappy_bird_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Txt { %> 
+              <% include!("txt_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::ThisPC { %> 
+              <% include!("thispc_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Music { %> 
+              <% include!("music_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::WebBuilder { %> 
+              <% include!("web_builder_file.stpl"); %> 
+            <% } %> 
+          <% } else if *item.item_type.as_ref().unwrap() == ItemType::Folder { %> 
+            <% include!("folder.stpl"); %> 
+          <% } %> 
+        <% } %>
+      </div>
+    <% } %>  
+  <% } %>  
+<% } else if *sort_type == FolderSortType::DateCreated { %> 
+  <% for row in 0..rows { %> 
+    <% for col in 0..cols { %>
+      <div
+        class="group/item relative flex justify-center items-center overflow-hidden"
+        style="width: <%= rectangle_width %>px;"
+        id="item-<%= row %>-<%= col %>"
+        draggable="true"
+      >
+        <% if let Some(item) = items.get((col * rows + row) as usize) { %> 
+          <% let id = item.id.unwrap(); %> 
+          <% let name = item.name.as_ref().unwrap(); %> 
+          <% if *item.item_type.as_ref().unwrap() == ItemType::File { %> 
+            <% if *item.file_type.as_ref().unwrap() == FileType::Calculator { %> 
+              <% include!("calculator_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Snake { %> 
+              <% include!("snake_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::FlappyBird { %> 
+              <% include!("flappy_bird_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Txt { %> 
+              <% include!("txt_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::ThisPC { %> 
+              <% include!("thispc_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Music { %> 
+              <% include!("music_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::WebBuilder { %> 
+              <% include!("web_builder_file.stpl"); %> 
+            <% } %> 
+          <% } else if *item.item_type.as_ref().unwrap() == ItemType::Folder { %> 
+            <% include!("folder.stpl"); %> 
+          <% } %> 
+        <% } %>
+      </div>
+    <% } %>  
+  <% } %>
+<% } %>

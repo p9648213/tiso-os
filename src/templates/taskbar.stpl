@@ -1,0 +1,49 @@
+<script type="module">
+  import { setupClock } from "/assets/js/clock.js";
+  import { setupTaskbarMenuToggle } from "/assets/js/taskbar.js";
+  setupTaskbarMenuToggle();
+  setupClock();
+</script>
+<footer
+  class="right-0 bottom-0 left-0 absolute flex justify-between items-center bg-zinc-800 px-6 border-t border-t-zinc-700 h-12 text-white"
+>
+  <div class="flex items-center gap-4">
+    <div id="taskbar-menu-icon">
+      <img
+        src="/assets/images/taskbar/menu.svg"
+        alt="menu"
+        class="hover:opacity-70 w-6.5 h-6.5"
+        draggable="false"
+      />
+    </div>
+    <div class="relative">
+      <input
+        type="text"
+        class="bg-zinc-700 pr-3 pl-10 rounded-2xl w-50 h-8"
+      /><img
+        src="/assets/images/common/search.svg"
+        alt="search"
+        class="top-1 left-3 absolute w-6 h-6"
+        draggable="false"
+      />
+    </div>
+    <div id="taskbar-minimize" class="flex gap-3"></div>
+  </div>
+  <div
+    class="flex flex-col justify-center items-center h-full text-sm select-none"
+  >
+    <div id="clock-time"></div>
+    <div id="clock-date"></div>
+  </div>
+</footer>
+<div
+  id="taskbar-menu"
+  class="hidden bottom-14 left-2 z-20 absolute bg-zinc-800 p-3 rounded-sm w-md h-112"
+>
+  <div
+    hx-get="/read/taskbar/files"
+    hx-trigger="load"
+    id="taskbar-menu-files"
+    class="flex flex-wrap gap-3"
+  ></div>
+</div>

@@ -1,0 +1,21 @@
+<script type="module">
+  import { setupTaskbarMenuFiles } from "/assets/js/taskbar.js";
+  setupTaskbarMenuFiles();
+</script>
+<% for file in files { %> 
+  <% if let Some(file_type) = &file.file_type { %> 
+    <% if *file_type == FileType::Calculator { %> 
+      <% include!("calculator_file.stpl"); %> 
+    <% } else if *file_type == FileType::Snake { %> 
+      <% include!("snake_file.stpl"); %> 
+    <% } else if *file_type == FileType::FlappyBird { %> 
+      <% include!("flappy_bird_file.stpl"); %> 
+    <% } else if *file_type == FileType::Music { %> 
+      <% include!("music_file.stpl"); %> 
+    <% } else if *file_type == FileType::WebBuilder { %> 
+      <% if let Some(id) = file.id { %> 
+        <% include!("web_builder_file.stpl"); %> 
+      <% } %>
+    <% } %>  
+  <% } %>
+<% } %>

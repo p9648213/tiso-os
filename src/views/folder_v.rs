@@ -1,7 +1,7 @@
-use sailfish::TemplateOnce;
+use sailfish::TemplateSimple;
 
-#[derive(TemplateOnce)]
-#[template(path = "folder/folder.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "folder.stpl")]
 pub struct Folder<'a> {
     pub id: &'a str,
     pub name: &'a str,
@@ -23,8 +23,8 @@ pub fn render_folder(id: i32, name: Option<String>, id_prefix: Option<String>) -
     .unwrap()
 }
 
-#[derive(TemplateOnce)]
-#[template(path = "folder/folder_input.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "folder_input.stpl")]
 pub struct FolderInput<'a> {
     pub folder_id: i32,
     pub value: &'a str,

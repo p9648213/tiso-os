@@ -5,7 +5,7 @@ use tokio_postgres::Row;
 
 use crate::models::{error::AppError, file_db::FileType, folder_db::FolderSortType};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ItemType {
     File,
     Folder,

@@ -1,15 +1,15 @@
-use sailfish::TemplateOnce;
+use sailfish::TemplateSimple;
 
-#[derive(TemplateOnce)]
-#[template(path = "snake/snake_file.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "snake_file.stpl")]
 pub struct SnakeFile;
 
 pub fn render_snake_file() -> String {
     SnakeFile {}.render_once().unwrap()
 }
 
-#[derive(TemplateOnce)]
-#[template(path = "snake/snake_window.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "snake_window.stpl")]
 pub struct SnakeWindow {
     pub top: i32,
     pub left: i32,

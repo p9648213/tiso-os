@@ -1,7 +1,7 @@
-use sailfish::TemplateOnce;
+use sailfish::TemplateSimple;
 
-#[derive(TemplateOnce)]
-#[template(path = "thispc/thispc_file.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "thispc_file.stpl")]
 pub struct ThisPcFile<'a> {
     pub id: i32,
     pub name: &'a str,

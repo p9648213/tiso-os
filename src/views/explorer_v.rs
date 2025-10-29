@@ -2,10 +2,10 @@ use crate::models::{
     file_db::FileType,
     folder_item::{FolderItem, ItemType},
 };
-use askama::Template;
+use sailfish::TemplateSimple;
 
-#[derive(Template)]
-#[template(path = "explorer/explorer_window.html")]
+#[derive(TemplateSimple)]
+#[template(path = "explorer_window.stpl")]
 pub struct ExplorerWindow<'a> {
     pub folder_id: i32,
     pub folder_name: &'a str,
@@ -38,6 +38,6 @@ pub fn render_explorer_window(
         top,
         folder_items,
     }
-    .render()
+    .render_once()
     .unwrap()
 }

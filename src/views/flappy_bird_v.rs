@@ -1,15 +1,15 @@
-use sailfish::TemplateOnce;
+use sailfish::TemplateSimple;
 
-#[derive(TemplateOnce)]
-#[template(path = "flappybird/flappy_bird_file.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "flappy_bird_file.stpl")]
 pub struct FlappyBirdFile;
 
 pub fn render_flappy_bird_file() -> String {
     FlappyBirdFile {}.render_once().unwrap()
 }
 
-#[derive(TemplateOnce)]
-#[template(path = "flappybird/flappy_bird_window.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "flappy_bird_window.stpl")]
 pub struct FlappyBirdWindow {
     pub top: i32,
     pub left: i32,

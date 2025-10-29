@@ -1,32 +1,27 @@
+use std::collections::HashMap;
+
+use sailfish::TemplateSimple;
+
 use crate::{
     constant::MIN_RECTANGLE_WIDTH,
     models::{
         folder_db::FolderSortType,
-        folder_item::FolderItem,
+        folder_item::{FolderItem, ItemType},
+        file_db::FileType,
     },
     utilities::common::parse_position,
 };
-use askama::Template;
-use std::collections::HashMap;
 
-#[derive(Template)]
-#[template(path = "screen/welcome_screen.html")]
-struct WelcomeScreen {
-    confirm_password: Option<String>,
-    register_mode: bool,
-}
+#[derive(TemplateSimple)]
+#[template(path = "welcome_screen.stpl")]
+struct WelcomeScreen {}
 
 pub fn render_welcome_screen() -> String {
-    WelcomeScreen {
-        confirm_password: None,
-        register_mode: true,
-    }
-    .render()
-    .unwrap()
+    WelcomeScreen {}.render_once().unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "screen/confirm_password.html")]
+#[derive(TemplateSimple)]
+#[template(path = "confirm_password.stpl")]
 struct ConfirmPassword {
     confirm_password: Option<String>,
     register_mode: bool,
@@ -37,40 +32,40 @@ pub fn render_confirm_password(value: Option<String>, register_mode: bool) -> St
         confirm_password: value,
         register_mode,
     }
-    .render()
+    .render_once()
     .unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "screen/main_screen.html")]
+#[derive(TemplateSimple)]
+#[template(path = "main_screen.stpl")]
 struct MainScreen<'a> {
     background: &'a str,
 }
 
 pub fn render_main_screen(background: &str) -> String {
-    MainScreen { background }.render().unwrap()
+    MainScreen { background }.render_once().unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "screen/screen_background.html")]
+#[derive(TemplateSimple)]
+#[template(path = "screen_background.stpl")]
 struct ScreenBackground<'a> {
     background: &'a str,
 }
 
 pub fn render_screen_background(background: &str) -> String {
-    ScreenBackground { background }.render().unwrap()
+    ScreenBackground { background }.render_once().unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "screen/screen_section.html")]
+#[derive(TemplateSimple)]
+#[template(path = "screen_section.stpl")]
 struct ScreenSection {}
 
 pub fn render_screen_section() -> String {
-    ScreenSection {}.render().unwrap()
+    ScreenSection {}.render_once().unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "screen/screen_grid.html")]
+#[derive(TemplateSimple)]
+#[template(path = "screen_grid.stpl")]
 struct ScreenGrid<'a> {
     desktop_id: i32,
     sort_type: &'a FolderSortType,
@@ -111,6 +106,6 @@ pub fn render_screen_grid(
         cols,
         rectangle_width,
     }
-    .render()
+    .render_once()
     .unwrap()
 }

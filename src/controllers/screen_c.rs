@@ -18,10 +18,7 @@ use crate::{
         folder_item::FolderItem,
     },
     utilities::common::parse_user_id,
-    views::{
-        screen_v::{render_main_screen, render_screen_grid},
-        screen_v_2::render_welcome_screen,
-    },
+    views::screen_v::{render_main_screen, render_screen_grid, render_welcome_screen},
 };
 
 #[derive(Deserialize)]

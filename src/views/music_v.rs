@@ -1,15 +1,15 @@
-use sailfish::TemplateOnce;
+use sailfish::TemplateSimple;
 
-#[derive(TemplateOnce)]
-#[template(path = "music/music_file.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "music_file.stpl")]
 pub struct MusicFile;
 
 pub fn render_music_file() -> String {
     MusicFile {}.render_once().unwrap()
 }
 
-#[derive(TemplateOnce)]
-#[template(path = "music/music_player_window.stpl")]
+#[derive(TemplateSimple)]
+#[template(path = "music_player_window.stpl")]
 pub struct MusicPlayerWindow {
     pub left: i32,
     pub window_width: i32,
