@@ -1,0 +1,39 @@
+<script type="module">
+  import { setupSnakeToolBar, setupSnakeWindowGrab } from "/assets/js/snake.js";
+  setupSnakeToolBar();
+  setupSnakeWindowGrab();
+</script>
+<div
+  id="snake-canvas-container"
+  class="absolute"
+  style="top: <%= top %>px; left: <%= left %>px;"
+>
+  <div
+    id="snake-toolbar"
+    class="flex justify-between items-center bg-zinc-950 px-3 h-12 select-none"
+  >
+    <div class="flex items-center gap-2">
+      <img
+        class="w-5 h-5"
+        src="/assets/images/snake/snake.svg"
+        draggable="false"
+      />
+      <div class="text-white">Snake</div>
+    </div>
+    <div class="flex items-center gap-3">
+      <img
+        class="hover:opacity-70 w-5 h-5 hide"
+        src="/assets/images/common/minus.svg"
+        draggable="false"
+      /><img
+        class="hover:opacity-70 w-5 h-5 close"
+        src="/assets/images/common/x.svg"
+        draggable="false"
+      />
+    </div>
+  </div>
+  <canvas id="canvas"></canvas>
+</div>
+<script type="text/javascript">
+  window.loadSnakeModule();
+</script>

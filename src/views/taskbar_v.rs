@@ -1,6 +1,6 @@
 use askama::Template;
 
-use crate::models::file_db::{File, FileType};
+use crate::models::file_db::File;
 
 #[derive(Template)]
 #[template(path = "taskbar/taskbar.html")]

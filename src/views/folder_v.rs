@@ -1,7 +1,7 @@
-use askama::Template;
+use sailfish::TemplateOnce;
 
-#[derive(Template)]
-#[template(path = "folder/folder.html")]
+#[derive(TemplateOnce)]
+#[template(path = "folder/folder.stpl")]
 pub struct Folder<'a> {
     pub id: &'a str,
     pub name: &'a str,
@@ -19,17 +19,17 @@ pub fn render_folder(id: i32, name: Option<String>, id_prefix: Option<String>) -
         id: &id,
         name: folder_name,
     }
-    .render()
+    .render_once()
     .unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "folder/folder_input.html")]
+#[derive(TemplateOnce)]
+#[template(path = "folder/folder_input.stpl")]
 pub struct FolderInput<'a> {
     pub folder_id: i32,
     pub value: &'a str,
 }
 
 pub fn render_folder_input(folder_id: i32, value: &str) -> String {
-    FolderInput { folder_id, value }.render().unwrap()
+    FolderInput { folder_id, value }.render_once().unwrap()
 }

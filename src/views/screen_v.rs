@@ -1,9 +1,8 @@
 use crate::{
     constant::MIN_RECTANGLE_WIDTH,
     models::{
-        file_db::FileType,
         folder_db::FolderSortType,
-        folder_item::{FolderItem, ItemType},
+        folder_item::FolderItem,
     },
     utilities::common::parse_position,
 };

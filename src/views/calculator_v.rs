@@ -1,15 +1,15 @@
-use askama::Template;
+use sailfish::TemplateOnce;
 
-#[derive(Template)]
-#[template(path = "calculator/calculator_file.html")]
+#[derive(TemplateOnce)]
+#[template(path = "calculator/calculator_file.stpl")]
 pub struct CalculatorFile;
 
 pub fn render_calculator_file() -> String {
-    CalculatorFile {}.render().unwrap()
+    CalculatorFile {}.render_once().unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "calculator/calculator_window.html")]
+#[derive(TemplateOnce)]
+#[template(path = "calculator/calculator_window.stpl")]
 pub struct CalculatorWindow {
     pub top: i32,
     pub left: i32,
@@ -30,6 +30,6 @@ pub fn render_calculator_window(parent_height: i32, parent_width: i32) -> String
         window_width,
         window_height,
     }
-    .render()
+    .render_once()
     .unwrap()
 }

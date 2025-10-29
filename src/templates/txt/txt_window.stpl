@@ -1,0 +1,46 @@
+<link href="/assets/css/lib/quill.snow.css" rel="stylesheet" />
+<script type="module">
+  import {
+    setupTxtWindowGrab,
+    setupTxtEditor,
+    setupTxtToolBar,
+  } from "/assets/js/txt.js";
+  setupTxtWindowGrab("<%= txt_id %>");
+  setupTxtEditor("<%= txt_id %>");
+  setupTxtToolBar("<%= txt_id %>");
+</script>
+<div
+  id="txt-window-<%= txt_id %>"
+  class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
+  style="top: <%= top %>px; left: <%= left %>px; width: <%= window_width %>px; height: <%= window_height %>px;"
+>
+  <div
+    id="txt-header-<%= txt_id %>"
+    class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none"
+  >
+    <div class="flex items-center gap-2">
+      <img
+        class="w-5 h-5"
+        src="/assets/images/txt/text-editor.svg"
+        draggable="false"
+      />
+      <%= file_name %>
+    </div>
+    <div class="flex items-center gap-3">
+      <img
+        class="hover:opacity-70 w-5 h-5 hide"
+        src="/assets/images/common/minus.svg"
+        draggable="false"
+      /><img
+        class="hover:opacity-70 w-4 h-4 maximize"
+        src="/assets/images/common/square.svg"
+        draggable="false"
+      /><img
+        class="hover:opacity-70 w-5 h-5 close"
+        src="/assets/images/common/x.svg"
+        draggable="false"
+      />
+    </div>
+  </div>
+  <div id="txt-editor-<%= txt_id %>"></div>
+</div>

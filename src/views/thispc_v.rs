@@ -1,7 +1,7 @@
-use askama::Template;
+use sailfish::TemplateOnce;
 
-#[derive(Template)]
-#[template(path = "thispc/thispc_file.html", whitespace = "suppress")]
+#[derive(TemplateOnce)]
+#[template(path = "thispc/thispc_file.stpl")]
 pub struct ThisPcFile<'a> {
     pub id: i32,
     pub name: &'a str,
@@ -14,6 +14,6 @@ pub fn render_thispc_file(file_id: i32, file_name: Option<String>) -> String {
         id: file_id,
         name: file_name,
     }
-    .render()
+    .render_once()
     .unwrap()
 }

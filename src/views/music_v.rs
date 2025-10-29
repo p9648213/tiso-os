@@ -1,15 +1,15 @@
-use askama::Template;
+use sailfish::TemplateOnce;
 
-#[derive(Template)]
-#[template(path = "music/music_file.html")]
+#[derive(TemplateOnce)]
+#[template(path = "music/music_file.stpl")]
 pub struct MusicFile;
 
 pub fn render_music_file() -> String {
-    MusicFile {}.render().unwrap()
+    MusicFile {}.render_once().unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "music/music_player_window.html")]
+#[derive(TemplateOnce)]
+#[template(path = "music/music_player_window.stpl")]
 pub struct MusicPlayerWindow {
     pub left: i32,
     pub window_width: i32,
@@ -19,5 +19,5 @@ pub fn render_music_player_window(_parent_height: i32, parent_width: i32) -> Str
     let window_width = 400;
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
 
-    MusicPlayerWindow { left, window_width }.render().unwrap()
+    MusicPlayerWindow { left, window_width }.render_once().unwrap()
 }

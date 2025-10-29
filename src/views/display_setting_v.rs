@@ -1,8 +1,8 @@
 use crate::{constant::EXAMPLE_COLORS, models::display_setting_db::BackgroundType};
-use askama::Template;
+use sailfish::TemplateOnce;
 
-#[derive(Template)]
-#[template(path = "display_setting/display_setting_window.html")]
+#[derive(TemplateOnce)]
+#[template(path = "display_setting/display_setting_window.stpl")]
 pub struct DisplaySettingWindow<'a> {
     pub top: i32,
     pub left: i32,
@@ -34,6 +34,6 @@ pub fn render_display_setting_window(
         background_color: background_color.as_deref(),
         example_colors: &EXAMPLE_COLORS,
     }
-    .render()
+    .render_once()
     .unwrap()
 }

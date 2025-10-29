@@ -1,7 +1,7 @@
-use askama::Template;
+use sailfish::TemplateOnce;
 
-#[derive(Template)]
-#[template(path = "txt/txt_file.html")]
+#[derive(TemplateOnce)]
+#[template(path = "txt/txt_file.stpl")]
 struct TxtFile<'a> {
     pub id: &'a str,
     pub name: &'a str,
@@ -21,23 +21,23 @@ pub fn render_txt_file(
         id: &id,
         name: &file_name,
     }
-    .render()
+    .render_once()
     .unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "txt/txt_input.html")]
+#[derive(TemplateOnce)]
+#[template(path = "txt/txt_input.stpl")]
 struct TxtInput<'a> {
     pub file_id: i32,
     pub value: &'a str,
 }
 
 pub fn render_txt_input(file_id: i32, value: &str) -> String {
-    TxtInput { file_id, value }.render().unwrap()
+    TxtInput { file_id, value }.render_once().unwrap()
 }
 
-#[derive(Template)]
-#[template(path = "txt/txt_window.html")]
+#[derive(TemplateOnce)]
+#[template(path = "txt/txt_window.stpl")]
 pub struct TxtWindow<'a> {
     pub file_name: &'a str,
     pub txt_id: i32,
@@ -67,6 +67,6 @@ pub fn render_txt_window(
         window_width,
         window_height,
     }
-    .render()
+    .render_once()
     .unwrap()
 }
