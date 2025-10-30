@@ -21,9 +21,7 @@ use crate::{
     },
     utilities::common::{html_to_nodes, parse_user_id},
     views::web_builder_v::{
-        render_web_builder_select_contact, render_web_builder_select_footer,
-        render_web_builder_select_header, render_web_builder_select_hero,
-        render_web_builder_select_section, render_web_builder_window,
+        render_web_builder_review, render_web_builder_select_contact, render_web_builder_select_footer, render_web_builder_select_header, render_web_builder_select_hero, render_web_builder_select_section, render_web_builder_window
     },
 };
 
@@ -212,6 +210,21 @@ pub async fn get_selected_section(
     }
 }
 
+pub async fn get_selected_template(
+    Path((section_type, template_index)): Path<(String, i32)>,
+) -> Result<impl IntoResponse, AppError> {
+    match section_type.as_str() {
+        "Header" => Ok((
+            [(
+                "HX-Trigger",
+                format!(r#"{{"changeTemplateNumber":{{"templateNumber": {}}}}}"#, template_index),
+            )],
+            render_web_builder_select_header(template_index, ""),
+        )),
+        _ => Err(AppError::new(StatusCode::NOT_FOUND, "Section not found")),
+    }
+}
+
 pub async fn add_section(
     Path((builder_id, section_type, template_number)): Path<(i32, String, i32)>,
     State(pool): State<Pool>,
@@ -233,11 +246,16 @@ pub async fn add_section(
 
             let (nodes, root_node_ids) = html_to_nodes(template_html);
 
-            WebBuilder::insert_nodes_to_body(builder_id, user_id, nodes, root_node_ids, &pool)
+            let web_builder = WebBuilder::insert_nodes_to_body(builder_id, user_id, nodes, root_node_ids, &pool)
                 .await?;
 
-            Ok(())
+            let dom_tree = DomTree::deserialize(web_builder.data.unwrap()).map_err(|err| {
+                tracing::error!("Could not parse dom tree: {}", err);
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            })?;
+
+            Ok(render_web_builder_review(&dom_tree))
         }
-        _ => Ok(()),
+        _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Invalid section type")),
     }
 }

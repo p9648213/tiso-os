@@ -161,7 +161,7 @@ impl WebBuilder {
         insert_nodes: HashMap<String, Node>,
         root_node_ids: Vec<String>,
         pool: &Pool,
-    ) -> Result<(), AppError> {
+    ) -> Result<WebBuilder, AppError> {
         let client = pool.get().await.map_err(|error| {
             tracing::error!("Couldn't get postgres client: {:?}", error);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
@@ -177,8 +177,8 @@ impl WebBuilder {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
         })?;
 
-        let rows = client
-            .execute(
+        let row = client
+            .query_one(
                 "UPDATE web_builder 
                 SET data = jsonb_set(
                     data || jsonb_build_object('nodes', data->'nodes' || $1::jsonb),
@@ -188,20 +188,13 @@ impl WebBuilder {
                 FROM file
                 WHERE web_builder.file_id = file.id
                 AND web_builder.id = $3
-                AND file.user_id = $4;",
+                AND file.user_id = $4
+                RETURNING data;",
                 &[&nodes_json, &root_node_ids_json, &builder_id, &user_id],
             )
             .await?;
 
-        if rows == 0 {
-            tracing::error!("Error insert nodes");
-            return Err(AppError::new(
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
-            ));
-        }
-
-        Ok(())
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn edit_node(

@@ -20,9 +20,7 @@ export function setupWebBuilderToolBar(builderId) {
 
   close.addEventListener("click", function () {
     document.getElementById(`web-builder-window-${builderId}`).remove();
-    document
-      .getElementById(`taskbar-web-builder-window-${builderId}`)
-      .remove();
+    document.getElementById(`taskbar-web-builder-window-${builderId}`).remove();
     webBuilderCleanUpEvent.forEach((event) => {
       if (event.id === builderId) {
         document.removeEventListener(event.event, event.handler);
@@ -51,13 +49,17 @@ export function setupAddSectionDialog(builderId) {
   });
 
   builderAddSectionBtn.addEventListener("click", function () {
-    htmx.ajax(
+    htmx
+      .ajax(
         "POST",
         `/create/web_builder/${builderId}/section/add/${sectionType}/${templateNumber}`,
         {
-          // target: ``,
-          swap: "none",
+          target: `#builder-review`,
+          swap: "outerHTML",
         }
-      );
+      )
+      .then(() => {
+        sectionDialog.close();
+      });
   });
 }

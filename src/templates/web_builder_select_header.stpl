@@ -9,6 +9,9 @@
   </h3>
   <div class="space-y-4">
     <div
+      hx-get="read/web_builder/template/Header/1"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
       class="bg-blue-50 border-2 rounded-sm overflow-hidden 
       <% if selected_header == 1 { %> 
         border-blue-500 
@@ -19,6 +22,9 @@
       <% include!("web_builder_template_header_1_sample.stpl"); %>
     </div>
     <div
+      hx-get="read/web_builder/template/Header/2"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
       <% if selected_header == 2 { %> 
         border-blue-500 
@@ -29,6 +35,9 @@
       <% include!("web_builder_template_header_2_sample.stpl"); %>
     </div>
     <div
+      hx-get="read/web_builder/template/Header/3"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
       <% if selected_header == 3 { %> 
         border-blue-500 
@@ -39,6 +48,9 @@
       <% include!("web_builder_template_header_3_sample.stpl"); %>
     </div>
     <div
+      hx-get="read/web_builder/template/Header/4"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
       <% if selected_header == 4 { %> 
         border-blue-500 
