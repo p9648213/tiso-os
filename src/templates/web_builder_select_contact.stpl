@@ -8,9 +8,57 @@
     Choose Contact Template
   </h3>
   <div class="space-y-4">
-    <% include!("web_builder_template_contact_1.stpl"); %>
-    <% include!("web_builder_template_contact_2.stpl"); %>
-    <% include!("web_builder_template_contact_3.stpl"); %>
-    <% include!("web_builder_template_contact_4.stpl"); %>
+    <div
+      hx-get="read/web_builder/template/Contact Form/1"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="bg-blue-50 border-2 rounded-sm overflow-hidden 
+      <% if selected_contact == 1 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_contact_1_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Contact Form/2"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_contact == 2 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_contact_2_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Contact Form/3"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_contact == 3 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_contact_3_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Contact Form/4"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_contact == 4 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_contact_4_sample.stpl"); %>
+    </div>
   </div>
 </div>

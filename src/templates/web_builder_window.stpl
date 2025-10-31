@@ -39,8 +39,8 @@
       />
     </div>
   </div>
-  <div class="flex flex-col bg-white h-full">
-    <div class="px-3 py-1.5 border-zinc-950 border-b">
+  <div class="flex flex-col bg-white h-[calc(100%-(--spacing(12)))]">
+    <div class="flex items-center gap-2 px-3 border-zinc-950 border-b h-9">
       <label>Page: </label>
       <select name="builders">
         <% for (id, name) in builder_list { %>
@@ -48,7 +48,7 @@
         <% } %>
       </select>
     </div>
-    <div class="flex flex-1">
+    <div class="flex flex-1 h-[calc(100%-(--spacing(9)))]">
       <% let nodes = &data.nodes; %> 
       <% let body_node = data.nodes.get(&data.body_node).unwrap(); %>
       <% include!("web_builder_structure.stpl"); %>

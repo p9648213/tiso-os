@@ -8,9 +8,57 @@
     Choose Footer Template
   </h3>
   <div class="space-y-4">
-    <% include!("web_builder_template_footer_1.stpl"); %>
-    <% include!("web_builder_template_footer_2.stpl"); %>
-    <% include!("web_builder_template_footer_3.stpl"); %>
-    <% include!("web_builder_template_footer_4.stpl"); %>
+    <div
+      hx-get="read/web_builder/template/Footer/1"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="bg-blue-50 border-2 rounded-sm overflow-hidden 
+      <% if selected_footer == 1 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_footer_1_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Footer/2"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_footer == 2 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_footer_2_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Footer/3"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_footer == 3 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_footer_3_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Footer/4"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_footer == 4 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_footer_4_sample.stpl"); %>
+    </div>
   </div>
 </div>

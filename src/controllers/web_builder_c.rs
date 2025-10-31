@@ -11,7 +11,7 @@ use serde::Deserialize;
 
 use crate::{
     constant::web_builder::{
-        HEADER_TEMPLATE_1, HEADER_TEMPLATE_2, HEADER_TEMPLATE_3, HEADER_TEMPLATE_4,
+        CONTACT_TEMPLATE_1, CONTACT_TEMPLATE_2, CONTACT_TEMPLATE_3, CONTACT_TEMPLATE_4, FOOTER_TEMPLATE_1, FOOTER_TEMPLATE_2, FOOTER_TEMPLATE_3, FOOTER_TEMPLATE_4, HEADER_TEMPLATE_1, HEADER_TEMPLATE_2, HEADER_TEMPLATE_3, HEADER_TEMPLATE_4, HERO_TEMPLATE_1, HERO_TEMPLATE_2, HERO_TEMPLATE_3, HERO_TEMPLATE_4
     },
     middlewares::session_mw::UserId,
     models::{
@@ -21,7 +21,10 @@ use crate::{
     },
     utilities::common::{html_to_nodes, parse_user_id},
     views::web_builder_v::{
-        render_web_builder_review, render_web_builder_select_contact, render_web_builder_select_footer, render_web_builder_select_header, render_web_builder_select_hero, render_web_builder_select_section, render_web_builder_window
+        render_web_builder_review, render_web_builder_select_contact,
+        render_web_builder_select_footer, render_web_builder_select_header,
+        render_web_builder_select_hero, render_web_builder_select_section,
+        render_web_builder_window,
     },
 };
 
@@ -217,9 +220,42 @@ pub async fn get_selected_template(
         "Header" => Ok((
             [(
                 "HX-Trigger",
-                format!(r#"{{"changeTemplateNumber":{{"templateNumber": {}}}}}"#, template_index),
+                format!(
+                    r#"{{"changeTemplateNumber":{{"templateNumber": {}}}}}"#,
+                    template_index
+                ),
             )],
             render_web_builder_select_header(template_index, ""),
+        )),
+        "Footer" => Ok((
+            [(
+                "HX-Trigger",
+                format!(
+                    r#"{{"changeTemplateNumber":{{"templateNumber": {}}}}}"#,
+                    template_index
+                ),
+            )],
+            render_web_builder_select_footer(template_index, ""),
+        )),
+        "Hero Section" => Ok((
+            [(
+                "HX-Trigger",
+                format!(
+                    r#"{{"changeTemplateNumber":{{"templateNumber": {}}}}}"#,
+                    template_index
+                ),
+            )],
+            render_web_builder_select_hero(template_index, ""),
+        )),
+        "Contact Form" => Ok((
+            [(
+                "HX-Trigger",
+                format!(
+                    r#"{{"changeTemplateNumber":{{"templateNumber": {}}}}}"#,
+                    template_index
+                ),
+            )],
+            render_web_builder_select_contact(template_index, ""),
         )),
         _ => Err(AppError::new(StatusCode::NOT_FOUND, "Section not found")),
     }
@@ -232,30 +268,60 @@ pub async fn add_section(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    match section_type.as_str() {
-        "Header" => {
-            let template_html = match template_number {
-                1 => HEADER_TEMPLATE_1,
-                2 => HEADER_TEMPLATE_2,
-                3 => HEADER_TEMPLATE_3,
-                4 => HEADER_TEMPLATE_4,
-                _ => {
-                    return Err(AppError::new(StatusCode::NOT_FOUND, "Template not found"));
-                }
-            };
-
-            let (nodes, root_node_ids) = html_to_nodes(template_html);
-
-            let web_builder = WebBuilder::insert_nodes_to_body(builder_id, user_id, nodes, root_node_ids, &pool)
-                .await?;
-
-            let dom_tree = DomTree::deserialize(web_builder.data.unwrap()).map_err(|err| {
-                tracing::error!("Could not parse dom tree: {}", err);
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
-            })?;
-
-            Ok(render_web_builder_review(&dom_tree))
+    let template_html = match section_type.as_str() {
+        "Header" => match template_number {
+            1 => HEADER_TEMPLATE_1,
+            2 => HEADER_TEMPLATE_2,
+            3 => HEADER_TEMPLATE_3,
+            4 => HEADER_TEMPLATE_4,
+            _ => {
+                return Err(AppError::new(StatusCode::NOT_FOUND, "Template not found"));
+            }
+        },
+        "Footer" => match template_number {
+            1 => FOOTER_TEMPLATE_1,
+            2 => FOOTER_TEMPLATE_2,
+            3 => FOOTER_TEMPLATE_3,
+            4 => FOOTER_TEMPLATE_4,
+            _ => {
+                return Err(AppError::new(StatusCode::NOT_FOUND, "Template not found"));
+            }
+        },
+        "Hero Section" => match template_number {
+            1 => HERO_TEMPLATE_1,
+            2 => HERO_TEMPLATE_2,
+            3 => HERO_TEMPLATE_3,
+            4 => HERO_TEMPLATE_4,
+            _ => {
+                return Err(AppError::new(StatusCode::NOT_FOUND, "Template not found"));
+            }
+        },
+        "Contact Form" => match template_number {
+            1 => CONTACT_TEMPLATE_1,
+            2 => CONTACT_TEMPLATE_2,
+            3 => CONTACT_TEMPLATE_3,
+            4 => CONTACT_TEMPLATE_4,
+            _ => {
+                return Err(AppError::new(StatusCode::NOT_FOUND, "Template not found"));
+            }
+        },
+        _ => {
+            return Err(AppError::new(
+                StatusCode::BAD_REQUEST,
+                "Invalid section type",
+            ));
         }
-        _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Invalid section type")),
-    }
+    };
+
+    let (nodes, root_node_ids) = html_to_nodes(template_html);
+
+    let web_builder =
+        WebBuilder::insert_nodes_to_body(builder_id, user_id, nodes, root_node_ids, &pool).await?;
+
+    let dom_tree = DomTree::deserialize(web_builder.data.unwrap()).map_err(|err| {
+        tracing::error!("Could not parse dom tree: {}", err);
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+    })?;
+
+    Ok(render_web_builder_review(&dom_tree))
 }

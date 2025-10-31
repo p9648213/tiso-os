@@ -7,10 +7,58 @@
   <h3 class="mb-4 font-semibold text-gray-700 text-lg">
     Choose Hero Template
   </h3>
-  <div class="space-y-4">
-    <% include!("web_builder_template_hero_1.stpl"); %>
-    <% include!("web_builder_template_hero_2.stpl"); %>
-    <% include!("web_builder_template_hero_3.stpl"); %>
-    <% include!("web_builder_template_hero_4.stpl"); %>
+    <div class="space-y-4">
+    <div
+      hx-get="read/web_builder/template/Hero Section/1"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="bg-blue-50 border-2 rounded-sm overflow-hidden 
+      <% if selected_hero == 1 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_hero_1_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Hero Section/2"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_hero == 2 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_hero_2_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Hero Section/3"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_hero == 3 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_hero_3_sample.stpl"); %>
+    </div>
+    <div
+      hx-get="read/web_builder/template/Hero Section/4"
+      hx-target="#builder_template"
+      hx-swap="outerHTML"
+      class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
+      <% if selected_hero == 4 { %> 
+        border-blue-500 
+      <% } else { %> 
+        border-gray-200 hover:border-blue-500 
+      <% } %>"
+    >
+      <% include!("web_builder_template_hero_4_sample.stpl"); %>
+    </div>
   </div>
 </div>

@@ -1,6 +1,8 @@
-<div id="builder-review" class="flex-1">
-  <% for child in &body_node.children { %>
-    <% let node = nodes.get(child).unwrap(); %>
-    <% include!("web_builder_node.stpl"); %>
-  <% } %>
+<div id="builder-review" class="flex-1 overflow-auto">
+  <div class="min-w-xl">
+      <% for child in &body_node.children { %>
+        <% let node = nodes.get(child).unwrap(); %>
+        <% include!("web_builder_node.stpl"); %>
+      <% } %>
+  </div>
 </div>
