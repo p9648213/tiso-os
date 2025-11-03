@@ -19,7 +19,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_hero_1_sample.stpl"); %>
+      <% include!("web_builder_template_hero_1.stpl"); %>
     </div>
     <div
       hx-get="read/web_builder/template/Hero Section/2"
@@ -32,7 +32,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_hero_2_sample.stpl"); %>
+      <% include!("web_builder_template_hero_2.stpl"); %>
     </div>
     <div
       hx-get="read/web_builder/template/Hero Section/3"
@@ -45,7 +45,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_hero_3_sample.stpl"); %>
+      <% include!("web_builder_template_hero_3.stpl"); %>
     </div>
     <div
       hx-get="read/web_builder/template/Hero Section/4"
@@ -58,7 +58,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_hero_4_sample.stpl"); %>
+      <% include!("web_builder_template_hero_4.stpl"); %>
     </div>
   </div>
 </div>

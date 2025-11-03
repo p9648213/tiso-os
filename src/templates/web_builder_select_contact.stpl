@@ -19,7 +19,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_contact_1_sample.stpl"); %>
+      <% include!("web_builder_template_contact_1.stpl"); %>
     </div>
     <div
       hx-get="read/web_builder/template/Contact Form/2"
@@ -32,7 +32,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_contact_2_sample.stpl"); %>
+      <% include!("web_builder_template_contact_2.stpl"); %>
     </div>
     <div
       hx-get="read/web_builder/template/Contact Form/3"
@@ -45,7 +45,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_contact_3_sample.stpl"); %>
+      <% include!("web_builder_template_contact_3.stpl"); %>
     </div>
     <div
       hx-get="read/web_builder/template/Contact Form/4"
@@ -58,7 +58,7 @@
         border-gray-200 hover:border-blue-500 
       <% } %>"
     >
-      <% include!("web_builder_template_contact_4_sample.stpl"); %>
+      <% include!("web_builder_template_contact_4.stpl"); %>
     </div>
   </div>
 </div>
