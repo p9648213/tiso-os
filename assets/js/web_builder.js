@@ -39,6 +39,13 @@ export function setupAddSectionDialog(builderId) {
   const builderAddSectionBtn = document.getElementById(
     "builder-add-section-btn"
   );
+  const viewWebsiteBtn = document.getElementById("view-website-btn");
+
+  viewWebsiteBtn.addEventListener("click", function () {
+    window.open(
+      `${window.location.origin}/read/web_builder/view_website/${builderId}`
+    );
+  });
 
   openSectionDialogBtn.addEventListener("click", function () {
     sectionDialog.showModal();

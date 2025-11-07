@@ -4,14 +4,17 @@ use axum::{
     Extension, Json,
     extract::{Path, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{Html, IntoResponse},
 };
 use deadpool_postgres::Pool;
 use serde::Deserialize;
 
 use crate::{
     constant::web_builder::{
-        CONTACT_TEMPLATE_1, CONTACT_TEMPLATE_2, CONTACT_TEMPLATE_3, CONTACT_TEMPLATE_4, FOOTER_TEMPLATE_1, FOOTER_TEMPLATE_2, FOOTER_TEMPLATE_3, FOOTER_TEMPLATE_4, HEADER_TEMPLATE_1, HEADER_TEMPLATE_2, HEADER_TEMPLATE_3, HEADER_TEMPLATE_4, HERO_TEMPLATE_1, HERO_TEMPLATE_2, HERO_TEMPLATE_3, HERO_TEMPLATE_4
+        CONTACT_TEMPLATE_1, CONTACT_TEMPLATE_2, CONTACT_TEMPLATE_3, CONTACT_TEMPLATE_4,
+        FOOTER_TEMPLATE_1, FOOTER_TEMPLATE_2, FOOTER_TEMPLATE_3, FOOTER_TEMPLATE_4,
+        HEADER_TEMPLATE_1, HEADER_TEMPLATE_2, HEADER_TEMPLATE_3, HEADER_TEMPLATE_4,
+        HERO_TEMPLATE_1, HERO_TEMPLATE_2, HERO_TEMPLATE_3, HERO_TEMPLATE_4,
     },
     middlewares::session_mw::UserId,
     models::{
@@ -323,5 +326,24 @@ pub async fn add_section(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
     })?;
 
-    Ok(render_web_builder_review(&dom_tree))
+    Ok(render_web_builder_review(&dom_tree, false))
+}
+
+pub async fn get_web_builder_review(
+    Path(builder_id): Path<i32>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    let web_builder_window =
+        WebBuilderWindow::get_web_builder(builder_id, user_id, vec!["data"], vec![], &pool).await?;
+
+    let dom_tree: DomTree = DomTree::deserialize(web_builder_window.web_builder.data.unwrap())
+        .map_err(|err| {
+            tracing::error!("Could not parse dom tree: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+
+    Ok(Html(render_web_builder_review(&dom_tree, true)))
 }

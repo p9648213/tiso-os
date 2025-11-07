@@ -1,3 +1,7 @@
+<% if is_view_website { %>
+  <link rel="stylesheet" href="/assets/css/lib/tailwind.css" />
+<% } %>
+
 <div id="builder-review" class="flex-1 overflow-auto">
   <div class="min-w-xl">
       <% for child in &body_node.children { %>

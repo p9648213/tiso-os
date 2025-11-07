@@ -71,12 +71,14 @@ pub fn render_web_builder_structure() -> String {
 struct WebBuilderReview<'a> {
     nodes: &'a HashMap<String, Node>,
     body_node: &'a Node,
+    is_view_website: bool,
 }
 
-pub fn render_web_builder_review(data: &DomTree) -> String {
+pub fn render_web_builder_review(data: &DomTree, is_view_website: bool) -> String {
     WebBuilderReview {
         nodes: &data.nodes,
         body_node: data.nodes.get(&data.body_node).unwrap(),
+        is_view_website,
     }
     .render_once()
     .unwrap()
