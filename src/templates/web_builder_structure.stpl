@@ -2,21 +2,28 @@
   class="flex flex-col justify-between border-zinc-950 border-r w-70 shrink-0"
 >
   <div class="bg-white px-3 py-2 h-full">Web tree</div>
-  <div class="flex flex-col">
+  <div class="flex flex-col border-t border-t-zinc-950">
     <button
-      id="view-website-btn"
-      class="hover:opacity-70 hover:bg-zinc-200 px-3 py-2 flex gap-4 items-center justify-center"
+      id="download-website-btn"
+      class="flex justify-center items-center gap-4 hover:bg-zinc-200 hover:opacity-70 px-3 py-2 border-b border-b-zinc-950"
     >
       <img
         class="w-5 h-5"
-        src="/assets/images/web-builder/eye.svg"
-        alt="eye"
+        src="/assets/images/web-builder/download.svg"
+        alt="download"
       />
-      <span>View website</span>
+      <span>Download</span>
+    </button>
+    <button
+      id="view-website-btn"
+      class="flex justify-center items-center gap-4 hover:bg-zinc-200 hover:opacity-70 px-3 py-2 border-b border-b-zinc-950"
+    >
+      <img class="w-5 h-5" src="/assets/images/web-builder/eye.svg" alt="eye" />
+      <span>Preview Website</span>
     </button>
     <button
       id="open-section-btn"
-      class="hover:opacity-70 hover:bg-zinc-200 px-3 py-2 flex gap-4 items-center justify-center"
+      class="flex justify-center items-center gap-4 hover:bg-zinc-200 hover:opacity-70 px-3 py-2"
     >
       <img
         class="w-5 h-5"

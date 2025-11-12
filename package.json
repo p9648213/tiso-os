@@ -6,11 +6,11 @@
     "dev": "concurrently \"nodemon --watch './tailwind.css' --watch './src/**/*.{stpl,rs, html}' --ext '*' --exec 'npx @tailwindcss/cli -i ./tailwind.css -o ./assets/css/lib/tailwind.css'\" \"cargo watch -c -w src -x run\""
   },
   "devDependencies": {
-    "@tailwindcss/cli": "4.1.16",
-    "@tailwindcss/postcss": "4.1.16",
+    "@tailwindcss/cli": "4.1.17",
+    "@tailwindcss/postcss": "4.1.17",
     "concurrently": "9.2.1",
-    "nodemon": "^3.1.10",
+    "nodemon": "^3.1.11",
     "postcss": "8.5.6",
-    "tailwindcss": "4.1.16"
+    "tailwindcss": "4.1.17"
   }
 }

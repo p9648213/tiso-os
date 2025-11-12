@@ -347,3 +347,24 @@ pub async fn get_web_builder_review(
 
     Ok(Html(render_web_builder_review(&dom_tree, true)))
 }
+
+pub async fn download_website(
+    Path(builder_id): Path<i32>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    let web_builder_window =
+        WebBuilderWindow::get_web_builder(builder_id, user_id, vec!["data"], vec![], &pool).await?;
+
+    let dom_tree: DomTree = DomTree::deserialize(web_builder_window.web_builder.data.unwrap())
+        .map_err(|err| {
+            tracing::error!("Could not parse dom tree: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+
+    let html = render_web_builder_review(&dom_tree, false);
+
+    Ok(())
+}
