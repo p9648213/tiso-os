@@ -39,7 +39,39 @@ export function setupAddSectionDialog(builderId) {
   const builderAddSectionBtn = document.getElementById(
     "builder-add-section-btn"
   );
-  const viewWebsiteBtn = document.getElementById("view-website-btn");
+  const downloadWebsiteBtn = document.getElementById("download-website-btn");
+
+  downloadWebsiteBtn.addEventListener("click", async function () {
+    try {
+      const response = await fetch(
+        `/create/web_builder/${builderId}/download`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Csrf-Protection": "1"
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Download failed");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `website-${builderId}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Download error:", error);
+      alert("Failed to download website");
+    }
+  });
 
   viewWebsiteBtn.addEventListener("click", function () {
     window.open(

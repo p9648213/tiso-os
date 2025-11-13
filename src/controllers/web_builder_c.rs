@@ -1,13 +1,15 @@
 use std::collections::HashMap;
+use std::io::prelude::*;
 
 use axum::{
     Extension, Json,
     extract::{Path, State},
-    http::StatusCode,
+    http::{HeaderMap, HeaderValue, StatusCode, header},
     response::{Html, IntoResponse},
 };
 use deadpool_postgres::Pool;
 use serde::Deserialize;
+use zip::{ZipWriter, write::FileOptions};
 
 use crate::{
     constant::web_builder::{
@@ -366,5 +368,46 @@ pub async fn download_website(
 
     let html = render_web_builder_review(&dom_tree, false);
 
-    Ok(())
+    let mut zip_buffer = Vec::new();
+    {
+        let mut zip = ZipWriter::new(std::io::Cursor::new(&mut zip_buffer));
+        let options: FileOptions<()> = FileOptions::default()
+            .compression_method(zip::CompressionMethod::Deflated)
+            .unix_permissions(0o755);
+
+        zip.start_file("index.html", options).map_err(|err| {
+            tracing::error!("Could not create HTML file in ZIP: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+        zip.write_all(html.as_bytes()).map_err(|err| {
+            tracing::error!("Could not write HTML to ZIP: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+
+        zip.finish().map_err(|err| {
+            tracing::error!("Could not finalize ZIP: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+    }
+
+    let mut headers = HeaderMap::new();
+    
+    headers.insert(
+        header::CONTENT_TYPE,
+        HeaderValue::from_static("application/zip"),
+    );
+
+    headers.insert(
+        header::CONTENT_DISPOSITION,
+        HeaderValue::from_str(&format!(
+            "attachment; filename=\"website-{}.zip\"",
+            builder_id
+        ))
+        .map_err(|err| {
+            tracing::error!("Invalid header value: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?,
+    );
+
+    Ok((headers, zip_buffer))
 }
