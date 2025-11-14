@@ -39,6 +39,7 @@ export function setupAddSectionDialog(builderId) {
   const builderAddSectionBtn = document.getElementById(
     "builder-add-section-btn"
   );
+  const viewWebsiteBtn = document.getElementById("view-website-btn");
   const downloadWebsiteBtn = document.getElementById("download-website-btn");
 
   downloadWebsiteBtn.addEventListener("click", async function () {

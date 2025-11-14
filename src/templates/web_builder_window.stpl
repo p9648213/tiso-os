@@ -50,7 +50,7 @@
     </div>
     <div class="flex flex-1 h-[calc(100%-(--spacing(9)))]">
       <% let nodes = &data.nodes; %> 
-      <% let is_view_website = false; %>
+      <% let review_mode = ReviewMode::None; %>
       <% let body_node = data.nodes.get(&data.body_node).unwrap(); %>
       <% include!("web_builder_structure.stpl"); %>
       <% include!("web_builder_review.stpl"); %>

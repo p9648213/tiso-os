@@ -7,6 +7,13 @@ use crate::{
     models::web_builder_db::{DomTree, Node},
 };
 
+#[derive(PartialEq, Eq)]
+pub enum ReviewMode {
+    Download,
+    Preview,
+    None,
+}
+
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_file.stpl")]
 struct WebBuilderFile {
@@ -71,14 +78,14 @@ pub fn render_web_builder_structure() -> String {
 struct WebBuilderReview<'a> {
     nodes: &'a HashMap<String, Node>,
     body_node: &'a Node,
-    is_view_website: bool,
+    review_mode: ReviewMode,
 }
 
-pub fn render_web_builder_review(data: &DomTree, is_view_website: bool) -> String {
+pub fn render_web_builder_review(data: &DomTree, review_mode: ReviewMode) -> String {
     WebBuilderReview {
         nodes: &data.nodes,
         body_node: data.nodes.get(&data.body_node).unwrap(),
-        is_view_website,
+        review_mode,
     }
     .render_once()
     .unwrap()

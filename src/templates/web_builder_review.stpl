@@ -1,5 +1,9 @@
-<% if is_view_website { %>
+<% if review_mode == ReviewMode::Preview { %>
   <link rel="stylesheet" href="/assets/css/lib/tailwind.css" />
+<% } %>
+
+<% if review_mode == ReviewMode::Download { %>
+  <link rel="stylesheet" href="styles.css" />
 <% } %>
 
 <div id="builder-review" class="flex-1 overflow-auto">

@@ -1,5 +1,6 @@
-use std::collections::HashMap;
+use std::env;
 use std::io::prelude::*;
+use std::{collections::HashMap, process::Command};
 
 use axum::{
     Extension, Json,
@@ -9,6 +10,8 @@ use axum::{
 };
 use deadpool_postgres::Pool;
 use serde::Deserialize;
+use tempfile::TempDir;
+use tokio::fs;
 use zip::{ZipWriter, write::FileOptions};
 
 use crate::{
@@ -26,7 +29,7 @@ use crate::{
     },
     utilities::common::{html_to_nodes, parse_user_id},
     views::web_builder_v::{
-        render_web_builder_review, render_web_builder_select_contact,
+        ReviewMode, render_web_builder_review, render_web_builder_select_contact,
         render_web_builder_select_footer, render_web_builder_select_header,
         render_web_builder_select_hero, render_web_builder_select_section,
         render_web_builder_window,
@@ -328,7 +331,7 @@ pub async fn add_section(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
     })?;
 
-    Ok(render_web_builder_review(&dom_tree, false))
+    Ok(render_web_builder_review(&dom_tree, ReviewMode::None))
 }
 
 pub async fn get_web_builder_review(
@@ -347,7 +350,10 @@ pub async fn get_web_builder_review(
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
         })?;
 
-    Ok(Html(render_web_builder_review(&dom_tree, true)))
+    Ok(Html(render_web_builder_review(
+        &dom_tree,
+        ReviewMode::Preview,
+    )))
 }
 
 pub async fn download_website(
@@ -366,11 +372,83 @@ pub async fn download_website(
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
         })?;
 
-    let html = render_web_builder_review(&dom_tree, false);
+    let html = render_web_builder_review(&dom_tree, ReviewMode::Download);
+
+    let temp_dir = TempDir::new().map_err(|err| {
+        tracing::error!("Could not create temp directory: {}", err);
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+    })?;
+
+    let temp_path = temp_dir.path();
+    let html_path = temp_path.join("index.html");
+    let css_path = temp_path.join("styles.css");
+
+    fs::write(&html_path, &html).await.map_err(|err| {
+        tracing::error!("Could not write HTML file: {}", err);
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+    })?;
+
+    let project_dir = env::current_dir().map_err(|err| {
+        tracing::error!("Could not get current directory: {}", err);
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+    })?;
+
+    // Use Tailwind CLI with stdin for base CSS
+    let mut child = Command::new("npx")
+        .current_dir(&project_dir)
+        .args([
+            "@tailwindcss/cli",
+            "--output",
+            css_path.to_str().unwrap(),
+            "--content",
+            html_path.to_str().unwrap(),
+        ])
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .map_err(|err| {
+            tracing::error!("Could not spawn Tailwind CLI: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+
+    // Write CSS directives to stdin
+    if let Some(mut stdin) = child.stdin.take() {
+        use std::io::Write as StdWrite;
+        stdin
+            .write_all(b"@import \"tailwindcss\";\n")
+            .map_err(|err| {
+                tracing::error!("Could not write to Tailwind CLI stdin: {}", err);
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            })?;
+    }
+
+    let output = child.wait_with_output().map_err(|err| {
+        tracing::error!("Could not wait for Tailwind CLI: {}", err);
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+    })?;
+
+    if !output.status.success() {
+        tracing::error!(
+            "Tailwind CLI failed: stderr={}, stdout={}",
+            String::from_utf8_lossy(&output.stderr),
+            String::from_utf8_lossy(&output.stdout)
+        );
+        return Err(AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "CSS generation failed",
+        ));
+    }
+
+    let css = fs::read_to_string(&css_path).await.map_err(|err| {
+        tracing::error!("Could not read generated CSS: {}", err);
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+    })?;
 
     let mut zip_buffer = Vec::new();
     {
         let mut zip = ZipWriter::new(std::io::Cursor::new(&mut zip_buffer));
+
         let options: FileOptions<()> = FileOptions::default()
             .compression_method(zip::CompressionMethod::Deflated)
             .unix_permissions(0o755);
@@ -379,8 +457,19 @@ pub async fn download_website(
             tracing::error!("Could not create HTML file in ZIP: {}", err);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
         })?;
+
         zip.write_all(html.as_bytes()).map_err(|err| {
             tracing::error!("Could not write HTML to ZIP: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+
+        zip.start_file("styles.css", options).map_err(|err| {
+            tracing::error!("Could not create CSS file in ZIP: {}", err);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        })?;
+
+        zip.write_all(css.as_bytes()).map_err(|err| {
+            tracing::error!("Could not write CSS to ZIP: {}", err);
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
         })?;
 
@@ -391,7 +480,7 @@ pub async fn download_website(
     }
 
     let mut headers = HeaderMap::new();
-    
+
     headers.insert(
         header::CONTENT_TYPE,
         HeaderValue::from_static("application/zip"),
