@@ -52,9 +52,9 @@
       <% let nodes = &data.nodes; %> 
       <% let review_mode = ReviewMode::None; %>
       <% let body_node = data.nodes.get(&data.body_node).unwrap(); %>
-      <% include!("web_builder_structure.stpl"); %>
-      <% include!("web_builder_review.stpl"); %>
       <% include!("web_builder_setting.stpl"); %>
+      <% include!("web_builder_review.stpl"); %>
+      <% include!("web_builder_edit.stpl"); %>
     </div>
   </div>
   <dialog

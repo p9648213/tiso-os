@@ -66,11 +66,29 @@ pub fn render_web_builder_window(
 }
 
 #[derive(TemplateSimple)]
-#[template(path = "web_builder_structure.stpl")]
-struct WebBuilderStructure {}
+#[template(path = "web_builder_setting.stpl")]
+struct WebBuilderSetting<'a> {
+    nodes: &'a HashMap<String, Node>,
+    body_node: &'a Node
+}
 
-pub fn render_web_builder_structure() -> String {
-    WebBuilderStructure {}.render_once().unwrap()
+pub fn render_web_builder_setting(data: &DomTree) -> String {
+    WebBuilderSetting {
+        nodes: &data.nodes,
+        body_node: data.nodes.get(&data.body_node).unwrap()
+    }.render_once().unwrap()
+}
+
+#[derive(TemplateSimple)]
+#[template(path = "web_builder_web_tree.stpl")]
+struct WebBuilderWebTree<'a> {
+    node: &'a Node,
+    nodes: &'a HashMap<String, Node>,
+    deep : i32
+}
+
+pub fn render_web_builder_web_tree(node: &Node, nodes: &HashMap<String, Node>) -> String {
+    WebBuilderWebTree { node, nodes, deep: 0 }.render_once().unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -103,11 +121,11 @@ pub fn render_web_builder_node(node: &Node, nodes: &HashMap<String, Node>) -> St
 }
 
 #[derive(TemplateSimple)]
-#[template(path = "web_builder_setting.stpl")]
-struct WebBuilderSetting {}
+#[template(path = "web_builder_edit.stpl")]
+struct WebBuilderEdit {}
 
-pub fn render_web_builder_setting() -> String {
-    WebBuilderSetting {}.render_once().unwrap()
+pub fn render_web_builder_edit() -> String {
+    WebBuilderEdit {}.render_once().unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -199,6 +217,16 @@ fn render_children_nodes(node: &Node, nodes: &HashMap<String, Node>) -> String {
     for child_id in &node.children {
         if let Some(child) = nodes.get(child_id) {
             out.push_str(&WebBuilderNode { node: child, nodes }.render_once().unwrap());
+        }
+    }
+    out
+}
+
+fn render_children_tree(node: &Node, nodes: &HashMap<String, Node>, deep: i32) -> String {
+    let mut out = String::new();
+    for child_id in &node.children {
+        if let Some(child) = nodes.get(child_id) {
+            out.push_str(&WebBuilderWebTree { node: child, nodes, deep }.render_once().unwrap());
         }
     }
     out
