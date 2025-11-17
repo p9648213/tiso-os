@@ -50,7 +50,7 @@ export function setupAddSectionDialog(builderId) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Csrf-Protection": "1"
+            "X-Csrf-Protection": "1",
           },
         }
       );
@@ -101,5 +101,13 @@ export function setupAddSectionDialog(builderId) {
       .then(() => {
         sectionDialog.close();
       });
+  });
+}
+
+export function setupWebBuilderWebTree() {
+  const webTree = document.getElementById(`builder-webtree`);
+
+  webTree.addEventListener("click", function (event) {
+    console.log(event.target);
   });
 }

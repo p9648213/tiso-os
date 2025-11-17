@@ -2,9 +2,11 @@
   import {
     setupWebBuilderToolBar,
     setupAddSectionDialog,
+    setupWebBuilderWebTree,
   } from "/assets/js/web_builder.js";
   setupWebBuilderToolBar("<%= web_builder_id %>");
   setupAddSectionDialog("<%= web_builder_id %>");
+  setupWebBuilderWebTree();
 </script>
 <div
   id="web-builder-window-<%= web_builder_id %>"
