@@ -2,9 +2,9 @@
   class="flex flex-col justify-between border-zinc-950 border-r w-70 shrink-0"
 >
   <div class="bg-white px-3 py-2 h-full overflow-auto">
-    <% for child in &body_node.children { %>
+    <% for child_id in &body_node.children { %>
       <% let deep = 0; %>
-      <% let node = nodes.get(child).unwrap(); %>
+      <% let node = nodes.get(child_id).unwrap(); %>
       <% include!("web_builder_web_tree.stpl"); %>
     <% } %>
   </div>

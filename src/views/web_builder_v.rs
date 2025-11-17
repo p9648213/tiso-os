@@ -84,11 +84,12 @@ pub fn render_web_builder_setting(data: &DomTree) -> String {
 struct WebBuilderWebTree<'a> {
     node: &'a Node,
     nodes: &'a HashMap<String, Node>,
-    deep : i32
+    deep : i32,
+    child_id: &'a String,
 }
 
-pub fn render_web_builder_web_tree(node: &Node, nodes: &HashMap<String, Node>) -> String {
-    WebBuilderWebTree { node, nodes, deep: 0 }.render_once().unwrap()
+pub fn render_web_builder_web_tree(node: &Node, nodes: &HashMap<String, Node>, child_id: String) -> String {
+    WebBuilderWebTree { node, nodes, deep: 0, child_id: &child_id }.render_once().unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -114,10 +115,11 @@ pub fn render_web_builder_review(data: &DomTree, review_mode: ReviewMode) -> Str
 struct WebBuilderNode<'a> {
     node: &'a Node,
     nodes: &'a HashMap<String, Node>,
+    child_id: &'a String,
 }
 
-pub fn render_web_builder_node(node: &Node, nodes: &HashMap<String, Node>) -> String {
-    WebBuilderNode { node, nodes }.render_once().unwrap()
+pub fn render_web_builder_node(node: &Node, nodes: &HashMap<String, Node>, child_id: String) -> String {
+    WebBuilderNode { node, nodes, child_id: &child_id }.render_once().unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -216,7 +218,7 @@ fn render_children_nodes(node: &Node, nodes: &HashMap<String, Node>) -> String {
     let mut out = String::new();
     for child_id in &node.children {
         if let Some(child) = nodes.get(child_id) {
-            out.push_str(&WebBuilderNode { node: child, nodes }.render_once().unwrap());
+            out.push_str(&WebBuilderNode { node: child, nodes, child_id }.render_once().unwrap());
         }
     }
     out
@@ -226,7 +228,7 @@ fn render_children_tree(node: &Node, nodes: &HashMap<String, Node>, deep: i32) -
     let mut out = String::new();
     for child_id in &node.children {
         if let Some(child) = nodes.get(child_id) {
-            out.push_str(&WebBuilderWebTree { node: child, nodes, deep }.render_once().unwrap());
+            out.push_str(&WebBuilderWebTree { node: child, nodes, deep, child_id }.render_once().unwrap());
         }
     }
     out

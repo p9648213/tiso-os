@@ -1,4 +1,4 @@
-<<%= node.tag %> 
+<<%= node.tag %> data-id="<%= child_id %>"
   <% for (k, v) in node.attributes.as_object().unwrap() { %>
     <%= k %> = "<%= v.as_str().unwrap() %>"
   <% } %>
