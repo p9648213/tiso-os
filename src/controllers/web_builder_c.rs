@@ -393,7 +393,6 @@ pub async fn download_website(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
     })?;
 
-    // Use Tailwind CLI with stdin for base CSS
     let mut child = Command::new("npx")
         .current_dir(&project_dir)
         .args([
@@ -412,7 +411,6 @@ pub async fn download_website(
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
         })?;
 
-    // Write CSS directives to stdin
     if let Some(mut stdin) = child.stdin.take() {
         use std::io::Write as StdWrite;
         stdin
