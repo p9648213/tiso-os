@@ -18,6 +18,11 @@ body {
   height: 100%;
 }
 
+.outline-highlight {
+  outline: 2px solid #FF5656;
+  outline-offset: 0px;
+}
+
 button.htmx-request {
   pointer-events: none;
 }

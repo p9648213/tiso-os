@@ -1,5 +1,8 @@
 let webBuilderCleanUpEvent = [];
 
+let currentSelectElement = null;
+let currentSettingElement = null;
+
 let sectionType = "Header";
 let templateNumber = 1;
 
@@ -106,8 +109,52 @@ export function setupAddSectionDialog(builderId) {
 
 export function setupWebBuilderWebTree() {
   const webTree = document.getElementById(`builder-webtree`);
+  const webReview = document.getElementById(`builder-review`);
 
   webTree.addEventListener("click", function (event) {
-    console.log(event.target);
+    const dataId = event.target.getAttribute("data-id");
+
+    if (dataId) {
+      if(currentSettingElement) {
+        currentSettingElement.style.fontWeight = "inherit";
+      }
+      event.target.style.fontWeight = "bold";
+      currentSettingElement = event.target;
+
+      const reviewElement = webReview.querySelector(`[data-id="${dataId}"]`);
+
+      if (reviewElement) {
+        if (currentSelectElement) {
+          currentSelectElement.classList.remove("outline-highlight");
+        }
+        reviewElement.classList.add("outline-highlight");
+        currentSelectElement = reviewElement;
+      }
+    }
+  });
+
+  webReview.addEventListener("click", function (event) {
+    const dataId = event.target.getAttribute("data-id");
+
+    if (dataId) {
+      if(currentSelectElement) {
+        currentSelectElement.classList.remove("outline-highlight");
+      }
+      event.target.classList.add("outline-highlight");
+      currentSelectElement = event.target;
+
+      const reviewElement = webTree.querySelector(`[data-id="${dataId}"]`);
+
+      console.log(reviewElement);
+      
+
+      if (reviewElement) {
+        if (currentSettingElement) {
+          currentSettingElement.style.fontWeight = "inherit";
+        }
+        reviewElement.style.fontWeight = "bold";
+        currentSettingElement = reviewElement;
+      }
+    }
   });
 }
