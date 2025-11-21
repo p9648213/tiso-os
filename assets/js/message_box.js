@@ -7,9 +7,17 @@ export const MessageBox = {
 
   _show(type, title, message) {
     return new Promise((resolve) => {
-      const box = document.createElement("div");
+      const existingBoxes = document.querySelectorAll('.js-message-box');
+      const offsetCount = existingBoxes.length;
+      const offsetPx = offsetCount * 20;
       
-      box.className = "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white w-[400px] max-w-[90%] rounded-sm shadow-2xl border border-zinc-300 flex flex-col overflow-hidden font-sans";
+      const box = document.createElement("div");
+
+      box.className = "js-message-box fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white w-[400px] max-w-[90%] rounded-sm shadow-2xl border border-zinc-300 flex flex-col overflow-hidden font-sans";
+
+      box.style.marginTop = `${offsetPx}px`;
+      box.style.marginLeft = `${offsetPx}px`;
+      box.style.zIndex = `${50 + offsetCount}`;
 
       const header = document.createElement("div");
       header.className = "p-3 flex justify-between items-center";

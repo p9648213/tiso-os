@@ -269,7 +269,7 @@ impl WebBuilder {
             })?;
 
         if !nodes.contains_key(&delete_node_id) {
-            return Err(AppError::new(StatusCode::NOT_FOUND, "Not Found"));
+            return Err(AppError::new(StatusCode::NOT_FOUND, "Node Not Found"));
         }
 
         let mut to_delete = std::collections::HashSet::new();

@@ -1,3 +1,5 @@
+import { MessageBox } from "./message_box.js";
+
 export function setupGlobalFunctions() {
   window.loadSnakeModule = function () {
     const script = document.createElement("script");
@@ -45,7 +47,7 @@ export function setupGlobalFunctions() {
         "flappy-canvas-container"
       );
       if (!canvasContainer) {
-        console.error("Canvas container not found");
+        MessageBox.error("Error", "Canvas container not found");
         return;
       }
 
@@ -76,7 +78,7 @@ export function setupGlobalFunctions() {
 
       console.log("Flappy Bird loaded successfully");
     } catch (error) {
-      console.error("Failed to load Flappy Bird:", error);
+      MessageBox.error("Error", "Failed to load Flappy Bird: " + error);
       window.canvasRunning = window.canvasRunning.filter(
         (item) => item !== "Flappy Bird"
       );

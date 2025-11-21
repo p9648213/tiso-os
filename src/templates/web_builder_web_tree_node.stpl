@@ -1,0 +1,4 @@
+<div style="padding-left: <%= deep * 4 %>px;" data-id="<%= child_id %>">
+  <%= node.tag %> <%= deep %>
+  <%- render_children_tree_nodes(node, nodes, deep + 1) %>
+</div>

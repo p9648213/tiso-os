@@ -1,4 +1,18 @@
-<div style="padding-left: <%= deep * 4 %>px;" data-id="<%= child_id %>">
-  <%= node.tag %> <%= deep %>
-  <%- render_children_tree(node, nodes, deep + 1) %>
+<script type="module">
+  import { setupWebBuilderWebTreeElement } from "/assets/js/web_builder.js";
+  setupWebBuilderWebTreeElement();
+</script>
+
+<div 
+  id="builder-webtree" 
+  class="bg-white px-3 py-2 h-full overflow-auto select-none"
+  <% if swap_oob != "" { %>
+    hx-swap-oob=<%= swap_oob %> 
+  <% } %>
+>
+  <% for child_id in &body_node.children { %>
+    <% let deep = 0; %>
+    <% let node = nodes.get(child_id).unwrap(); %>
+    <% include!("web_builder_web_tree_node.stpl"); %>
+  <% } %>
 </div>

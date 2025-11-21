@@ -14,6 +14,7 @@ use tempfile::TempDir;
 use tokio::fs;
 use zip::{ZipWriter, write::FileOptions};
 
+use crate::views::web_builder_v::render_web_builder_web_tree;
 use crate::{
     constant::web_builder::{
         CONTACT_TEMPLATE_1, CONTACT_TEMPLATE_2, CONTACT_TEMPLATE_3, CONTACT_TEMPLATE_4,
@@ -335,7 +336,11 @@ pub async fn add_section(
         )
     })?;
 
-    Ok(render_web_builder_review(&dom_tree, ReviewMode::None))
+    Ok(format!(
+        "{}{}",
+        render_web_builder_review(&dom_tree, ReviewMode::None),
+        render_web_builder_web_tree(&dom_tree, "outerHTML")
+    ))
 }
 
 pub async fn get_web_builder_review(
@@ -458,7 +463,10 @@ pub async fn download_website(
     }
 
     let css = fs::read_to_string(&css_path).await.map_err(|err| {
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not read generated CSS: {}", err))
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            &format!("Could not read generated CSS: {}", err),
+        )
     })?;
 
     let mut zip_buffer = Vec::new();
@@ -470,23 +478,38 @@ pub async fn download_website(
             .unix_permissions(0o755);
 
         zip.start_file("index.html", options).map_err(|err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not create HTML file in ZIP: {}", err))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Could not create HTML file in ZIP: {}", err),
+            )
         })?;
 
         zip.write_all(html.as_bytes()).map_err(|err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not write HTML to ZIP: {}", err))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Could not write HTML to ZIP: {}", err),
+            )
         })?;
 
         zip.start_file("styles.css", options).map_err(|err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not create CSS file in ZIP: {}", err))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Could not create CSS file in ZIP: {}", err),
+            )
         })?;
 
         zip.write_all(css.as_bytes()).map_err(|err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not write CSS to ZIP: {}", err))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Could not write CSS to ZIP: {}", err),
+            )
         })?;
 
         zip.finish().map_err(|err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not finalize ZIP: {}", err))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Could not finalize ZIP: {}", err),
+            )
         })?;
     }
 
@@ -504,7 +527,10 @@ pub async fn download_website(
             builder_id
         ))
         .map_err(|err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Invalid header value: {}", err))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Invalid header value: {}", err),
+            )
         })?,
     );
 

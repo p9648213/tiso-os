@@ -1,3 +1,5 @@
+import { MessageBox } from "./message_box.js";
+
 let webBuilderCleanUpEvent = [];
 
 let currentSelectElement = null;
@@ -96,9 +98,15 @@ export function setupWebBuilderWebTreeElement() {
         }
         reviewElement.classList.add("outline-highlight");
         currentSelectElement = reviewElement;
+        setupWebBuilderEdit()
       }
     }
   });
+}
+
+export function setupWebBuilderWebReviewElement() {
+  const webTree = document.getElementById(`builder-webtree`);
+  const webReview = document.getElementById(`builder-review`);
 
   webReview.addEventListener("click", function (event) {
     const dataId = event.target.getAttribute("data-id");
@@ -118,6 +126,7 @@ export function setupWebBuilderWebTreeElement() {
         }
         reviewElement.style.fontWeight = "bold";
         currentSettingElement = reviewElement;
+        setupWebBuilderEdit()
       }
     }
   });
@@ -126,12 +135,6 @@ export function setupWebBuilderWebTreeElement() {
 export function setupWebBuilderTreeActions(builderId) {
   const viewWebsiteBtn = document.getElementById("view-website-btn");
   const downloadWebsiteBtn = document.getElementById("download-website-btn");
-
-  function handleKeyDown(event) {
-    if (event.key === "Delete" && currentSelectElement) {
-      console.log(currentSelectElement.getAttribute("data-id"));
-    }
-  }
 
   downloadWebsiteBtn.addEventListener("click", async function () {
     try {
@@ -147,7 +150,10 @@ export function setupWebBuilderTreeActions(builderId) {
       );
 
       if (!response.ok) {
-        throw new Error("Download failed");
+        return MessageBox.error(
+          "Error",
+          "Failed to download website: " + (await response.text())
+        );
       }
 
       const blob = await response.blob();
@@ -160,8 +166,7 @@ export function setupWebBuilderTreeActions(builderId) {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error("Download error:", error);
-      alert("Failed to download website");
+      MessageBox.error("Error", "Failed to download website: " + error);
     }
   });
 
@@ -170,6 +175,50 @@ export function setupWebBuilderTreeActions(builderId) {
       `${window.location.origin}/read/web_builder/view_website/${builderId}`
     );
   });
+}
+
+export function setupWebBuilderEdit() {
+  if (currentSelectElement) {
+    console.log(currentSelectElement);
+  }
+}
+
+export function setupWebBuilderKeyboardEvent(builderId) {
+  function handleKeyDown(event) {
+    if (event.key === "Delete" && currentSelectElement) {
+      let nodeId = currentSelectElement.getAttribute("data-id");
+
+      MessageBox.warning(
+        "Confirm Delete",
+        `Are you sure you want to delete this node: ${nodeId} ?`
+      ).then(async (result) => {
+        if (result) {
+          const response = await fetch(
+            `/delete/web_builder/${builderId}/node/delete/${nodeId}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-Csrf-Protection": "1",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            return MessageBox.error(
+              "Error",
+              "Failed to delete node: " + (await response.text())
+            );
+          }
+
+          currentSelectElement.remove();
+          currentSettingElement.remove();
+          currentSelectElement = null;
+          currentSettingElement = null;
+        }
+      });
+    }
+  }
 
   webBuilderCleanUpEvent.push({
     event: "keydown",

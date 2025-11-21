@@ -2,13 +2,13 @@
   import {
     setupWebBuilderToolBar,
     setupAddSectionDialog,
-    setupWebBuilderWebTreeElement,
-    setupWebBuilderTreeActions
+    setupWebBuilderTreeActions,
+    setupWebBuilderKeyboardEvent
   } from "/assets/js/web_builder.js";
   setupWebBuilderToolBar("<%= web_builder_id %>");
   setupAddSectionDialog("<%= web_builder_id %>");
-  setupWebBuilderWebTreeElement();
   setupWebBuilderTreeActions("<%= web_builder_id %>");
+  setupWebBuilderKeyboardEvent("<%= web_builder_id %>");
 </script>
 <div
   id="web-builder-window-<%= web_builder_id %>"

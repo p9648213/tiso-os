@@ -82,14 +82,30 @@ pub fn render_web_builder_setting(data: &DomTree) -> String {
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_web_tree.stpl")]
 struct WebBuilderWebTree<'a> {
+    nodes: &'a HashMap<String, Node>,
+    body_node: &'a Node,
+    swap_oob: &'a str,
+}
+
+pub fn render_web_builder_web_tree(data: &DomTree, swap_oob: &str) -> String {
+    WebBuilderWebTree {
+        nodes: &data.nodes,
+        body_node: data.nodes.get(&data.body_node).unwrap(),
+        swap_oob
+    }.render_once().unwrap()
+}
+
+#[derive(TemplateSimple)]
+#[template(path = "web_builder_web_tree_node.stpl")]
+struct WebBuilderWebTreeNode<'a> {
     node: &'a Node,
     nodes: &'a HashMap<String, Node>,
     deep : i32,
     child_id: &'a String,
 }
 
-pub fn render_web_builder_web_tree(node: &Node, nodes: &HashMap<String, Node>, child_id: String) -> String {
-    WebBuilderWebTree { node, nodes, deep: 0, child_id: &child_id }.render_once().unwrap()
+pub fn render_web_builder_web_tree_node(node: &Node, nodes: &HashMap<String, Node>, child_id: String) -> String {
+    WebBuilderWebTreeNode { node, nodes, deep: 0, child_id: &child_id }.render_once().unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -224,11 +240,11 @@ fn render_children_nodes(node: &Node, nodes: &HashMap<String, Node>) -> String {
     out
 }
 
-fn render_children_tree(node: &Node, nodes: &HashMap<String, Node>, deep: i32) -> String {
+fn render_children_tree_nodes(node: &Node, nodes: &HashMap<String, Node>, deep: i32) -> String {
     let mut out = String::new();
     for child_id in &node.children {
         if let Some(child) = nodes.get(child_id) {
-            out.push_str(&WebBuilderWebTree { node: child, nodes, deep, child_id }.render_once().unwrap());
+            out.push_str(&WebBuilderWebTreeNode { node: child, nodes, deep, child_id }.render_once().unwrap());
         }
     }
     out
