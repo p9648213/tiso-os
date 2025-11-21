@@ -35,13 +35,11 @@ pub async fn create_account(
     let hx_trigger = header
         .get("HX-Trigger")
         .ok_or_else(|| {
-            tracing::error!("Failed to get HX-Trigger header");
-            AppError::new(StatusCode::BAD_REQUEST, "Bad Request")
+            AppError::new(StatusCode::BAD_REQUEST, "Failed to get HX-Trigger header")
         })?
         .to_str()
         .map_err(|err| {
-            tracing::error!("Failed to convert HX-Trigger header to str: {:?}", err);
-            AppError::new(StatusCode::BAD_REQUEST, "Bad Request")
+            AppError::new(StatusCode::BAD_REQUEST, &format!("Failed to convert HX-Trigger header to str: {:?}", err))
         })?;
 
     match hx_trigger {
@@ -71,8 +69,7 @@ pub async fn create_account(
                     .header("HX-Retarget", "#account_error")
                     .body(Body::new("Input fields cannot be empty".to_string()))
                     .map_err(|err| {
-                        tracing::error!("Failed to build response: {:?}", err);
-                        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to build response:: {:?}", err))
                     })?;
 
                 return Ok(response);
@@ -86,14 +83,12 @@ pub async fn create_account(
                 let user = User::try_from(&row, None);
 
                 let user_password = user.password.ok_or_else(|| {
-                    tracing::error!("No password column or value is null");
-                    AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                    AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "No password column or value is null")
                 })?;
 
                 if compare_password(&account_form.password, &user_password)? {
                     let user_id = user.id.ok_or_else(|| {
-                        tracing::error!("No id column or value is null");
-                        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "No id column or value is null")
                     })?;
 
                     let session: i128 = rand::rng().random();
@@ -118,8 +113,7 @@ pub async fn create_account(
                         .header("HX-Retarget", "#account_error")
                         .body(Body::new("Invalid password".to_string()))
                         .map_err(|err| {
-                            tracing::error!("Failed to build response: {:?}", err);
-                            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to build response:: {:?}", err))
                         })?;
 
                     Ok(response)
@@ -158,8 +152,7 @@ pub async fn create_account(
                         .header("HX-Retarget", "#account_error")
                         .body(Body::new("Passwords do not match".to_string()))
                         .map_err(|err| {
-                            tracing::error!("Failed to build response: {:?}", err);
-                            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to build response:: {:?}", err))
                         })?;
 
                     Ok(response)

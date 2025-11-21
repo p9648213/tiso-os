@@ -89,8 +89,7 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let columns = columns.join(",");
@@ -111,8 +110,7 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let columns = columns.join(",");
@@ -133,8 +131,7 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let columns = columns.join(",");
@@ -155,8 +152,7 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let columns = columns.join(",");
@@ -180,8 +176,7 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client.query_one(
@@ -203,8 +198,7 @@ impl Folder {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let rows = client
@@ -215,10 +209,9 @@ impl Folder {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error updating folder desktop position");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error updating folder desktop position",
             ));
         }
 
@@ -236,10 +229,9 @@ impl Folder {
                 .await?;
 
             if rows == 0 {
-                tracing::error!("Error updating folder sort type");
                 return Err(AppError::new(
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    "Server Error",
+                    "Error updating folder sort type",
                 ));
             }
         }
@@ -249,8 +241,7 @@ impl Folder {
 
     pub async fn delete_folder(id: i32, user_id: i32, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let rows = client
@@ -261,10 +252,9 @@ impl Folder {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error deleting folder");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error deleting folder",
             ));
         }
 
@@ -278,8 +268,7 @@ impl Folder {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client
@@ -290,10 +279,9 @@ impl Folder {
             .await?;
 
         if row == 0 {
-            tracing::error!("Error updating folder name");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error updating folder name",
             ));
         }
 

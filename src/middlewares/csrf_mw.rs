@@ -5,25 +5,21 @@ pub async fn csrf_middleware(request: Request, next: Next) -> Result<impl IntoRe
     let csrf_header = request.headers().get("X-Csrf-Protection");
 
     if csrf_header.is_none() {
-        tracing::error!("X-Csrf-Protection header is missing");
-        return Err(AppError::new(StatusCode::FORBIDDEN, "Forbidden"));
+        return Err(AppError::new(StatusCode::FORBIDDEN, "X-Csrf-Protection header is missing"));
     }
 
     let origin = request.headers().get("Origin");
 
     if let Some(origin) = origin {
         let origin = origin.to_str().map_err(|error| {
-            tracing::error!("Failed to get origin header: {}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to get origin header: {}", error))
         })?;
 
         if origin != ALLOW_ORIGIN {
-            tracing::error!("Origin is not allowed");
-            return Err(AppError::new(StatusCode::FORBIDDEN, "Forbidden"));
+            return Err(AppError::new(StatusCode::FORBIDDEN, &format!("Origin is not allowed: {}", origin)));
         }
     } else {
-        tracing::error!("Origin header is missing");
-        return Err(AppError::new(StatusCode::FORBIDDEN, "Forbidden"));
+        return Err(AppError::new(StatusCode::FORBIDDEN, "Origin header is missing"));
     }
 
     Ok(next.run(request).await)

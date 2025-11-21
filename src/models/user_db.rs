@@ -52,8 +52,7 @@ impl User {
         pool: &Pool,
     ) -> Result<Option<Row>, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let columns = columns.join(",");
@@ -68,13 +67,11 @@ impl User {
 
     pub async fn create_user(username: &str, password: &str, pool: &Pool) -> Result<i32, AppError> {
         let mut client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let txn = client.transaction().await.map_err(|err| {
-            tracing::error!("Couldn't start transaction: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't start transaction: {:?}", err))
         })?;
 
         let row = txn
@@ -176,8 +173,7 @@ impl User {
         .await?;
 
         txn.commit().await.map_err(|err| {
-            tracing::error!("Couldn't commit transaction: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't commit transaction: {:?}", err))
         })?;
 
         Ok(user_id)

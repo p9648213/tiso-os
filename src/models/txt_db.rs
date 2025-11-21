@@ -29,8 +29,7 @@ impl Txt {
 
     pub async fn create_txt(file_id: i32, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let rows = client
@@ -38,10 +37,9 @@ impl Txt {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error creating calculator");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error creating calculator",
             ));
         }
 

@@ -26,8 +26,7 @@ pub fn parse_user_id(user_id: UserId) -> Result<i32, AppError> {
         .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
         .parse::<i32>()
         .map_err(|err| {
-            tracing::error!("Couldn't parse user_id: {:?}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't parse user_id: {:?}", err))
         })
 }
 

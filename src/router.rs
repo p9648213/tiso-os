@@ -25,15 +25,14 @@ use crate::{
             add_section, delete_node, download_website, edit_node, get_node, get_selected_section, get_selected_template, get_web_builder, get_web_builder_review, get_web_builder_window, insert_node
         },
     },
-    middlewares::{csrf_mw::csrf_middleware, log_mw::request_log, session_mw::session_middleware},
+    middlewares::{csrf_mw::csrf_middleware, log_mw::{request_log, response_log}, session_mw::session_middleware},
     models::state::AppState,
 };
 use axum::{
     Router,
-    body::Body,
     http::{HeaderValue, StatusCode, header},
     middleware::{from_fn, from_fn_with_state},
-    response::{IntoResponse, Response},
+    response::IntoResponse,
     routing::{get, post},
 };
 
@@ -46,15 +45,11 @@ use tower_http::{
     set_header::SetResponseHeaderLayer,
     trace::TraceLayer,
 };
-use tracing::Span;
 
 async fn fallback() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, "Not Found")
 }
 
-fn response_log(response: &Response<Body>, latency: std::time::Duration, _: &Span) {
-    tracing::info!("<- Response: status {} in {:?}", response.status(), latency)
-}
 
 pub async fn create_router(pool: Pool) -> Router {
     let memory_router = MemoryServe::new(load_assets!("assets")).into_router();

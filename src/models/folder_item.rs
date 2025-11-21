@@ -75,8 +75,7 @@ impl FolderItem {
         pool: &Pool,
     ) -> Result<Vec<FolderItem>, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let sql = 
@@ -94,8 +93,7 @@ impl FolderItem {
         };
 
         let row = client.query(sql, &[&desktop_id, &user_id]).await.map_err(|error| {
-            tracing::error!("Couldn't query postgres: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't query postgres: {:?}", error))
         })?;
 
         Ok(Self::try_from_vec(row, None))
@@ -108,8 +106,7 @@ impl FolderItem {
         pool: &Pool,
     ) -> Result<Vec<FolderItem>, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let sql = 
@@ -130,8 +127,7 @@ impl FolderItem {
             .query(sql, &[&folder_id, &user_id, &FileType::ThisPC])
             .await
             .map_err(|error| {
-                tracing::error!("Couldn't query postgres: {:?}", error);
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't query postgres: {:?}", error))
             })?;
 
         Ok(Self::try_from_vec(row, None))

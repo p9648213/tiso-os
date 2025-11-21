@@ -76,8 +76,7 @@ impl DisplaySetting {
         pool: &Pool,
     ) -> Result<DisplaySetting, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let columns = columns.join(",");
@@ -99,8 +98,7 @@ impl DisplaySetting {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client
@@ -111,10 +109,9 @@ impl DisplaySetting {
             .await?;
 
         if row == 0 {
-            tracing::error!("Error updating background");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error updating background",
             ));
         }
 
@@ -127,8 +124,7 @@ impl DisplaySetting {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client
@@ -139,10 +135,9 @@ impl DisplaySetting {
             .await?;
 
         if row == 0 {
-            tracing::error!("Error updating background type");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error updating background type",
             ));
         }
 
@@ -155,8 +150,7 @@ impl DisplaySetting {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client
@@ -167,10 +161,9 @@ impl DisplaySetting {
             .await?;
 
         if row == 0 {
-            tracing::error!("Error updating background color");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error updating background color",
             ));
         }
 

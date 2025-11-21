@@ -83,8 +83,7 @@ impl File {
         pool: &Pool,
     ) -> Result<File, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let columns = columns.join(",");
@@ -105,8 +104,7 @@ impl File {
         pool: &Pool,
     ) -> Result<Vec<File>, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let taskbar_folder = Folder::get_taskbar_folder(user_id, vec!["id"], pool).await?;
@@ -132,8 +130,7 @@ impl File {
         pool: &Pool,
     ) -> Result<File, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client
@@ -162,8 +159,7 @@ impl File {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let rows = client
@@ -174,10 +170,9 @@ impl File {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error updating file desktop position");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error updating file desktop position",
             ));
         }
 
@@ -195,10 +190,9 @@ impl File {
                 .await?;
 
             if rows == 0 {
-                tracing::error!("Error updating folder sort type");
                 return Err(AppError::new(
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    "Server Error",
+                    "Error updating folder sort type",
                 ));
             }
         }
@@ -208,8 +202,7 @@ impl File {
 
     pub async fn delete_file(id: i32, user_id: i32, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let rows = client
@@ -220,10 +213,9 @@ impl File {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error deleting file");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error deleting file",
             ));
         }
 
@@ -237,8 +229,7 @@ impl File {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client
@@ -249,10 +240,9 @@ impl File {
             .await?;
 
         if row == 0 {
-            tracing::error!("Error updating file name");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error updating file name",
             ));
         }
 

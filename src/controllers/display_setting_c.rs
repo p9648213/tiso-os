@@ -115,8 +115,7 @@ pub async fn upload_background_picture(
     let mut file_bytes = Bytes::new();
 
     while let Some(field) = multipart.next_field().await.map_err(|err| {
-        tracing::error!("Error while reading multipart field: {}", err);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Error while reading multipart field: {}", err))
     })? {
         content_type = field
             .content_type()
@@ -124,28 +123,24 @@ pub async fn upload_background_picture(
             .unwrap_or_default();
 
         if !content_type.starts_with("image/") {
-            tracing::error!("Invalid content type: {}", content_type);
             return Err(AppError::new(
                 StatusCode::BAD_REQUEST,
-                "Invalid content type",
+                &format!("Invalid content type: {}", content_type),
             ));
         }
 
         file_bytes = field.bytes().await.map_err(|err| {
-            tracing::error!("Error while reading multipart field: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Error while reading multipart field: {}", err))
         })?;
 
         if file_bytes.len() > MAX_BACKGROUND_PICTURE_SIZE {
-            tracing::error!("File size is too large: {:?}", file_bytes);
             return Err(AppError::new(
                 StatusCode::BAD_REQUEST,
-                "File size is too large",
+                &format!("File size is too large: {:?}", file_bytes),
             ));
         }
 
         if file_bytes.is_empty() {
-            tracing::error!("File is empty");
             return Err(AppError::new(StatusCode::BAD_REQUEST, "File is empty"));
         }
 

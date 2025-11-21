@@ -56,8 +56,10 @@ pub async fn get_web_builder_window(
     let data = first_builder.web_builder.data.as_ref().unwrap();
 
     let dom_tree: DomTree = DomTree::deserialize(data).map_err(|err| {
-        tracing::error!("Could not parse dom tree: {}", err);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            &format!("Could not parse dom tree: {}", err),
+        )
     })?;
 
     let web_builder_id = first_builder.web_builder.id.unwrap();
@@ -327,8 +329,10 @@ pub async fn add_section(
         WebBuilder::insert_nodes_to_body(builder_id, user_id, nodes, root_node_ids, &pool).await?;
 
     let dom_tree = DomTree::deserialize(web_builder.data.unwrap()).map_err(|err| {
-        tracing::error!("Could not parse dom tree: {}", err);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            &format!("Could not parse dom tree: {}", err),
+        )
     })?;
 
     Ok(render_web_builder_review(&dom_tree, ReviewMode::None))
@@ -346,8 +350,10 @@ pub async fn get_web_builder_review(
 
     let dom_tree: DomTree = DomTree::deserialize(web_builder_window.web_builder.data.unwrap())
         .map_err(|err| {
-            tracing::error!("Could not parse dom tree: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Could not parse dom tree: {}", err),
+            )
         })?;
 
     Ok(Html(render_web_builder_review(
@@ -368,15 +374,19 @@ pub async fn download_website(
 
     let dom_tree: DomTree = DomTree::deserialize(web_builder_window.web_builder.data.unwrap())
         .map_err(|err| {
-            tracing::error!("Could not parse dom tree: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Could not parse dom tree: {}", err),
+            )
         })?;
 
     let html = render_web_builder_review(&dom_tree, ReviewMode::Download);
 
     let temp_dir = TempDir::new().map_err(|err| {
-        tracing::error!("Could not create temp directory: {}", err);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            &format!("Could not create temp directory: {}", err),
+        )
     })?;
 
     let temp_path = temp_dir.path();
@@ -384,13 +394,17 @@ pub async fn download_website(
     let css_path = temp_path.join("styles.css");
 
     fs::write(&html_path, &html).await.map_err(|err| {
-        tracing::error!("Could not write HTML file: {}", err);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            &format!("Could not write HTML file: {}", err),
+        )
     })?;
 
     let project_dir = env::current_dir().map_err(|err| {
-        tracing::error!("Could not get current directory: {}", err);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            &format!("Could not get current directory: {}", err),
+        )
     })?;
 
     let mut child = Command::new("npx")
@@ -407,8 +421,10 @@ pub async fn download_website(
         .stderr(std::process::Stdio::piped())
         .spawn()
         .map_err(|err| {
-            tracing::error!("Could not spawn Tailwind CLI: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Could not spawn Tailwind CLI: {}", err),
+            )
         })?;
 
     if let Some(mut stdin) = child.stdin.take() {
@@ -416,31 +432,33 @@ pub async fn download_website(
         stdin
             .write_all(b"@import \"tailwindcss\";\n")
             .map_err(|err| {
-                tracing::error!("Could not write to Tailwind CLI stdin: {}", err);
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+                AppError::new(
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    &format!("Could not write to Tailwind CLI stdin: {}", err),
+                )
             })?;
     }
 
     let output = child.wait_with_output().map_err(|err| {
-        tracing::error!("Could not wait for Tailwind CLI: {}", err);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            &format!("Could not wait for Tailwind CLI: {}", err),
+        )
     })?;
 
     if !output.status.success() {
-        tracing::error!(
-            "Tailwind CLI failed: stderr={}, stdout={}",
-            String::from_utf8_lossy(&output.stderr),
-            String::from_utf8_lossy(&output.stdout)
-        );
         return Err(AppError::new(
             StatusCode::INTERNAL_SERVER_ERROR,
-            "CSS generation failed",
+            &format!(
+                "Tailwind CLI failed: stderr={}, stdout={}",
+                String::from_utf8_lossy(&output.stderr),
+                String::from_utf8_lossy(&output.stdout)
+            ),
         ));
     }
 
     let css = fs::read_to_string(&css_path).await.map_err(|err| {
-        tracing::error!("Could not read generated CSS: {}", err);
-        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not read generated CSS: {}", err))
     })?;
 
     let mut zip_buffer = Vec::new();
@@ -452,28 +470,23 @@ pub async fn download_website(
             .unix_permissions(0o755);
 
         zip.start_file("index.html", options).map_err(|err| {
-            tracing::error!("Could not create HTML file in ZIP: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not create HTML file in ZIP: {}", err))
         })?;
 
         zip.write_all(html.as_bytes()).map_err(|err| {
-            tracing::error!("Could not write HTML to ZIP: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not write HTML to ZIP: {}", err))
         })?;
 
         zip.start_file("styles.css", options).map_err(|err| {
-            tracing::error!("Could not create CSS file in ZIP: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not create CSS file in ZIP: {}", err))
         })?;
 
         zip.write_all(css.as_bytes()).map_err(|err| {
-            tracing::error!("Could not write CSS to ZIP: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not write CSS to ZIP: {}", err))
         })?;
 
         zip.finish().map_err(|err| {
-            tracing::error!("Could not finalize ZIP: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not finalize ZIP: {}", err))
         })?;
     }
 
@@ -491,8 +504,7 @@ pub async fn download_website(
             builder_id
         ))
         .map_err(|err| {
-            tracing::error!("Invalid header value: {}", err);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Invalid header value: {}", err))
         })?,
     );
 

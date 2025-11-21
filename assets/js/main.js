@@ -1,3 +1,5 @@
+import { MessageBox } from "./message_box.js"
+
 htmx.config.defaultSettleDelay = 0;
 htmx.config.getCacheBusterParam = true;
 htmx.config.selfRequestsOnly = true;
@@ -12,8 +14,7 @@ window.addEventListener("htmx:afterRequest", function (event) {
   document.body.style.cursor = "auto";
 
   if (event?.detail?.failed && event?.detail?.xhr?.responseText) {
-    // handler error
-    console.error(event.detail.xhr.responseText);
+    MessageBox.error("Error", event?.detail?.xhr?.responseText);
   }
 });
 

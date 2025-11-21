@@ -38,12 +38,10 @@ where
         params: &[&(dyn ToSql + Sync)],
     ) -> Result<Vec<Row>, AppError> {
         let stmt = self.prepare(query).await.map_err(|e| {
-            tracing::error!("Prepare Error: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Prepare Error: {:?}", e))
         })?;
         self.query(&stmt, params).await.map_err(|e| {
-            tracing::error!("query error: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("query Error: {:?}", e))
         })
     }
 
@@ -53,12 +51,10 @@ where
         params: &[&(dyn ToSql + Sync)],
     ) -> Result<Row, AppError> {
         let stmt = self.prepare(query).await.map_err(|e| {
-            tracing::error!("Prepare Error: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Prepare Error: {:?}", e))
         })?;
         self.query_one(&stmt, params).await.map_err(|e| {
-            tracing::error!("query_one error: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("query_one Error: {:?}", e))
         })
     }
 
@@ -68,23 +64,19 @@ where
         params: &[&(dyn ToSql + Sync)],
     ) -> Result<Option<Row>, AppError> {
         let stmt = self.prepare(query).await.map_err(|e| {
-            tracing::error!("Prepare Error: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Prepare Error: {:?}", e))
         })?;
         self.query_opt(&stmt, params).await.map_err(|e| {
-            tracing::error!("query_opt error: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("query_opt Error: {:?}", e))
         })
     }
 
     async fn execute(&self, query: &str, params: &[&(dyn ToSql + Sync)]) -> Result<u64, AppError> {
         let stmt = self.prepare(query).await.map_err(|e| {
-            tracing::error!("Prepare Error: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Prepare Error: {:?}", e))
         })?;
         self.execute(&stmt, params).await.map_err(|e| {
-            tracing::error!("Execute Error: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("execute Error: {:?}", e))
         })
     }
 }

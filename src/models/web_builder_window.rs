@@ -38,8 +38,7 @@ impl WebBuilderWindow {
         pool: &Pool,
     ) -> Result<Vec<WebBuilderWindow>, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let mut columns = vec![];
@@ -74,8 +73,7 @@ impl WebBuilderWindow {
         pool: &Pool,
     ) -> Result<WebBuilderWindow, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let mut columns = vec![];
@@ -109,8 +107,7 @@ impl WebBuilderWindow {
         pool: &Pool,
     ) -> Result<Option<Node>, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client
@@ -124,8 +121,7 @@ impl WebBuilderWindow {
 
         if let Some(node) = node {
             let node: Node = serde_json::from_value(node).map_err(|err| {
-                tracing::error!("Could not parse node: {}", err);
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not parse node: {}", err))
             })?;
 
             Ok(Some(node))

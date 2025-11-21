@@ -72,8 +72,7 @@ impl WebBuilder {
 
     pub async fn create_web_builder(file_id: i32, name: &str, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let rows = client
@@ -84,10 +83,9 @@ impl WebBuilder {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error creating web builder");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error creating web builder",
             ));
         }
 
@@ -103,13 +101,11 @@ impl WebBuilder {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let node_json = serde_json::to_value(&update_node).map_err(|e| {
-            tracing::error!("Failed to serialize node: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to serialize node: {:?}", e))
         })?;
 
         let rows = client
@@ -145,10 +141,9 @@ impl WebBuilder {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error insert node");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error insert node",
             ));
         }
 
@@ -163,18 +158,15 @@ impl WebBuilder {
         pool: &Pool,
     ) -> Result<WebBuilder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let nodes_json = serde_json::to_value(&insert_nodes).map_err(|e| {
-            tracing::error!("Failed to serialize nodes: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to serialize nodes: {:?}", e))
         })?;
 
         let root_node_ids_json = serde_json::to_value(&root_node_ids).map_err(|e| {
-            tracing::error!("Failed to serialize root_node_ids: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to serialize root_node_ids: {:?}", e))
         })?;
 
         let row = client
@@ -205,13 +197,11 @@ impl WebBuilder {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let node_json = serde_json::to_value(update_node).map_err(|e| {
-            tracing::error!("Failed to serialize node: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Serialization error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to serialize node: {:?}", e))
         })?;
 
         let rows = client
@@ -236,10 +226,9 @@ impl WebBuilder {
             .await?;
 
         if rows == 0 {
-            tracing::error!("Error edit node");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "Error edit node",
             ));
         }
 
@@ -253,8 +242,7 @@ impl WebBuilder {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            tracing::error!("Couldn't get postgres client: {:?}", error);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
         let row = client
@@ -268,8 +256,7 @@ impl WebBuilder {
             )
             .await
             .map_err(|e| {
-                tracing::error!("Failed to fetch builder data: {:?}", e);
-                AppError::new(StatusCode::NOT_FOUND, "Builder not found")
+                AppError::new(StatusCode::NOT_FOUND, &format!("Failed to fetch builder data: {:?}", e))
             })?;
 
         let data: Value = row.get("data");
@@ -278,8 +265,7 @@ impl WebBuilder {
             .get("nodes")
             .and_then(|n| n.as_object())
             .ok_or_else(|| {
-                tracing::error!("Invalid nodes structure");
-                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Invalid data structure")
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Invalid nodes structure")
             })?;
 
         if !nodes.contains_key(&delete_node_id) {
@@ -325,15 +311,13 @@ impl WebBuilder {
         )
         .await
         .map_err(|e| {
-            tracing::error!("Failed to delete node: {:?}", e);
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server Error")
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to delete node: {:?}", e))
         })?;
 
         if rows == 0 {
-            tracing::error!("No rows updated when deleting node");
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Server Error",
+                "No rows updated when deleting node",
             ));
         }
 
