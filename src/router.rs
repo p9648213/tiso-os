@@ -47,7 +47,7 @@ use tower_http::{
 };
 
 async fn fallback() -> impl IntoResponse {
-    (StatusCode::NOT_FOUND, "Not Found")
+    (StatusCode::NOT_FOUND, "Route Not Found")
 }
 
 

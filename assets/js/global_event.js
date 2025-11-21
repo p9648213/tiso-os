@@ -1,5 +1,5 @@
 export function setupGlobalEvents() {
-  window.addEventListener("openFile", function (event) {
+  window.addEventListener("openFile", function (event) {    
     const img = event.detail.image;
     const windowId = event.detail.window_id;
     const openNewTask = event.detail.open_new_task;

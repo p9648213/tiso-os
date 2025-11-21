@@ -24,11 +24,18 @@ export function setupWebBuilderToolBar(builderId) {
   close.addEventListener("click", function () {
     document.getElementById(`web-builder-window-${builderId}`).remove();
     document.getElementById(`taskbar-web-builder-window-${builderId}`).remove();
+
+    currentSelectElement = null;
+    currentSettingElement = null;
+    sectionType = "Header";
+    templateNumber = 1;
+
     webBuilderCleanUpEvent.forEach((event) => {
       if (event.id === builderId) {
         document.removeEventListener(event.event, event.handler);
       }
     });
+
     webBuilderCleanUpEvent = webBuilderCleanUpEvent.filter(
       (event) => event.id !== builderId
     );
@@ -42,8 +49,89 @@ export function setupAddSectionDialog(builderId) {
   const builderAddSectionBtn = document.getElementById(
     "builder-add-section-btn"
   );
+
+  openSectionDialogBtn.addEventListener("click", function () {
+    sectionDialog.showModal();
+  });
+
+  closeSectionDialogBtn.addEventListener("click", function () {
+    sectionDialog.close();
+  });
+
+  builderAddSectionBtn.addEventListener("click", function () {
+    htmx
+      .ajax(
+        "POST",
+        `/create/web_builder/${builderId}/section/add/${sectionType}/${templateNumber}`,
+        {
+          target: `#builder-review`,
+          swap: "outerHTML",
+        }
+      )
+      .then(() => {
+        sectionDialog.close();
+      });
+  });
+}
+
+export function setupWebBuilderWebTreeElement() {
+  const webTree = document.getElementById(`builder-webtree`);
+  const webReview = document.getElementById(`builder-review`);
+
+  webTree.addEventListener("click", function (event) {
+    const dataId = event.target.getAttribute("data-id");
+
+    if (dataId) {
+      if (currentSettingElement) {
+        currentSettingElement.style.fontWeight = "inherit";
+      }
+      event.target.style.fontWeight = "bold";
+      currentSettingElement = event.target;
+
+      const reviewElement = webReview.querySelector(`[data-id="${dataId}"]`);
+
+      if (reviewElement) {
+        if (currentSelectElement) {
+          currentSelectElement.classList.remove("outline-highlight");
+        }
+        reviewElement.classList.add("outline-highlight");
+        currentSelectElement = reviewElement;
+      }
+    }
+  });
+
+  webReview.addEventListener("click", function (event) {
+    const dataId = event.target.getAttribute("data-id");
+
+    if (dataId) {
+      if (currentSelectElement) {
+        currentSelectElement.classList.remove("outline-highlight");
+      }
+      event.target.classList.add("outline-highlight");
+      currentSelectElement = event.target;
+
+      const reviewElement = webTree.querySelector(`[data-id="${dataId}"]`);
+
+      if (reviewElement) {
+        if (currentSettingElement) {
+          currentSettingElement.style.fontWeight = "inherit";
+        }
+        reviewElement.style.fontWeight = "bold";
+        currentSettingElement = reviewElement;
+      }
+    }
+  });
+}
+
+export function setupWebBuilderTreeActions(builderId) {
   const viewWebsiteBtn = document.getElementById("view-website-btn");
   const downloadWebsiteBtn = document.getElementById("download-website-btn");
+
+  function handleKeyDown(event) {
+    if (event.key === "Delete" && currentSelectElement) {
+      console.log(currentSelectElement.getAttribute("data-id"));
+    }
+  }
 
   downloadWebsiteBtn.addEventListener("click", async function () {
     try {
@@ -83,78 +171,11 @@ export function setupAddSectionDialog(builderId) {
     );
   });
 
-  openSectionDialogBtn.addEventListener("click", function () {
-    sectionDialog.showModal();
+  webBuilderCleanUpEvent.push({
+    event: "keydown",
+    handler: handleKeyDown,
+    id: builderId,
   });
 
-  closeSectionDialogBtn.addEventListener("click", function () {
-    sectionDialog.close();
-  });
-
-  builderAddSectionBtn.addEventListener("click", function () {
-    htmx
-      .ajax(
-        "POST",
-        `/create/web_builder/${builderId}/section/add/${sectionType}/${templateNumber}`,
-        {
-          target: `#builder-review`,
-          swap: "outerHTML",
-        }
-      )
-      .then(() => {
-        sectionDialog.close();
-      });
-  });
-}
-
-export function setupWebBuilderWebTree() {
-  const webTree = document.getElementById(`builder-webtree`);
-  const webReview = document.getElementById(`builder-review`);
-
-  webTree.addEventListener("click", function (event) {
-    const dataId = event.target.getAttribute("data-id");
-
-    if (dataId) {
-      if(currentSettingElement) {
-        currentSettingElement.style.fontWeight = "inherit";
-      }
-      event.target.style.fontWeight = "bold";
-      currentSettingElement = event.target;
-
-      const reviewElement = webReview.querySelector(`[data-id="${dataId}"]`);
-
-      if (reviewElement) {
-        if (currentSelectElement) {
-          currentSelectElement.classList.remove("outline-highlight");
-        }
-        reviewElement.classList.add("outline-highlight");
-        currentSelectElement = reviewElement;
-      }
-    }
-  });
-
-  webReview.addEventListener("click", function (event) {
-    const dataId = event.target.getAttribute("data-id");
-
-    if (dataId) {
-      if(currentSelectElement) {
-        currentSelectElement.classList.remove("outline-highlight");
-      }
-      event.target.classList.add("outline-highlight");
-      currentSelectElement = event.target;
-
-      const reviewElement = webTree.querySelector(`[data-id="${dataId}"]`);
-
-      console.log(reviewElement);
-      
-
-      if (reviewElement) {
-        if (currentSettingElement) {
-          currentSettingElement.style.fontWeight = "inherit";
-        }
-        reviewElement.style.fontWeight = "bold";
-        currentSettingElement = reviewElement;
-      }
-    }
-  });
+  document.addEventListener("keydown", handleKeyDown);
 }
