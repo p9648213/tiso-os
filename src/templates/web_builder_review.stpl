@@ -1,7 +1,7 @@
 <% if review_mode == ReviewMode::None { %>
   <script type="module">
     import { setupWebBuilderWebReviewElement } from "/assets/js/web_builder.js";
-    setupWebBuilderWebReviewElement();
+    setupWebBuilderWebReviewElement("<%= web_builder_id %>");
   </script>
 <% } %>
 

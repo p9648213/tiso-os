@@ -1,11 +1,11 @@
 <script type="module">
   import { setupWebBuilderWebTreeElement } from "/assets/js/web_builder.js";
-  setupWebBuilderWebTreeElement();
+  setupWebBuilderWebTreeElement("<%= web_builder_id %>");
 </script>
 
 <div 
   id="builder-webtree" 
-  class="bg-white px-3 py-2 h-full overflow-auto select-none"
+  class="bg-white px-3 py-2 h-full overflow-auto"
   <% if swap_oob != "" { %>
     hx-swap-oob=<%= swap_oob %> 
   <% } %>

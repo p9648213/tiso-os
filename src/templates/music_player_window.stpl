@@ -15,7 +15,7 @@
 >
   <div
     id="music-player-header"
-    class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none"
+    class="flex justify-between items-center bg-zinc-900 px-3 h-12"
   >
     <div class="flex items-center gap-2">
       <img

@@ -17,7 +17,7 @@
   class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
   style="top:<%= top %>px; left:<%= left %>px; width:<%= width %>px; height:<%= height %>px;"
 >
-  <div id="display-setting-header" class="flex justify-between items-center bg-zinc-900 px-3 h-12 select-none">
+  <div id="display-setting-header" class="flex justify-between items-center bg-zinc-900 px-3 h-12">
     <div class="flex items-center gap-2">
       <img
         class="w-6 h-6"

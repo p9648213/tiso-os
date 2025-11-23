@@ -1,6 +1,6 @@
 <div id="builder_select_section">
   <h3 class="mb-4 font-semibold text-gray-700 text-lg">Select Section Type</h3>
-  <div class="gap-4 grid grid-cols-2 select-none">
+  <div class="gap-4 grid grid-cols-2">
     <% for section in SECTIONS { %> 
       <% if section == selected_section { %>
         <div

@@ -117,13 +117,7 @@ pub async fn get_node(
 
     let node = WebBuilderWindow::get_web_builder_node(builder_id, user_id, &node_id, &pool).await?;
 
-    match node {
-        Some(node) => {
-            println!("{:?}", node);
-            Ok(())
-        }
-        None => Err(AppError::new(StatusCode::NOT_FOUND, "Node not found")),
-    }
+    Ok(Json(node))
 }
 
 pub async fn insert_node(
@@ -338,8 +332,8 @@ pub async fn add_section(
 
     Ok(format!(
         "{}{}",
-        render_web_builder_review(&dom_tree, ReviewMode::None),
-        render_web_builder_web_tree(&dom_tree, "outerHTML")
+        render_web_builder_review(&dom_tree, ReviewMode::None, builder_id),
+        render_web_builder_web_tree(&dom_tree, "outerHTML", builder_id)
     ))
 }
 
@@ -364,6 +358,7 @@ pub async fn get_web_builder_review(
     Ok(Html(render_web_builder_review(
         &dom_tree,
         ReviewMode::Preview,
+        builder_id,
     )))
 }
 
@@ -385,7 +380,7 @@ pub async fn download_website(
             )
         })?;
 
-    let html = render_web_builder_review(&dom_tree, ReviewMode::Download);
+    let html = render_web_builder_review(&dom_tree, ReviewMode::Download, builder_id);
 
     let temp_dir = TempDir::new().map_err(|err| {
         AppError::new(

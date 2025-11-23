@@ -15,6 +15,8 @@ pub fn render_folder(id: i32, name: Option<String>, id_prefix: Option<String>) -
         None => format!("folder-{id}"),
     };
 
+    println!("id: {id}");
+
     Folder {
         id: &id,
         name: folder_name,

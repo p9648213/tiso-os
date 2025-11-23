@@ -1,8 +1,19 @@
+/**
+ * @typedef {Object} WebBuilderNode
+ * @property {string} tag
+ * @property {string} text
+ * @property {Array<string>} children
+ * @property {Object.<string, string>} attributes
+ */
+
 import { MessageBox } from "./message_box.js";
 
 let webBuilderCleanUpEvent = [];
 
+/** @type {HTMLElement | null} */
 let currentSelectElement = null;
+
+/** @type {HTMLElement | null} */
 let currentSettingElement = null;
 
 let sectionType = "Header";
@@ -76,7 +87,7 @@ export function setupAddSectionDialog(builderId) {
   });
 }
 
-export function setupWebBuilderWebTreeElement() {
+export function setupWebBuilderWebTreeElement(builderId) {
   const webTree = document.getElementById(`builder-webtree`);
   const webReview = document.getElementById(`builder-review`);
 
@@ -98,13 +109,13 @@ export function setupWebBuilderWebTreeElement() {
         }
         reviewElement.classList.add("outline-highlight");
         currentSelectElement = reviewElement;
-        setupWebBuilderEdit()
+        setupWebBuilderEdit(builderId);
       }
     }
   });
 }
 
-export function setupWebBuilderWebReviewElement() {
+export function setupWebBuilderWebReviewElement(builderId) {
   const webTree = document.getElementById(`builder-webtree`);
   const webReview = document.getElementById(`builder-review`);
 
@@ -126,7 +137,7 @@ export function setupWebBuilderWebReviewElement() {
         }
         reviewElement.style.fontWeight = "bold";
         currentSettingElement = reviewElement;
-        setupWebBuilderEdit()
+        setupWebBuilderEdit(builderId);
       }
     }
   });
@@ -138,6 +149,8 @@ export function setupWebBuilderTreeActions(builderId) {
 
   downloadWebsiteBtn.addEventListener("click", async function () {
     try {
+      document.body.style.cursor = "wait";
+
       const response = await fetch(
         `/create/web_builder/${builderId}/download`,
         {
@@ -150,6 +163,8 @@ export function setupWebBuilderTreeActions(builderId) {
       );
 
       if (!response.ok) {
+        document.body.style.cursor = "auto";
+
         return MessageBox.error(
           "Error",
           "Failed to download website: " + (await response.text())
@@ -168,6 +183,8 @@ export function setupWebBuilderTreeActions(builderId) {
     } catch (error) {
       MessageBox.error("Error", "Failed to download website: " + error);
     }
+
+    document.body.style.cursor = "auto";
   });
 
   viewWebsiteBtn.addEventListener("click", function () {
@@ -177,9 +194,29 @@ export function setupWebBuilderTreeActions(builderId) {
   });
 }
 
-export function setupWebBuilderEdit() {
+export async function setupWebBuilderEdit(builderId) {
   if (currentSelectElement) {
-    console.log(currentSelectElement);
+    const nodeId = currentSelectElement.getAttribute("data-id");
+    
+    document.body.style.cursor = "wait";
+
+    const response = await fetch(
+      `/read/web_builder/${builderId}/node/${nodeId}`
+    );
+
+    if (!response.ok) {
+      return MessageBox.error(
+        "Error",
+        "Failed to fetch node: " + (await response.text())
+      );
+    }
+
+    /** @type {WebBuilderNode} */
+    const node = await response.json();
+
+    console.log(node);
+
+    document.body.style.cursor = "auto";
   }
 }
 
@@ -193,6 +230,8 @@ export function setupWebBuilderKeyboardEvent(builderId) {
         `Are you sure you want to delete this node: ${nodeId} ?`
       ).then(async (result) => {
         if (result) {
+          document.body.style.cursor = "wait";
+
           const response = await fetch(
             `/delete/web_builder/${builderId}/node/delete/${nodeId}`,
             {
@@ -203,6 +242,8 @@ export function setupWebBuilderKeyboardEvent(builderId) {
               },
             }
           );
+
+          document.body.style.cursor = "auto";
 
           if (!response.ok) {
             return MessageBox.error(

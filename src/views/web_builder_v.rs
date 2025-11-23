@@ -68,12 +68,14 @@ pub fn render_web_builder_window(
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_setting.stpl")]
 struct WebBuilderSetting<'a> {
+    web_builder_id: i32,
     nodes: &'a HashMap<String, Node>,
     body_node: &'a Node
 }
 
-pub fn render_web_builder_setting(data: &DomTree) -> String {
+pub fn render_web_builder_setting(data: &DomTree, web_builder_id: i32) -> String {
     WebBuilderSetting {
+        web_builder_id,
         nodes: &data.nodes,
         body_node: data.nodes.get(&data.body_node).unwrap()
     }.render_once().unwrap()
@@ -82,13 +84,15 @@ pub fn render_web_builder_setting(data: &DomTree) -> String {
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_web_tree.stpl")]
 struct WebBuilderWebTree<'a> {
+    web_builder_id: i32,
     nodes: &'a HashMap<String, Node>,
     body_node: &'a Node,
     swap_oob: &'a str,
 }
 
-pub fn render_web_builder_web_tree(data: &DomTree, swap_oob: &str) -> String {
+pub fn render_web_builder_web_tree(data: &DomTree, swap_oob: &str, web_builder_id: i32) -> String {
     WebBuilderWebTree {
+        web_builder_id,
         nodes: &data.nodes,
         body_node: data.nodes.get(&data.body_node).unwrap(),
         swap_oob
@@ -111,13 +115,15 @@ pub fn render_web_builder_web_tree_node(node: &Node, nodes: &HashMap<String, Nod
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_review.stpl")]
 struct WebBuilderReview<'a> {
+    web_builder_id: i32,
     nodes: &'a HashMap<String, Node>,
     body_node: &'a Node,
     review_mode: ReviewMode,
 }
 
-pub fn render_web_builder_review(data: &DomTree, review_mode: ReviewMode) -> String {
+pub fn render_web_builder_review(data: &DomTree, review_mode: ReviewMode, web_builder_id: i32) -> String {
     WebBuilderReview {
+        web_builder_id,
         nodes: &data.nodes,
         body_node: data.nodes.get(&data.body_node).unwrap(),
         review_mode,

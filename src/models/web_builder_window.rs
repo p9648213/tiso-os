@@ -105,7 +105,7 @@ impl WebBuilderWindow {
         user_id: i32,
         node_id: &str,
         pool: &Pool,
-    ) -> Result<Option<Node>, AppError> {
+    ) -> Result<Node, AppError> {
         let client = pool.get().await.map_err(|error| {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
@@ -120,13 +120,11 @@ impl WebBuilderWindow {
         let node: Option<Value> = row.try_get("node").unwrap_or(None);
 
         if let Some(node) = node {
-            let node: Node = serde_json::from_value(node).map_err(|err| {
+            Ok(serde_json::from_value(node).map_err(|err| {
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Could not parse node: {}", err))
-            })?;
-
-            Ok(Some(node))
+            })?)
         } else {
-            Ok(None)
+            Err(AppError::new(StatusCode::NOT_FOUND, "Node not found"))
         }
     }
 }

@@ -3,9 +3,9 @@
   class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 group-hover/item:bg-blue-900 p-1.5 rounded-xs w-24 h-fit file"
 >
   <img
-    class="w-9 h-9 select-none"
+    class="w-9 h-9"
     src="/assets/images/flappybird/flappy_bird.png"
     draggable="false"
   />
-  <div class="text-white text-sm text-center select-none">Flappy Bird</div>
+  <div class="text-white text-sm text-center">Flappy Bird</div>
 </div>

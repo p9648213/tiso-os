@@ -24,6 +24,7 @@
             <% } else if *item.file_type.as_ref().unwrap() == FileType::FlappyBird { %> 
               <% include!("flappy_bird_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Txt { %> 
+               <% let id = format!("file-{}", id); %>
               <% include!("txt_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::ThisPC { %> 
               <% include!("thispc_file.stpl"); %> 
@@ -33,6 +34,7 @@
               <% include!("web_builder_file.stpl"); %> 
             <% } %> 
           <% } else if *item.item_type.as_ref().unwrap() == ItemType::Folder { %> 
+            <% let id = format!("folder-{}", id); %>
             <% include!("folder.stpl"); %> 
           <% } %> 
         <% } %>
@@ -59,6 +61,7 @@
             <% } else if *item.file_type.as_ref().unwrap() == FileType::FlappyBird { %> 
               <% include!("flappy_bird_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Txt { %> 
+               <% let id = format!("file-{}", id); %>
               <% include!("txt_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::ThisPC { %> 
               <% include!("thispc_file.stpl"); %> 
@@ -68,6 +71,7 @@
               <% include!("web_builder_file.stpl"); %> 
             <% } %> 
           <% } else if *item.item_type.as_ref().unwrap() == ItemType::Folder { %> 
+            <% let id = format!("folder-{}", id); %>
             <% include!("folder.stpl"); %> 
           <% } %> 
         <% } %>

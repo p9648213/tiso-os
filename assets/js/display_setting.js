@@ -39,7 +39,7 @@ export function setupBackgroundColorList() {
 
   backgroundColorList.addEventListener("click", (event) => {
     if (event.target.dataset?.color) {
-      backgroundColorList.childNodes.forEach((node) => {
+      backgroundColorList.children.forEach((node) => {
         node.style.outline = "none";
       });
       event.target.style.outline = "3px solid #155dfc";
@@ -58,7 +58,7 @@ export function setupBackgroundColorList() {
           const backgroundContainer = document.getElementById(
             "background-container"
           );
-          backgroundContainer.childNodes[0].style.background =
+          backgroundContainer.children[0].style.background =
             event.target.dataset.color;
         });
     }

@@ -102,13 +102,13 @@ export function setupScreenContextMenu() {
     contextMenu.style.left = `${event.x}px`;
     contextMenu.style.top = `${event.y}px`;
 
-    const desktopItem = event.target.closest('[id^="file-"], [id^="folder-"]');
+    const desktopItem = event.target.closest('[id^="file-"], [id^="folder-"]');    
 
     if (desktopItem) {
       window.selectedItem = desktopItem;
-      desktopItem.childNodes[0].classList.add("bg-blue-900");
+      desktopItem.children[0].classList.add("bg-blue-900");
 
-      for (const contextItem of CONTEXT_MENU_ITEM) {
+      for (const contextItem of CONTEXT_MENU_ITEM) {        
         let menuForm = document.createElement("form");
         let menuItem = document.createElement("div");
 
@@ -198,9 +198,10 @@ export function setupScreenContextMenu() {
         menuForm.style.cursor = "pointer";
         menuForm.setAttribute("id", id);
 
-        if (itemsType === "txt") {
-          menuForm.addEventListener("mouseup", () => {
+        if (itemsType === "txt") {          
+          menuForm.addEventListener("mouseup", () => {         
             let targetId = checkEmptySpace();
+            
             if (targetId) {
               htmx.ajax("POST", `/create/txt/${desktopId}/${targetId}`, {
                 target: `#${targetId}`,
@@ -270,9 +271,9 @@ export function setupScreenItemSingleSelect() {
         removeSelectedItem();
       }
 
-      if (window.editMode === false) {
+      if (window.editMode === false) {      
         window.selectedItem = checkDesktopItem;
-        checkDesktopItem.childNodes[0].classList.add("bg-blue-900");
+        checkDesktopItem.children[0].classList.add("bg-blue-900");
       }
     } else {
       removeSelectedItem();
@@ -286,7 +287,7 @@ export function setupScreenItemDrag() {
   let draggedItem = null;
 
   main.addEventListener("dragstart", (event) => {
-    if (event.target.innerHTML && !window.editMode) {
+    if (event.target.innerHTML.trim() && !window.editMode) {
       draggedItem = event.target;
     } else {
       draggedItem = null;
@@ -305,15 +306,17 @@ export function setupScreenItemDrag() {
       const dragElement = document.getElementById(draggedItem.id);
       const dropElement = document.getElementById(event.target.id);
 
-      if (dragElement.innerHTML && !dropElement.innerHTML) {
+      if (dragElement.innerHTML.trim() && !dropElement.innerHTML.trim()) {        
         const dropPosition = dropElement.id;
-        const dragChild = dragElement.childNodes[0];
+        const dragChild = dragElement.children[0];
         const dragItemIdSplit = dragChild.id.split("-");
 
         const itemType = dragItemIdSplit[0];
         const itemId = dragItemIdSplit[1];
 
         let isRoot = dragChild.getAttribute("data-folder-type") === "Root";
+
+        document.body.style.cursor = "wait";
 
         const response = await fetch(
           `/update/${
@@ -329,7 +332,11 @@ export function setupScreenItemDrag() {
 
         if (response.ok) {
           dropElement.appendChild(dragChild);
+        } else {
+          MessageBox.error("Error", "Failed to move item: " + (await response.text()));
         }
+
+        document.body.style.cursor = "auto";
       }
     }
   });
@@ -388,8 +395,8 @@ function checkEmptySpace() {
   if (totalRows && totalCols) {
     for (let i = 0; i < totalCols; i++) {
       for (let j = 0; j < totalRows; j++) {
-        const item = document.getElementById(`item-${j}-${i}`);
-        if (item && item.innerHTML == "") {
+        const item = document.getElementById(`item-${j}-${i}`);        
+        if (item && item.innerHTML.trim() == "") {
           return `item-${j}-${i}`;
         }
       }
@@ -401,7 +408,7 @@ function checkEmptySpace() {
 
 function removeSelectedItem() {
   if (window.selectedItem) {
-    window.selectedItem.childNodes[0].classList.remove("bg-blue-900");
+    window.selectedItem.children[0].classList.remove("bg-blue-900");
     window.selectedItem = null;
   }
 }

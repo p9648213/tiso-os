@@ -13,7 +13,7 @@
 >
   <div
     id="flappy-toolbar"
-    class="flex justify-between items-center bg-zinc-950 px-3 h-12 select-none"
+    class="flex justify-between items-center bg-zinc-950 px-3 h-12"
   >
     <div class="flex items-center gap-2">
       <img

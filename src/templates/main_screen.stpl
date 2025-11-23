@@ -10,7 +10,7 @@
     <script src="/assets/js/message_box.js" type="module" defer></script>
     <title>TisoOS</title>
   </head>
-  <body class="relative overflow-hidden">
+  <body class="relative overflow-hidden select-none">
     <% include!("screen_section.stpl"); %> 
     <% include!("screen_background.stpl"); %>
   </body>
