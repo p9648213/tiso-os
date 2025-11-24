@@ -1,11 +1,3 @@
-/**
- * @typedef {Object} WebBuilderNode
- * @property {string} tag
- * @property {string} text
- * @property {Array<string>} children
- * @property {Object.<string, string>} attributes
- */
-
 import { MessageBox } from "./message_box.js";
 
 let webBuilderCleanUpEvent = [];
@@ -197,26 +189,11 @@ export function setupWebBuilderTreeActions(builderId) {
 export async function setupWebBuilderEdit(builderId) {
   if (currentSelectElement) {
     const nodeId = currentSelectElement.getAttribute("data-id");
-    
-    document.body.style.cursor = "wait";
 
-    const response = await fetch(
-      `/read/web_builder/${builderId}/node/${nodeId}`
-    );
-
-    if (!response.ok) {
-      return MessageBox.error(
-        "Error",
-        "Failed to fetch node: " + (await response.text())
-      );
-    }
-
-    /** @type {WebBuilderNode} */
-    const node = await response.json();
-
-    console.log(node);
-
-    document.body.style.cursor = "auto";
+    htmx.ajax("GET", `/read/web_builder/${builderId}/edit_node/${nodeId}`, {
+      target: `#builder-edit`,
+      swap: "outerHTML",
+    });
   }
 }
 

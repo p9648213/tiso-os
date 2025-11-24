@@ -1,0 +1,18 @@
+<div id="builder-edit" class="px-3 py-2 border-zinc-950 border-l w-70 shrink-0 flex flex-col gap-2">
+  <% if node_selected { %>
+    <% if let Some(background) = editable_element.background { %>
+      <div class="flex items-center gap-2">
+        <span>Background: </span>
+        <input type="color" value="<%= background %>"/>
+      </div>
+    <% } %>
+    <% if let Some(text) = editable_element.text { %>
+      <div class="flex items-center gap-2">
+        <span>Text: </span>
+        <input class="border-zinc-800 border pl-2 rounded-sm" type="text" value="<%= text %>"/>
+      </div>
+    <% } %>
+  <% } else { %>
+    No node selected
+  <% } %>
+</div>

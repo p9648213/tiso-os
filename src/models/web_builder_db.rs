@@ -8,7 +8,7 @@ use tokio_postgres::Row;
 
 use crate::{
     models::error::AppError,
-    utilities::{common::collect_descendants, postgres::DbExecutor},
+    utilities::{web_builder_u::collect_descendants, postgres::DbExecutor},
 };
 
 fn default_attributes() -> Value {

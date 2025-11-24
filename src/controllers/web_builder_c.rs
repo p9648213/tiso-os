@@ -14,7 +14,8 @@ use tempfile::TempDir;
 use tokio::fs;
 use zip::{ZipWriter, write::FileOptions};
 
-use crate::views::web_builder_v::render_web_builder_web_tree;
+use crate::utilities::web_builder_u::{extract_hex_background_color, html_to_nodes};
+use crate::views::web_builder_v::{EditableElement, render_web_builder_edit_node, render_web_builder_web_tree};
 use crate::{
     constant::web_builder::{
         CONTACT_TEMPLATE_1, CONTACT_TEMPLATE_2, CONTACT_TEMPLATE_3, CONTACT_TEMPLATE_4,
@@ -28,7 +29,7 @@ use crate::{
         web_builder_db::{DomTree, Node, WebBuilder},
         web_builder_window::WebBuilderWindow,
     },
-    utilities::common::{html_to_nodes, parse_user_id},
+    utilities::common::parse_user_id,
     views::web_builder_v::{
         ReviewMode, render_web_builder_review, render_web_builder_select_contact,
         render_web_builder_select_footer, render_web_builder_select_header,
@@ -108,7 +109,7 @@ pub async fn get_web_builder(
     Ok(())
 }
 
-pub async fn get_node(
+pub async fn get_edit_node(
     Path((builder_id, node_id)): Path<(i32, String)>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
@@ -117,7 +118,17 @@ pub async fn get_node(
 
     let node = WebBuilderWindow::get_web_builder_node(builder_id, user_id, &node_id, &pool).await?;
 
-    Ok(Json(node))
+    let background = node
+        .attributes
+        .get("class")
+        .and_then(|classes| extract_hex_background_color(&classes.to_string()).ok()?);
+
+    let editable_element = EditableElement {
+        background,
+        text: node.text,
+    };
+
+    Ok(render_web_builder_edit_node(editable_element))
 }
 
 pub async fn insert_node(

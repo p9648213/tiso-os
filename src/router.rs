@@ -22,7 +22,7 @@ use crate::{
         taskbar_c::get_taskbar_menu_files,
         txt_c::{create_txt, get_txt_input, get_txt_window},
         web_builder_c::{
-            add_section, delete_node, download_website, edit_node, get_node, get_selected_section, get_selected_template, get_web_builder, get_web_builder_review, get_web_builder_window, insert_node
+            add_section, delete_node, download_website, edit_node, get_edit_node, get_selected_section, get_selected_template, get_web_builder, get_web_builder_review, get_web_builder_window, insert_node
         },
     },
     middlewares::{csrf_mw::csrf_middleware, log_mw::{request_log, response_log}, session_mw::session_middleware},
@@ -167,7 +167,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 "/web_builder/{builder_id}",
                 get(get_web_builder),
             )
-            .route("/web_builder/{builder_id}/node/{node_id}", get(get_node))
+            .route("/web_builder/{builder_id}/edit_node/{node_id}", get(get_edit_node))
             .route("/web_builder/section/{section_type}", get(get_selected_section))
             .route("/web_builder/template/{section_type}/{template_index}", get(get_selected_template))
             .route("/web_builder/view_website/{builder_id}", get(get_web_builder_review))

@@ -14,6 +14,20 @@ pub enum ReviewMode {
     None,
 }
 
+pub struct EditableElement {
+    pub text: Option<String>,
+    pub background: Option<String>,
+}
+
+impl Default for EditableElement {
+    fn default() -> Self {
+        Self {
+            text: None,
+            background: None,
+        }
+    }
+}
+
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_file.stpl")]
 struct WebBuilderFile {
@@ -145,11 +159,16 @@ pub fn render_web_builder_node(node: &Node, nodes: &HashMap<String, Node>, child
 }
 
 #[derive(TemplateSimple)]
-#[template(path = "web_builder_edit.stpl")]
-struct WebBuilderEdit {}
+#[template(path = "web_builder_edit_node.stpl")]
+struct WebBuilderEditNode {
+    node_selected: bool,
+    editable_element: EditableElement,
+}
 
-pub fn render_web_builder_edit() -> String {
-    WebBuilderEdit {}.render_once().unwrap()
+pub fn render_web_builder_edit_node(editable_element: EditableElement) -> String {
+    WebBuilderEditNode { node_selected: true, editable_element }
+        .render_once()
+        .unwrap()
 }
 
 #[derive(TemplateSimple)]
