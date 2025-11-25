@@ -1,17 +1,27 @@
-<div id="builder-edit" class="px-3 py-2 border-zinc-950 border-l w-70 shrink-0 flex flex-col gap-2">
+<script type="module">
+  import { setupWebBuilderEditInput, setupWebBuilderEditButton } from "/assets/js/web_builder.js";
+  setupWebBuilderEditInput("<%= web_builder_id %>");
+  setupWebBuilderEditButton("<%= web_builder_id %>");
+</script>
+
+<div id="builder-edit" class="px-3 py-2 border-zinc-950 border-l w-70 shrink-0 flex flex-col gap-3">
   <% if node_selected { %>
     <% if let Some(background) = editable_element.background { %>
       <div class="flex items-center gap-2">
         <span>Background: </span>
-        <input type="color" value="<%= background %>"/>
+        <input id="builder-edit-background" type="color" value="<%= background %>"/>
       </div>
     <% } %>
     <% if let Some(text) = editable_element.text { %>
       <div class="flex items-center gap-2">
         <span>Text: </span>
-        <input class="border-zinc-800 border pl-2 rounded-sm" type="text" value="<%= text %>"/>
+        <input id="builder-edit-text" class="border-zinc-800 border pl-2 rounded-sm" type="text" value="<%= text %>"/>
       </div>
     <% } %>
+    <div class="flex gap-2 mt-auto">
+      <button id="builder-edit-cancel-btn" class="flex-1 hover:opacity-70 px-6 py-1.5 border border-blue-500 rounded-sm font-medium text-blue-500">Cancel</button>
+      <button id="builder-edit-save-btn" class="flex-1 bg-blue-500 hover:opacity-70 px-6 py-1.5 rounded-sm font-medium text-white">Save</button>
+    </div>
   <% } else { %>
     No node selected
   <% } %>

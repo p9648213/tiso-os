@@ -84,15 +84,17 @@ pub fn render_web_builder_window(
 struct WebBuilderSetting<'a> {
     web_builder_id: i32,
     nodes: &'a HashMap<String, Node>,
-    body_node: &'a Node
+    body_node: &'a Node,
 }
 
 pub fn render_web_builder_setting(data: &DomTree, web_builder_id: i32) -> String {
     WebBuilderSetting {
         web_builder_id,
         nodes: &data.nodes,
-        body_node: data.nodes.get(&data.body_node).unwrap()
-    }.render_once().unwrap()
+        body_node: data.nodes.get(&data.body_node).unwrap(),
+    }
+    .render_once()
+    .unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -109,8 +111,10 @@ pub fn render_web_builder_web_tree(data: &DomTree, swap_oob: &str, web_builder_i
         web_builder_id,
         nodes: &data.nodes,
         body_node: data.nodes.get(&data.body_node).unwrap(),
-        swap_oob
-    }.render_once().unwrap()
+        swap_oob,
+    }
+    .render_once()
+    .unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -118,12 +122,23 @@ pub fn render_web_builder_web_tree(data: &DomTree, swap_oob: &str, web_builder_i
 struct WebBuilderWebTreeNode<'a> {
     node: &'a Node,
     nodes: &'a HashMap<String, Node>,
-    deep : i32,
+    deep: i32,
     child_id: &'a String,
 }
 
-pub fn render_web_builder_web_tree_node(node: &Node, nodes: &HashMap<String, Node>, child_id: String) -> String {
-    WebBuilderWebTreeNode { node, nodes, deep: 0, child_id: &child_id }.render_once().unwrap()
+pub fn render_web_builder_web_tree_node(
+    node: &Node,
+    nodes: &HashMap<String, Node>,
+    child_id: String,
+) -> String {
+    WebBuilderWebTreeNode {
+        node,
+        nodes,
+        deep: 0,
+        child_id: &child_id,
+    }
+    .render_once()
+    .unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -135,7 +150,11 @@ struct WebBuilderReview<'a> {
     review_mode: ReviewMode,
 }
 
-pub fn render_web_builder_review(data: &DomTree, review_mode: ReviewMode, web_builder_id: i32) -> String {
+pub fn render_web_builder_review(
+    data: &DomTree,
+    review_mode: ReviewMode,
+    web_builder_id: i32,
+) -> String {
     WebBuilderReview {
         web_builder_id,
         nodes: &data.nodes,
@@ -154,21 +173,39 @@ struct WebBuilderNode<'a> {
     child_id: &'a String,
 }
 
-pub fn render_web_builder_node(node: &Node, nodes: &HashMap<String, Node>, child_id: String) -> String {
-    WebBuilderNode { node, nodes, child_id: &child_id }.render_once().unwrap()
+pub fn render_web_builder_node(
+    node: &Node,
+    nodes: &HashMap<String, Node>,
+    child_id: String,
+) -> String {
+    WebBuilderNode {
+        node,
+        nodes,
+        child_id: &child_id,
+    }
+    .render_once()
+    .unwrap()
 }
 
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_edit_node.stpl")]
 struct WebBuilderEditNode {
+    web_builder_id: i32,
     node_selected: bool,
     editable_element: EditableElement,
 }
 
-pub fn render_web_builder_edit_node(editable_element: EditableElement) -> String {
-    WebBuilderEditNode { node_selected: true, editable_element }
-        .render_once()
-        .unwrap()
+pub fn render_web_builder_edit_node(
+    web_builder_id: i32,
+    editable_element: EditableElement,
+) -> String {
+    WebBuilderEditNode {
+        web_builder_id,
+        node_selected: true,
+        editable_element,
+    }
+    .render_once()
+    .unwrap()
 }
 
 #[derive(TemplateSimple)]
@@ -259,7 +296,15 @@ fn render_children_nodes(node: &Node, nodes: &HashMap<String, Node>) -> String {
     let mut out = String::new();
     for child_id in &node.children {
         if let Some(child) = nodes.get(child_id) {
-            out.push_str(&WebBuilderNode { node: child, nodes, child_id }.render_once().unwrap());
+            out.push_str(
+                &WebBuilderNode {
+                    node: child,
+                    nodes,
+                    child_id,
+                }
+                .render_once()
+                .unwrap(),
+            );
         }
     }
     out
@@ -269,7 +314,16 @@ fn render_children_tree_nodes(node: &Node, nodes: &HashMap<String, Node>, deep: 
     let mut out = String::new();
     for child_id in &node.children {
         if let Some(child) = nodes.get(child_id) {
-            out.push_str(&WebBuilderWebTreeNode { node: child, nodes, deep, child_id }.render_once().unwrap());
+            out.push_str(
+                &WebBuilderWebTreeNode {
+                    node: child,
+                    nodes,
+                    deep,
+                    child_id,
+                }
+                .render_once()
+                .unwrap(),
+            );
         }
     }
     out

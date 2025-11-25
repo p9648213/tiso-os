@@ -15,7 +15,9 @@ use tokio::fs;
 use zip::{ZipWriter, write::FileOptions};
 
 use crate::utilities::web_builder_u::{extract_hex_background_color, html_to_nodes};
-use crate::views::web_builder_v::{EditableElement, render_web_builder_edit_node, render_web_builder_web_tree};
+use crate::views::web_builder_v::{
+    EditableElement, render_web_builder_edit_node, render_web_builder_web_tree,
+};
 use crate::{
     constant::web_builder::{
         CONTACT_TEMPLATE_1, CONTACT_TEMPLATE_2, CONTACT_TEMPLATE_3, CONTACT_TEMPLATE_4,
@@ -128,7 +130,7 @@ pub async fn get_edit_node(
         text: node.text,
     };
 
-    Ok(render_web_builder_edit_node(editable_element))
+    Ok(render_web_builder_edit_node(builder_id, editable_element))
 }
 
 pub async fn insert_node(

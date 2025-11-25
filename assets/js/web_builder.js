@@ -8,6 +8,11 @@ let currentSelectElement = null;
 /** @type {HTMLElement | null} */
 let currentSettingElement = null;
 
+let initialEditValue = {
+  background: null,
+  text: null,
+};
+
 let sectionType = "Header";
 let templateNumber = 1;
 
@@ -101,7 +106,7 @@ export function setupWebBuilderWebTreeElement(builderId) {
         }
         reviewElement.classList.add("outline-highlight");
         currentSelectElement = reviewElement;
-        setupWebBuilderEdit(builderId);
+        setupWebBuilderEditSelect(builderId);
       }
     }
   });
@@ -129,7 +134,7 @@ export function setupWebBuilderWebReviewElement(builderId) {
         }
         reviewElement.style.fontWeight = "bold";
         currentSettingElement = reviewElement;
-        setupWebBuilderEdit(builderId);
+        setupWebBuilderEditSelect(builderId);
       }
     }
   });
@@ -186,7 +191,7 @@ export function setupWebBuilderTreeActions(builderId) {
   });
 }
 
-export async function setupWebBuilderEdit(builderId) {
+export function setupWebBuilderEditSelect(builderId) {
   if (currentSelectElement) {
     const nodeId = currentSelectElement.getAttribute("data-id");
 
@@ -197,10 +202,52 @@ export async function setupWebBuilderEdit(builderId) {
   }
 }
 
+export function setupWebBuilderEditInput(builderId) {
+  const backgroundEdit = document.getElementById("builder-edit-background");
+  const textEdit = document.getElementById("builder-edit-text");
+
+  if (backgroundEdit) {
+    initialEditValue.background = backgroundEdit.value;
+
+    backgroundEdit.addEventListener("input", function (event) {
+      currentSelectElement.style.backgroundColor = event.target.value;
+    });
+  }
+
+  if (textEdit) {
+    initialEditValue.text = textEdit.value;
+
+    textEdit.addEventListener("input", function () {
+      currentSelectElement.textContent = textEdit.value;
+    });
+  }
+}
+
+export function setupWebBuilderEditButton(builderId) {
+  const saveBtn = document.getElementById("builder-edit-save-btn");
+  const cancelBtn = document.getElementById("builder-edit-cancel-btn");
+  const backgroundEdit = document.getElementById("builder-edit-background");
+  const textEdit = document.getElementById("builder-edit-text");
+
+  if (saveBtn && cancelBtn) {
+    saveBtn.addEventListener("click", function () {
+      console.log(backgroundEdit.value);
+      console.log(textEdit.value);
+    });
+
+    cancelBtn.addEventListener("click", function () {
+      backgroundEdit.value = initialEditValue.background;
+      textEdit.value = initialEditValue.text;
+      currentSelectElement.style.backgroundColor = initialEditValue.background;
+      currentSelectElement.textContent = initialEditValue.text;
+    });
+  }
+}
+
 export function setupWebBuilderKeyboardEvent(builderId) {
   function handleKeyDown(event) {
     if (event.key === "Delete" && currentSelectElement) {
-      let nodeId = currentSelectElement.getAttribute("data-id");
+      const nodeId = currentSelectElement.getAttribute("data-id");
 
       MessageBox.warning(
         "Confirm Delete",
