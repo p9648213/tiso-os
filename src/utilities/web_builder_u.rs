@@ -88,10 +88,13 @@ pub fn html_to_nodes(html: &str) -> (HashMap<String, Node>, Vec<String>) {
     (nodes, root_ids.into_iter().filter_map(|mut id| id.take()).collect())
 }
 
-pub fn extract_hex_background_color(input: &str) -> Result<Option<String>, AppError> {
+pub fn extract_bg_class(input: &str) -> Option<String> {
     let regex = Regex::new(r"bg-(\[[^\]]+\]|[^\s]+)").unwrap();
+    regex.find(input).map(|m| m.as_str().to_string())
+} 
 
-    if let Some(bg_class) = regex.find(input).map(|m| m.as_str().to_string()){ 
+pub fn extract_hex_background_color(input: &str) -> Result<Option<String>, AppError> {
+    if let Some(bg_class) = extract_bg_class(input) { 
         let css_file = include_str!("../../assets/css/lib/tailwind.css");
         let css_var = format!("--color-{}", &bg_class[3..]);
 

@@ -2,6 +2,7 @@ use std::env;
 use std::io::prelude::*;
 use std::{collections::HashMap, process::Command};
 
+use axum::Form;
 use axum::{
     Extension, Json,
     extract::{Path, State},
@@ -14,7 +15,7 @@ use tempfile::TempDir;
 use tokio::fs;
 use zip::{ZipWriter, write::FileOptions};
 
-use crate::utilities::web_builder_u::{extract_hex_background_color, html_to_nodes};
+use crate::utilities::web_builder_u::{extract_bg_class, extract_hex_background_color, html_to_nodes};
 use crate::views::web_builder_v::{
     EditableElement, render_web_builder_edit_node, render_web_builder_web_tree,
 };
@@ -39,6 +40,12 @@ use crate::{
         render_web_builder_window,
     },
 };
+
+#[derive(Deserialize, Debug)]
+pub struct EditNodeForm {
+    pub background: Option<String>,
+    pub text: Option<String>,
+}
 
 pub async fn get_web_builder_window(
     Path((file_id, height, width)): Path<(i32, i32, i32)>,
@@ -158,11 +165,27 @@ pub async fn edit_node(
     Path((builder_id, node_id)): Path<(i32, String)>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
-    Json(payload): Json<Node>,
+    Form(form): Form<EditNodeForm>,
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    WebBuilder::edit_node(builder_id, user_id, node_id, &payload, &pool).await?;
+    let mut node = WebBuilderWindow::get_web_builder_node(builder_id, user_id, &node_id, &pool).await?;
+
+    if let Some(text) = form.text {
+        node.text = Some(text);
+    }
+
+    if let Some(background) = form.background {
+        if let Some(value) = node.attributes.get_mut("class") {
+            let class = value.as_str().unwrap();
+            let bg_class = extract_bg_class(class);
+            println!("{:?}", bg_class);
+        } else {
+            return Err(AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Background classes not found"));
+        }
+    }
+
+    // WebBuilder::edit_node(builder_id, user_id, node_id, &payload, &pool).await?;
 
     Ok(())
 }

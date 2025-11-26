@@ -23,7 +23,7 @@ export const MessageBox = {
       header.className = "p-3 flex justify-between items-center";
       
       const titleEl = document.createElement("span");
-      titleEl.className = "text-lg font-semibold text-zinc-900";
+      titleEl.className = "text-lg font-semibold text-zinc-900 select-text";
       titleEl.innerText = title;
       header.appendChild(titleEl);
 
@@ -35,7 +35,7 @@ export const MessageBox = {
       iconImg.src = this.icons[type] || this.icons.info;
       
       const contentEl = document.createElement("div");
-      contentEl.className = "text-zinc-800 pt-1 leading-normal";
+      contentEl.className = "text-zinc-800 pt-1 leading-normal select-text";
       contentEl.innerText = message;
 
       body.appendChild(iconImg);

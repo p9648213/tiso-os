@@ -1,6 +1,7 @@
 <script type="module">
-  import { setupWebBuilderEditInput, setupWebBuilderEditButton } from "/assets/js/web_builder.js";
-  setupWebBuilderEditInput("<%= web_builder_id %>");
+  import { setupWebBuilderEditInput, setupWebBuilderEditButton, resetReviewElement } from "/assets/js/web_builder.js";
+  resetReviewElement();
+  setupWebBuilderEditInput();
   setupWebBuilderEditButton("<%= web_builder_id %>");
 </script>
 

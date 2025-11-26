@@ -11,6 +11,7 @@ py-1.5
 border-zinc-700
 
 /* Message Box */
+select-text
 fixed
 top-1/2
 left-1/2

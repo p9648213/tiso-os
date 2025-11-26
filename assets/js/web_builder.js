@@ -8,6 +8,9 @@ let currentSelectElement = null;
 /** @type {HTMLElement | null} */
 let currentSettingElement = null;
 
+/** @type {HTMLElement | null} */
+let previousSelectElement = null;
+
 let initialEditValue = {
   background: null,
   text: null,
@@ -105,6 +108,7 @@ export function setupWebBuilderWebTreeElement(builderId) {
           currentSelectElement.classList.remove("outline-highlight");
         }
         reviewElement.classList.add("outline-highlight");
+        previousSelectElement = currentSelectElement;
         currentSelectElement = reviewElement;
         setupWebBuilderEditSelect(builderId);
       }
@@ -117,6 +121,10 @@ export function setupWebBuilderWebReviewElement(builderId) {
   const webReview = document.getElementById(`builder-review`);
 
   webReview.addEventListener("click", function (event) {
+    if (currentSelectElement) {
+      currentSelectElement.removeAttribute("style");
+    }
+
     const dataId = event.target.getAttribute("data-id");
 
     if (dataId) {
@@ -124,6 +132,7 @@ export function setupWebBuilderWebReviewElement(builderId) {
         currentSelectElement.classList.remove("outline-highlight");
       }
       event.target.classList.add("outline-highlight");
+      previousSelectElement = currentSelectElement;
       currentSelectElement = event.target;
 
       const reviewElement = webTree.querySelector(`[data-id="${dataId}"]`);
@@ -202,7 +211,7 @@ export function setupWebBuilderEditSelect(builderId) {
   }
 }
 
-export function setupWebBuilderEditInput(builderId) {
+export function setupWebBuilderEditInput() {
   const backgroundEdit = document.getElementById("builder-edit-background");
   const textEdit = document.getElementById("builder-edit-text");
 
@@ -223,6 +232,17 @@ export function setupWebBuilderEditInput(builderId) {
   }
 }
 
+export function resetReviewElement() {
+  // const textEdit = document.getElementById("builder-edit-text");
+
+  // if (previousSelectElement) {
+  //   previousSelectElement.removeAttribute("style");
+  //   if (textEdit) {
+  //     previousSelectElement.textContent = initialEditValue.text;
+  //   }
+  // }
+}
+
 export function setupWebBuilderEditButton(builderId) {
   const saveBtn = document.getElementById("builder-edit-save-btn");
   const cancelBtn = document.getElementById("builder-edit-cancel-btn");
@@ -230,9 +250,30 @@ export function setupWebBuilderEditButton(builderId) {
   const textEdit = document.getElementById("builder-edit-text");
 
   if (saveBtn && cancelBtn) {
+    let nodeId = currentSelectElement.getAttribute("data-id");
+
     saveBtn.addEventListener("click", function () {
-      console.log(backgroundEdit.value);
-      console.log(textEdit.value);
+      let payload = {};
+
+      if (backgroundEdit.value != initialEditValue.background) {
+        payload.background = backgroundEdit.value;
+      }
+
+      if (textEdit.value != initialEditValue.text) {
+        payload.text = textEdit.value;
+      }
+
+      if (Object.keys(payload).length > 0) {
+        htmx.ajax(
+          "POST",
+          `/update/web_builder/${builderId}/node/edit/${nodeId}`,
+          {
+            target: "main",
+            swap: "none",
+            values: payload,
+          }
+        );
+      }
     });
 
     cancelBtn.addEventListener("click", function () {
