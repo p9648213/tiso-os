@@ -1,11 +1,10 @@
 <script type="module">
-  import { setupWebBuilderEditInput, setupWebBuilderEditButton, resetReviewElement } from "/assets/js/web_builder.js";
-  resetReviewElement();
+  import { setupWebBuilderEditInput, setupWebBuilderEditButton } from "/assets/js/web_builder.js";
   setupWebBuilderEditInput();
   setupWebBuilderEditButton("<%= web_builder_id %>");
 </script>
 
-<div id="builder-edit" class="px-3 py-2 border-zinc-950 border-l w-70 shrink-0 flex flex-col gap-3">
+<div id="builder-edit" class="flex flex-col gap-3 px-3 py-2 border-zinc-950 border-l w-70 shrink-0">
   <% if node_selected { %>
     <% if let Some(background) = editable_element.background { %>
       <div class="flex items-center gap-2">
@@ -16,7 +15,7 @@
     <% if let Some(text) = editable_element.text { %>
       <div class="flex items-center gap-2">
         <span>Text: </span>
-        <input id="builder-edit-text" class="border-zinc-800 border pl-2 rounded-sm" type="text" value="<%= text %>"/>
+        <input id="builder-edit-text" class="pl-2 border border-zinc-800 rounded-sm" type="text" value="<%= text %>"/>
       </div>
     <% } %>
     <div class="flex gap-2 mt-auto">

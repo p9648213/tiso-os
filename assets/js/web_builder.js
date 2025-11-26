@@ -212,6 +212,19 @@ export function setupWebBuilderEditSelect(builderId) {
 }
 
 export function setupWebBuilderEditInput() {
+  if (previousSelectElement) {
+    previousSelectElement.removeAttribute("style");
+
+    if (initialEditValue.text){
+      previousSelectElement.textContent = initialEditValue.text;
+    }
+
+    initialEditValue = {
+      background: null,
+      text: null,
+    }
+  }
+
   const backgroundEdit = document.getElementById("builder-edit-background");
   const textEdit = document.getElementById("builder-edit-text");
 
@@ -230,17 +243,6 @@ export function setupWebBuilderEditInput() {
       currentSelectElement.textContent = textEdit.value;
     });
   }
-}
-
-export function resetReviewElement() {
-  // const textEdit = document.getElementById("builder-edit-text");
-
-  // if (previousSelectElement) {
-  //   previousSelectElement.removeAttribute("style");
-  //   if (textEdit) {
-  //     previousSelectElement.textContent = initialEditValue.text;
-  //   }
-  // }
 }
 
 export function setupWebBuilderEditButton(builderId) {
