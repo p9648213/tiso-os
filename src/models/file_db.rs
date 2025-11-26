@@ -22,6 +22,7 @@ pub enum FileType {
     ThisPC,
     Music,
     WebBuilder,
+    Terminal
 }
 
 #[derive(Debug)]

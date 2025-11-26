@@ -9,5 +9,6 @@ pub mod music_c;
 pub mod screen_c;
 pub mod snake_c;
 pub mod taskbar_c;
+pub mod terminal_c;
 pub mod txt_c;
 pub mod web_builder_c;

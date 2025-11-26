@@ -20,12 +20,19 @@ use crate::{
         screen_c::{create_screen_grid, get_screen},
         snake_c::get_snake_window,
         taskbar_c::get_taskbar_menu_files,
+        terminal_c::get_terminal_window,
         txt_c::{create_txt, get_txt_input, get_txt_window},
         web_builder_c::{
-            add_section, delete_node, download_website, edit_node, get_edit_node, get_selected_section, get_selected_template, get_web_builder, get_web_builder_review, get_web_builder_window, insert_node
+            add_section, delete_node, download_website, edit_node, get_edit_node,
+            get_selected_section, get_selected_template, get_web_builder, get_web_builder_review,
+            get_web_builder_window, insert_node,
         },
     },
-    middlewares::{csrf_mw::csrf_middleware, log_mw::{request_log, response_log}, session_mw::session_middleware},
+    middlewares::{
+        csrf_mw::csrf_middleware,
+        log_mw::{request_log, response_log},
+        session_mw::session_middleware,
+    },
     models::state::AppState,
 };
 use axum::{
@@ -49,7 +56,6 @@ use tower_http::{
 async fn fallback() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, "Route Not Found")
 }
-
 
 pub async fn create_router(pool: Pool) -> Router {
     let memory_router = MemoryServe::new(load_assets!("assets")).into_router();
@@ -83,10 +89,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 "/web_builder/{builder_id}/section/add/{section_type}/{template_number}",
                 post(add_section),
             )
-            .route(
-                "/web_builder/{builder_id}/download",
-                post(download_website),
-            )
+            .route("/web_builder/{builder_id}/download", post(download_website))
             .layer(from_fn(csrf_middleware)),
     );
 
@@ -147,6 +150,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 "/file/flappybird/{height}/{width}",
                 get(get_flappy_bird_window),
             )
+            .route("/file/terminal/{height}/{width}", get(get_terminal_window))
             .route("/file/music/{height}/{width}", get(get_music_player_window))
             .route("/txt/{file_id}/{height}/{width}", get(get_txt_window))
             .route("/txt/input/{file_id}", get(get_txt_input))

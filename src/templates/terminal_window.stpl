@@ -1,0 +1,60 @@
+<script type="module">
+  import {
+    setupTerminalWindowGrab,
+    setupTerminalToolBar,
+    setupTerminalInput
+  } from "/assets/js/terminal.js";
+  setupTerminalToolBar();
+  setupTerminalWindowGrab();
+  setupTerminalInput();
+</script>
+
+<div
+  id="terminal-window"
+  class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
+  style="
+    top: <%= top %>px;
+    left: <%= left %>px;
+    width: <%= window_width %>px;
+    height: <%= window_height %>px;
+  "
+>
+  <div
+    id="terminal-header"
+    class="flex justify-between items-center bg-zinc-900 px-3 h-12"
+  >
+    <div class="flex items-center gap-2">
+      <img
+        class="w-5 h-5"
+        src="/assets/images/terminal/terminal.svg"
+        draggable="false"
+      />
+      Terminal
+    </div>
+    <div class="flex items-center gap-3">
+      <img
+        class="hover:opacity-70 w-5 h-5 hide"
+        src="/assets/images/common/minus.svg"
+        draggable="false"
+      /><img
+        class="hover:opacity-70 w-4 h-4 maximize"
+        src="/assets/images/common/square.svg"
+        draggable="false"
+      /><img
+        class="hover:opacity-70 w-5 h-5 close"
+        src="/assets/images/common/x.svg"
+        draggable="false"
+      />
+    </div>
+  </div>
+  <div class="p-2 flex gap-1">
+    <span class="whitespace-nowrap text-green-600"><%= username %>@tiso-os:~$</span>
+    <textarea 
+      id="terminal-input" 
+      autofocus 
+      class="pl-1 w-full resize-none border-none outline-none" 
+      onblur="this.focus()"
+      spellcheck="false"
+    ></textarea>
+  </div>
+</div>

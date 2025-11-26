@@ -52,7 +52,7 @@ pub async fn init_database(pool: &Pool) {
     let sql = "DO $$
       BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'filetype') THEN
-          CREATE TYPE FileType AS ENUM ('Txt', 'Calculator', 'Snake', 'FlappyBird', 'ThisPC', 'Music', 'WebBuilder');
+          CREATE TYPE FileType AS ENUM ('Txt', 'Calculator', 'Snake', 'FlappyBird', 'ThisPC', 'Music', 'WebBuilder', 'Terminal');
         END IF;
       END
     $$;";
@@ -86,6 +86,14 @@ pub async fn init_database(pool: &Pool) {
       file_id INT UNIQUE,
       name VARCHAR(255) NOT NULL,
       data JSONB DEFAULT '{}'::jsonb,
+      FOREIGN KEY (file_id) REFERENCES file(id) ON DELETE CASCADE
+    );";
+
+    client.execute(sql, &[]).await.unwrap();
+
+    let sql = "CREATE TABLE IF NOT EXISTS terminal (
+      id SERIAL PRIMARY KEY,
+      file_id INT UNIQUE,
       FOREIGN KEY (file_id) REFERENCES file(id) ON DELETE CASCADE
     );";
 

@@ -46,13 +46,38 @@ impl User {
         }
     }
 
+    pub async fn get_user_by_id(
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Option<Row>, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
+        })?;
+
+        let columns = columns.join(",");
+
+        client
+            .query_optional(
+                &format!(r#"SELECT {columns} FROM "user" WHERE id = $1"#),
+                &[&user_id],
+            )
+            .await
+    }
+
     pub async fn get_user_by_username(
         username: &str,
         columns: Vec<&str>,
         pool: &Pool,
     ) -> Result<Option<Row>, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let columns = columns.join(",");
@@ -67,11 +92,17 @@ impl User {
 
     pub async fn create_user(username: &str, password: &str, pool: &Pool) -> Result<i32, AppError> {
         let mut client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let txn = client.transaction().await.map_err(|err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't start transaction: {:?}", err))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't start transaction: {:?}", err),
+            )
         })?;
 
         let row = txn
@@ -117,6 +148,7 @@ impl User {
                 ($1, $2, 'Snake', 'Snake'),
                 ($1, $2, 'FlappyBird', 'FlappyBird'),
                 ($1, $2, 'Music Player', 'Music')",
+                
             &[&user_id, &taskbar_folder.id.unwrap()],
         )
         .await?;
@@ -150,6 +182,18 @@ impl User {
         )
         .await?;
 
+        let row = txn.query_one(r#"
+            INSERT INTO "file" (user_id, folder_id, file_name, file_type) VALUES ($1, $2, 'Terminal', 'Terminal') RETURNING id
+        "#, &[&user_id, &taskbar_folder.id.unwrap()]).await?;
+
+        let terminal_file = File::try_from(&row, None);
+
+        txn.execute(
+            "INSERT INTO terminal (file_id) VALUES ($1)",
+            &[&terminal_file.id.unwrap()],
+        )
+        .await?;
+
         txn.execute(
             "INSERT INTO display_setting (user_id) VALUES ($1)",
             &[&user_id],
@@ -173,7 +217,10 @@ impl User {
         .await?;
 
         txn.commit().await.map_err(|err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't commit transaction: {:?}", err))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't commit transaction: {:?}", err),
+            )
         })?;
 
         Ok(user_id)

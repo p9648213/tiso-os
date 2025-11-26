@@ -16,6 +16,8 @@
       <% if let Some(id) = file.id { %> 
         <% include!("web_builder_file.stpl"); %> 
       <% } %>
-    <% } %>  
+    <% } else if *file_type == FileType::Terminal { %> 
+      <% include!("terminal_file.stpl"); %> 
+    <% } %>
   <% } %>
 <% } %>
