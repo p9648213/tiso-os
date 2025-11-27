@@ -195,7 +195,7 @@ impl WebBuilder {
         edit_node_id: String,
         update_node: &Node,
         pool: &Pool,
-    ) -> Result<(), AppError> {
+    ) -> Result<WebBuilder, AppError> {
         let client = pool.get().await.map_err(|error| {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
@@ -204,18 +204,19 @@ impl WebBuilder {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Failed to serialize node: {:?}", e))
         })?;
 
-        let rows = client
-            .execute(
+        let row = client
+            .query_one(
                 "UPDATE web_builder
-            SET data = jsonb_set(
-                data,
-                $1::text[],
-                $2
-            )
-            FROM file
-            WHERE web_builder.file_id = file.id
-            AND web_builder.id = $3
-            AND file.user_id = $4;",
+                SET data = jsonb_set(
+                    data,
+                    $1::text[],
+                    $2
+                )
+                FROM file
+                WHERE web_builder.file_id = file.id
+                AND web_builder.id = $3
+                AND file.user_id = $4 
+                RETURNING data;",
                 &[
                     &vec![String::from("nodes"), edit_node_id.clone()],
                     &node_json,
@@ -225,14 +226,7 @@ impl WebBuilder {
             )
             .await?;
 
-        if rows == 0 {
-            return Err(AppError::new(
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Error edit node",
-            ));
-        }
-
-        Ok(())
+        Ok(Self::try_from(&row, None))
     }
 
     pub async fn delete_node(

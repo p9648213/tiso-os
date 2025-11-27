@@ -58,6 +58,7 @@
       <% let body_node = data.nodes.get(&data.body_node).unwrap(); %>
       <% let node_selected = false; %>
       <% let editable_element = EditableElement::default(); %>
+      <% let swap_oob = ""; %>
       <% include!("web_builder_setting.stpl"); %>
       <% include!("web_builder_review.stpl"); %>
       <% include!("web_builder_edit_node.stpl"); %>

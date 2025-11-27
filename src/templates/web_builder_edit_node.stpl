@@ -2,9 +2,15 @@
   import { setupWebBuilderEditInput, setupWebBuilderEditButton } from "/assets/js/web_builder.js";
   setupWebBuilderEditInput();
   setupWebBuilderEditButton("<%= web_builder_id %>");
-</script>
+</script>  
 
-<div id="builder-edit" class="flex flex-col gap-3 px-3 py-2 border-zinc-950 border-l w-70 shrink-0">
+<div 
+  id="builder-edit" 
+  class="flex flex-col gap-3 px-3 py-2 border-zinc-950 border-l w-70 shrink-0"
+  <% if swap_oob != "" { %>
+    hx-swap-oob=<%= swap_oob %> 
+  <% } %>
+>  
   <% if node_selected { %>
     <% if let Some(background) = editable_element.background { %>
       <div class="flex items-center gap-2">

@@ -104,4 +104,16 @@ export function setupGlobalFunctions() {
       console.log("Flappy Bird stopped");
     }
   };
+
+  window.reloadTailwind = function () {
+    const link = document.querySelector('link[href*="tailwind.css"]');
+
+    if (link) {
+      const baseUrl = link.href.split("?")[0];
+      link.href = `${baseUrl}?v=${new Date().getTime()}`;
+      console.log("Tailwind CSS reloaded");
+    } else {
+      console.error("Tailwind CSS link not found");
+    }
+  };
 }

@@ -189,20 +189,24 @@ pub fn render_web_builder_node(
 
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_edit_node.stpl")]
-struct WebBuilderEditNode {
+struct WebBuilderEditNode<'a> {
     web_builder_id: i32,
     node_selected: bool,
+    swap_oob: &'a str,
     editable_element: EditableElement,
 }
 
 pub fn render_web_builder_edit_node(
-    web_builder_id: i32,
     editable_element: EditableElement,
+    swap_oob: &str,
+    node_selected: bool,
+    web_builder_id: i32,
 ) -> String {
     WebBuilderEditNode {
         web_builder_id,
-        node_selected: true,
+        node_selected,
         editable_element,
+        swap_oob,
     }
     .render_once()
     .unwrap()

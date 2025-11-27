@@ -6,9 +6,7 @@ use ego_tree::NodeRef;
 use regex::Regex;
 use scraper::{Html, Node as ScrapperNode};
 
-use crate::
-    models::{error::AppError, web_builder_db::Node}
-;
+use crate::models::{error::AppError, web_builder_db::Node};
 
 pub fn collect_descendants(
     node_id: &str,
@@ -85,23 +83,38 @@ pub fn html_to_nodes(html: &str) -> (HashMap<String, Node>, Vec<String>) {
         root_ids.push(traverse_node(child, &mut nodes));
     }
 
-    (nodes, root_ids.into_iter().filter_map(|mut id| id.take()).collect())
+    (
+        nodes,
+        root_ids
+            .into_iter()
+            .filter_map(|mut id| id.take())
+            .collect(),
+    )
 }
 
 pub fn extract_bg_class(input: &str) -> Option<String> {
-    let regex = Regex::new(r"bg-(\[[^\]]+\]|[^\s]+)").unwrap();
+    let regex = Regex::new(r"bg-\[[^\]]+\]|bg-[^\s]+").unwrap();
     regex.find(input).map(|m| m.as_str().to_string())
-} 
+}
 
 pub fn extract_hex_background_color(input: &str) -> Result<Option<String>, AppError> {
-    if let Some(bg_class) = extract_bg_class(input) { 
+    if let Some(bg_class) = extract_bg_class(input) {
+        if bg_class.chars().nth(3).unwrap_or_default() == '['
+            && bg_class.chars().nth(4).unwrap_or_default() == '#'
+        {
+            return Ok(Some(bg_class[4..11].to_string()));
+        }
+
         let css_file = include_str!("../../assets/css/lib/tailwind.css");
         let css_var = format!("--color-{}", &bg_class[3..]);
 
         let pattern = format!(r"{}:\s*([^;]+);", regex::escape(&css_var));
         let regex = Regex::new(&pattern).unwrap();
 
-        if let Some(okch_color) = regex.captures(css_file).and_then(|cap| Some(cap[1].trim().to_string())) {
+        if let Some(okch_color) = regex
+            .captures(css_file)
+            .and_then(|cap| Some(cap[1].trim().to_string()))
+        {
             let okch_color: Color = okch_color.parse().map_err(|err| {
                 AppError::new(
                     StatusCode::INTERNAL_SERVER_ERROR,

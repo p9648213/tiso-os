@@ -46,6 +46,7 @@ use axum::{
 use deadpool_postgres::Pool;
 use memory_serve::{MemoryServe, load_assets};
 use papaya::HashMap;
+use tokio::sync::Mutex;
 use tower_http::{
     CompressionLevel,
     compression::{CompressionLayer, DefaultPredicate, Predicate, predicate::SizeAbove},
@@ -72,6 +73,7 @@ pub async fn create_router(pool: Pool) -> Router {
     let app_state = AppState {
         session_map: Arc::new(HashMap::new()),
         pool,
+        file_lock: Arc::new(Mutex::new(()))
     };
 
     let create_routes = Router::new().nest(

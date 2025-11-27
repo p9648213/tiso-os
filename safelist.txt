@@ -66,3 +66,6 @@ bg-blue-600
 text-white
 hover:bg-blue-700
 hover:bg-zinc-100
+
+/* Custom */
+bg-[#0a1e47]

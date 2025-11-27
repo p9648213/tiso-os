@@ -215,14 +215,14 @@ export function setupWebBuilderEditInput() {
   if (previousSelectElement) {
     previousSelectElement.removeAttribute("style");
 
-    if (initialEditValue.text){
+    if (initialEditValue.text) {
       previousSelectElement.textContent = initialEditValue.text;
     }
 
     initialEditValue = {
       background: null,
       text: null,
-    }
+    };
   }
 
   const backgroundEdit = document.getElementById("builder-edit-background");
@@ -257,24 +257,32 @@ export function setupWebBuilderEditButton(builderId) {
     saveBtn.addEventListener("click", function () {
       let payload = {};
 
-      if (backgroundEdit.value != initialEditValue.background) {
+      if (backgroundEdit?.value != initialEditValue.background) {
         payload.background = backgroundEdit.value;
       }
 
-      if (textEdit.value != initialEditValue.text) {
+      if (textEdit?.value != initialEditValue.text) {
         payload.text = textEdit.value;
       }
 
       if (Object.keys(payload).length > 0) {
-        htmx.ajax(
-          "POST",
-          `/update/web_builder/${builderId}/node/edit/${nodeId}`,
-          {
-            target: "main",
-            swap: "none",
-            values: payload,
-          }
-        );
+        htmx
+          .ajax(
+            "POST",
+            `/update/web_builder/${builderId}/node/edit/${nodeId}`,
+            {
+              target: "#builder-review",
+              swap: "outerHTML",
+              values: payload,
+            }
+          )
+          .then(() => {
+            initialEditValue = {
+              background: null,
+              text: null,
+            };
+            window.reloadTailwind();
+          });
       }
     });
 
