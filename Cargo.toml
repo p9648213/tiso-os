@@ -13,7 +13,6 @@ base64 = "0.22.1"
 csscolorparser = "0.8.1"
 deadpool-postgres = "0.14.1"
 ego-tree = "0.10.0"
-hypertext = { version = "0.12.1", features = ["axum", "htmx"] }
 memory-serve = { version = "1.2.2" }
 papaya = "0.2.3"
 postgres-types = { version = "0.2.11", features = ["derive"] }
