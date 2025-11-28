@@ -29,7 +29,6 @@ export function setupGlobalFunctions() {
       window.snakeState.wasmModule = null;
       window.snakeState.canvasContainer = null;
 
-      // Force garbage collection if available
       if (window.gc) {
         window.gc();
       }
@@ -42,7 +41,6 @@ export function setupGlobalFunctions() {
 
   window.loadFlappyBirdModule = async function () {
     try {
-      // Create a fresh canvas each time
       const canvasContainer = document.getElementById(
         "flappy-canvas-container"
       );
@@ -51,19 +49,15 @@ export function setupGlobalFunctions() {
         return;
       }
 
-      // Clear any existing canvas
       const existingCanvas = canvasContainer.querySelector("canvas");
       if (existingCanvas) {
         existingCanvas.remove();
       }
 
-      // Create new canvas
       const canvas = document.createElement("canvas");
       canvas.id = `canvas`;
       canvasContainer.appendChild(canvas);
 
-      // Import and initialize WASM module
-      // Note: Using dynamic import with timestamp to bypass cache
       const timestamp = Date.now();
       const wasm = await import(
         `/assets/flappybird/flappybird.js?t=${timestamp}`
@@ -71,7 +65,6 @@ export function setupGlobalFunctions() {
 
       await wasm.default();
 
-      // Update state
       window.canvasRunning.push("Flappy Bird");
       window.flappyBirdState.wasmModule = wasm;
       window.flappyBirdState.canvasContainer = canvasContainer;
@@ -94,7 +87,6 @@ export function setupGlobalFunctions() {
       window.flappyBirdState.wasmModule = null;
       window.flappyBirdState.canvasContainer = null;
 
-      // Force garbage collection if available
       if (window.gc) {
         window.gc();
       }
@@ -115,5 +107,24 @@ export function setupGlobalFunctions() {
     } else {
       console.error("Tailwind CSS link not found");
     }
+  };
+
+  window.injectScript = function (scriptString) {
+    const container = document.createElement("div");
+    container.innerHTML = scriptString.trim();
+
+    const scriptEl = container.querySelector("script");
+    if (!scriptEl) return;
+
+    const newScript = document.createElement("script");
+    newScript.type = "module";
+
+    newScript.textContent = scriptEl.textContent;
+
+    [...scriptEl.attributes].forEach((attr) =>
+      newScript.setAttribute(attr.name, attr.value)
+    );
+
+    document.body.appendChild(newScript);
   };
 }

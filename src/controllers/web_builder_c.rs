@@ -110,21 +110,6 @@ pub async fn get_web_builder_window(
     ))
 }
 
-pub async fn get_web_builder(
-    Path(builder_id): Path<i32>,
-    State(pool): State<Pool>,
-    Extension(user_id): Extension<UserId>,
-) -> Result<impl IntoResponse, AppError> {
-    let user_id = parse_user_id(user_id)?;
-
-    let web_builder =
-        WebBuilderWindow::get_web_builder(builder_id, user_id, vec!["data"], vec![], &pool).await?;
-
-    println!("{:?}", web_builder);
-
-    Ok(())
-}
-
 pub async fn get_edit_node(
     Path((builder_id, node_id)): Path<(i32, String)>,
     State(pool): State<Pool>,

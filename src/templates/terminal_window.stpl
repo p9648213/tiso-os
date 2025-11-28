@@ -2,11 +2,13 @@
   import {
     setupTerminalWindowGrab,
     setupTerminalToolBar,
-    setupTerminalInput
+    setupTerminalTextArea,
+    setupTerminalWebSocket,
   } from "/assets/js/terminal.js";
   setupTerminalToolBar();
   setupTerminalWindowGrab();
-  setupTerminalInput();
+  setupTerminalTextArea();
+  setupTerminalWebSocket();
 </script>
 
 <div
@@ -47,14 +49,16 @@
       />
     </div>
   </div>
-  <div class="p-2 flex gap-1">
-    <span class="whitespace-nowrap text-green-600"><%= username %>@tiso-os:~$</span>
-    <textarea 
-      id="terminal-input" 
-      autofocus 
-      class="pl-1 w-full resize-none border-none outline-none" 
-      onblur="this.focus()"
-      spellcheck="false"
-    ></textarea>
+  <div id="terminal-display" class="p-2">
+    <div id="terminal-input" class="flex gap-1">
+      <span class="whitespace-nowrap text-green-600"><%= username %>@tiso-os:~$</span>
+      <textarea
+        id="terminal-text-area"
+        autofocus
+        class="pl-1 w-full resize-none border-none outline-none"
+        onblur="this.focus()"
+        spellcheck="false"
+      ></textarea>
+    </div>
   </div>
 </div>

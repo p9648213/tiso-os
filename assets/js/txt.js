@@ -35,6 +35,7 @@ export function setupTxtWindowGrab(txtId) {
     handler: handleMouseMove,
     id: txtId,
   });
+  
   txtCleanUpEvent.push({ event: "mouseup", handler: handleMouseUp, id: txtId });
 
   document.addEventListener("mousemove", handleMouseMove);

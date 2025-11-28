@@ -1,5 +1,8 @@
 let terminalCleanUpEvent = [];
 
+/** @type {WebSocket | null} */
+let terminalSocket = null;
+
 export function setupTerminalWindowGrab() {
   const terminalHeader = document.getElementById(`terminal-header`);
   const terminalWindow = document.getElementById(`terminal-window`);
@@ -56,17 +59,85 @@ export function setupTerminalToolBar() {
   });
 }
 
-export function setupTerminalInput() {
+export function setupTerminalTextArea() {
+  const terminalTextArea = document.getElementById(`terminal-text-area`);
+  const terminalDisplay = document.getElementById(`terminal-display`);
   const terminalInput = document.getElementById(`terminal-input`);
 
-  terminalInput.addEventListener("input", function () {
-    terminalInput.style.height = "auto";
-    terminalInput.style.height = terminalInput.scrollHeight + "px";
+  terminalTextArea.focus();
+
+  terminalTextArea.addEventListener("input", function () {
+    terminalTextArea.style.height = "auto";
+    terminalTextArea.style.height = terminalTextArea.scrollHeight + "px";
   });
 
-  terminalInput.addEventListener("keydown", function (e) {
+  terminalTextArea.addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
+      let value = terminalTextArea.value;
       e.preventDefault();
+      if (
+        terminalTextArea.value == "clear" ||
+        terminalTextArea.value == "cls"
+      ) {
+        terminalTextArea.value = "";
+        let terminalInputClone = terminalInput.cloneNode(true);
+        terminalDisplay.innerHTML = "";
+        terminalDisplay.appendChild(terminalInputClone);
+        setupTerminalTextArea();
+      }
+
+      terminalSocket.send(value);
     }
+  });
+}
+
+export function setupTerminalWebSocket() {
+  terminalSocket = new WebSocket(`ws://${window.location.host}/ws/terminal`);
+
+  terminalSocket.addEventListener("open", function () {
+    console.log("WebSocket connection opened");
+  });
+
+  terminalSocket.addEventListener("message", function (event) {
+    const message = JSON.parse(event.data);
+
+    if (message.output == "") return;
+
+    const terminalDisplay = document.getElementById(`terminal-display`);
+    const terminalInput = document.getElementById(`terminal-input`);
+    const terminalTextArea = document.getElementById(`terminal-text-area`);
+
+    let prevInput = document.createElement("div");
+    prevInput.classList.add("flex", "gap-2");
+    prevInput.appendChild(terminalInput.children[0].cloneNode(true));
+
+    let prevInputText = document.createElement("div");
+    prevInputText.textContent = terminalTextArea.value;
+    prevInput.appendChild(prevInputText);
+
+    terminalDisplay.appendChild(prevInput);
+
+    let terminalOutput = document.createElement("div");
+    terminalOutput.innerHTML = message.output;
+    terminalDisplay.appendChild(terminalOutput);
+
+    if (message.script) {
+      window.injectScript(message.script);
+    }
+
+    terminalTextArea.value = "";
+    terminalDisplay.appendChild(terminalInput.cloneNode(true));
+
+    terminalInput.remove();
+
+    setupTerminalTextArea();
+  });
+
+  terminalSocket.addEventListener("close", function () {
+    console.log("WebSocket connection closed");
+  });
+
+  terminalSocket.addEventListener("error", function () {
+    console.log("WebSocket connection error");
   });
 }

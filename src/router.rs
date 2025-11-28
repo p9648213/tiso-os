@@ -20,11 +20,11 @@ use crate::{
         screen_c::{create_screen_grid, get_screen},
         snake_c::get_snake_window,
         taskbar_c::get_taskbar_menu_files,
-        terminal_c::get_terminal_window,
+        terminal_c::{get_terminal_window, terminal_ws_handler},
         txt_c::{create_txt, get_txt_input, get_txt_window},
         web_builder_c::{
             add_section, delete_node, download_website, edit_node, get_edit_node,
-            get_selected_section, get_selected_template, get_web_builder, get_web_builder_review,
+            get_selected_section, get_selected_template, get_web_builder_review,
             get_web_builder_window, insert_node,
         },
     },
@@ -40,7 +40,7 @@ use axum::{
     http::{HeaderValue, StatusCode, header},
     middleware::{from_fn, from_fn_with_state},
     response::IntoResponse,
-    routing::{get, post},
+    routing::{any, get, post},
 };
 
 use deadpool_postgres::Pool;
@@ -73,7 +73,7 @@ pub async fn create_router(pool: Pool) -> Router {
     let app_state = AppState {
         session_map: Arc::new(HashMap::new()),
         pool,
-        file_lock: Arc::new(Mutex::new(()))
+        file_lock: Arc::new(Mutex::new(())),
     };
 
     let create_routes = Router::new().nest(
@@ -169,15 +169,13 @@ pub async fn create_router(pool: Pool) -> Router {
                 "/web_builder/{file_id}/{height}/{width}",
                 get(get_web_builder_window),
             )
-            .route(
-                "/web_builder/{builder_id}",
-                get(get_web_builder),
-            )
             .route("/web_builder/{builder_id}/edit_node/{node_id}", get(get_edit_node))
             .route("/web_builder/section/{section_type}", get(get_selected_section))
             .route("/web_builder/template/{section_type}/{template_index}", get(get_selected_template))
             .route("/web_builder/view_website/{builder_id}", get(get_web_builder_review))
     );
+
+    let ws_routes = Router::new().route("/ws/terminal", any(terminal_ws_handler));
 
     Router::new()
         .route("/", get(get_screen))
@@ -185,6 +183,7 @@ pub async fn create_router(pool: Pool) -> Router {
         .merge(update_routes)
         .merge(delete_routes)
         .merge(read_routes)
+        .merge(ws_routes)
         .layer(from_fn_with_state(app_state.clone(), session_middleware))
         .with_state(app_state.clone())
         .layer(compression_layer)
