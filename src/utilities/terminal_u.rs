@@ -60,11 +60,15 @@ impl From<&str> for CommandLine {
 
         let mut command_line = CommandLine::default();
 
-        if split_parts.len() > 1 {
+        if text.trim() == "" {
+            command_line.command = Command::Empty;
+        }
+
+        if split_parts.len() > 0 {
             command_line.command = Command::from(split_parts[0].to_string());
         }
 
-        if split_parts.len() > 2 {
+        if split_parts.len() > 1 {
             command_line.args = split_parts[1..].to_vec();
         }
 
