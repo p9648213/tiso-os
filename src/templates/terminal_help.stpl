@@ -1,0 +1,20 @@
+<div>
+  <div class="font-semibold">List of commands:</div>
+  <div class="pl-4">
+    <ul>
+      <li>help - Show this help</li>
+      <li>ls - List files</li>
+      <li>cd - Change directory</li>
+      <li>mkdir - Create directory</li>
+      <li>rm - Remove file or directory</li>
+      <li>cp - Copy file or directory</li>
+      <li>mv - Move file or directory</li>
+      <li>cat - Print file contents</li>
+      <li>echo - Print text</li>
+      <li>clear - Clear terminal</li>
+    </ul>
+  </div>
+  <div class="font-semibold">
+    Type `help command_name' to find out more about the command `command_name'.
+  </div>
+</div>

@@ -1,9 +1,12 @@
 use serde::Serialize;
 
+use crate::views::terminal_v::render_terminal_help;
+
 #[derive(Debug, PartialEq)]
 pub enum Command {
     Echo,
     Clear,
+    Help,
     Unknown(String),
 }
 
@@ -12,6 +15,7 @@ impl From<String> for Command {
         match text.as_str() {
             "echo" => Command::Echo,
             "clear" | "cls" => Command::Clear,
+            "help" => Command::Help,
             _ => Command::Unknown(text),
         }
     }
@@ -71,6 +75,10 @@ impl CommandLine {
                 script: "".to_string(),
             },
             Command::Clear => CommandLineOutput::default(),
+            Command::Help => CommandLineOutput {
+                output: render_terminal_help(),
+                script: "".to_string(),
+            },
             Command::Unknown(command) => CommandLineOutput {
                 output: format!("Unknown command: {}", command),
                 script: "".to_string(),

@@ -35,3 +35,11 @@ pub fn render_terminal_window(username: &str, parent_height: i32, parent_width: 
     .render_once()
     .unwrap()
 }
+
+#[derive(TemplateSimple)]
+#[template(path = "terminal_help.stpl")]
+pub struct TerminalHelp {}
+
+pub fn render_terminal_help() -> String {
+    TerminalHelp {}.render_once().unwrap()
+}
