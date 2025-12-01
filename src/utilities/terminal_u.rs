@@ -1,4 +1,5 @@
-use serde::Serialize;
+use serde::{Serialize, de};
+use tracing_subscriber::field::debug;
 
 use crate::views::terminal_v::render_terminal_help;
 
@@ -7,6 +8,7 @@ pub enum Command {
     Echo,
     Clear,
     Help,
+    Empty,
     Unknown(String),
 }
 
@@ -16,6 +18,7 @@ impl From<String> for Command {
             "echo" => Command::Echo,
             "clear" | "cls" => Command::Clear,
             "help" => Command::Help,
+            "" => Command::Empty,
             _ => Command::Unknown(text),
         }
     }
@@ -57,9 +60,11 @@ impl From<&str> for CommandLine {
 
         let mut command_line = CommandLine::default();
 
-        command_line.command = Command::from(split_parts[0].to_string());
-
         if split_parts.len() > 1 {
+            command_line.command = Command::from(split_parts[0].to_string());
+        }
+
+        if split_parts.len() > 2 {
             command_line.args = split_parts[1..].to_vec();
         }
 
@@ -79,6 +84,7 @@ impl CommandLine {
                 output: render_terminal_help(),
                 script: "".to_string(),
             },
+            Command::Empty => CommandLineOutput::default(),
             Command::Unknown(command) => CommandLineOutput {
                 output: format!("Unknown command: {}", command),
                 script: "".to_string(),
