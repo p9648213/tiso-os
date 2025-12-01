@@ -112,8 +112,7 @@ pub fn extract_hex_background_color(input: &str) -> Result<Option<String>, AppEr
         let regex = Regex::new(&pattern).unwrap();
 
         if let Some(okch_color) = regex
-            .captures(css_file)
-            .and_then(|cap| Some(cap[1].trim().to_string()))
+            .captures(css_file).map(|cap| cap[1].trim().to_string())
         {
             let okch_color: Color = okch_color.parse().map_err(|err| {
                 AppError::new(
@@ -142,12 +141,12 @@ pub fn oklch_to_hex(l: f32, c: f32, h: f32) -> String {
     let l_ = l / 100.0;
 
     let l1 = l_;
-    let m1 = l_ + 0.3963377774 * a + 0.2158037573 * b;
-    let s1 = l_ - 0.1055613458 * a - 0.0638541728 * b;
+    let m1 = l_ + 0.396_337_78 * a + 0.215_803_76 * b;
+    let s1 = l_ - 0.105_561_346 * a -0.063_854_18 * b;
 
-    let mut r = 4.0767416621 * l1 - 3.3077115913 * m1 + 0.2309699292 * s1;
-    let mut g = -1.2684380046 * l1 + 2.6097574011 * m1 - 0.3413193965 * s1;
-    let mut b_ = -0.0041960863 * l1 - 0.7034186147 * m1 + 1.7076147010 * s1;
+    let mut r = 4.076_741_7 * l1 - 3.307_711_6 * m1 + 0.230_969_94 * s1;
+    let mut g = -1.268_438 * l1 + 2.609_757_4 * m1 - 0.341_319_38 * s1;
+    let mut b_ = -0.0041960863 * l1 - 0.703_418_6 * m1 + 1.707_614_7* s1;
 
     fn srgb(x: f32) -> f32 {
         if x <= 0.0031308 {

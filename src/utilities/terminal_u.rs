@@ -1,5 +1,4 @@
-use serde::{Serialize, de};
-use tracing_subscriber::field::debug;
+use serde::Serialize;
 
 use crate::views::terminal_v::render_terminal_help;
 
@@ -64,7 +63,7 @@ impl From<&str> for CommandLine {
             command_line.command = Command::Empty;
         }
 
-        if split_parts.len() > 0 {
+        if !split_parts.is_empty() {
             command_line.command = Command::from(split_parts[0].to_string());
         }
 
@@ -80,7 +79,7 @@ impl CommandLine {
     pub fn execute(&self) -> CommandLineOutput {
         match &self.command {
             Command::Echo => CommandLineOutput {
-                output: format!("{}", self.args.join(" ")),
+                output: self.args.join(" ").to_string(),
                 script: "".to_string(),
             },
             Command::Clear => CommandLineOutput::default(),
@@ -90,7 +89,7 @@ impl CommandLine {
             },
             Command::Empty => CommandLineOutput::default(),
             Command::Unknown(command) => CommandLineOutput {
-                output: format!("Unknown command: {}", command),
+                output: format!("Unknown command: {}. Type help for more information.", command),
                 script: "".to_string(),
             },
         }

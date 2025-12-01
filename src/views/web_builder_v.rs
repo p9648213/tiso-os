@@ -14,18 +14,10 @@ pub enum ReviewMode {
     None,
 }
 
+#[derive(Default)]
 pub struct EditableElement {
     pub text: Option<String>,
     pub background: Option<String>,
-}
-
-impl Default for EditableElement {
-    fn default() -> Self {
-        Self {
-            text: None,
-            background: None,
-        }
-    }
 }
 
 #[derive(TemplateSimple)]

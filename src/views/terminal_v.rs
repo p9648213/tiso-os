@@ -19,8 +19,8 @@ pub struct TerminalWindow<'a> {
 }
 
 pub fn render_terminal_window(username: &str, parent_height: i32, parent_width: i32) -> String {
-    let window_width = parent_width * 40 / 100;
-    let window_height = parent_height * 60 / 100;
+    let window_width = parent_width * 50 / 100;
+    let window_height = parent_height * 80 / 100;
 
     let left = ((parent_width / 2) - (window_width / 2)).max(0);
     let top = ((parent_height / 2) - (window_height / 2)).max(0);

@@ -23,7 +23,7 @@
 >
   <div
     id="terminal-header"
-    class="flex justify-between items-center bg-zinc-900 px-3 h-12"
+    class="flex justify-between items-center bg-zinc-900 px-3 h-12 shrink-0"
   >
     <div class="flex items-center gap-2">
       <img
@@ -49,13 +49,13 @@
       />
     </div>
   </div>
-  <div id="terminal-display" class="p-2">
+  <div id="terminal-display" class="p-2 overflow-auto">
     <div id="terminal-input" class="flex gap-1">
-      <span class="whitespace-nowrap text-green-600"><%= username %>@tiso-os:~$</span>
+      <span class="text-green-600 whitespace-nowrap"><%= username %>@tiso-os:~$</span>
       <textarea
         id="terminal-text-area"
         autofocus
-        class="pl-1 w-full resize-none border-none outline-none"
+        class="pl-1 border-none outline-none w-full resize-none"
         onblur="this.focus()"
         spellcheck="false"
       ></textarea>

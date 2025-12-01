@@ -177,7 +177,7 @@ pub async fn edit_node(
     }
 
     if let Some(background) = form.background {
-        if background.chars().nth(0).unwrap_or_default() != '#' {
+        if background.chars().next().unwrap_or_default() != '#' {
             return Err(AppError::new(
                 StatusCode::BAD_REQUEST,
                 "Background color must be a hex color",
@@ -271,7 +271,7 @@ pub async fn edit_node(
         need_update = true;
     }
 
-    if need_update == false {
+    if !need_update {
         return Err(AppError::new(
             StatusCode::BAD_REQUEST,
             "No changes to update",

@@ -35,10 +35,10 @@ pub async fn get_terminal_window(
             render_terminal_window(&username, height, width),
         ))
     } else {
-        return Err(AppError::new(
+        Err(AppError::new(
             StatusCode::INTERNAL_SERVER_ERROR,
             "Error getting user",
-        ));
+        ))
     }
 }
 
