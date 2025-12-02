@@ -4,6 +4,7 @@
     <ul>
       <li>help - Show this help</li>
       <li>ls - List files</li>
+      <li>pwd - Print working directory</li>
       <li>cd - Change directory</li>
       <li>mkdir - Create directory</li>
       <li>rm - Remove file or directory</li>

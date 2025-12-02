@@ -133,13 +133,10 @@ impl<'a> CommandLine<'a> {
             }
             Command::Clear => CommandLineOutput::default(),
             Command::Empty => CommandLineOutput::default(),
-            Command::Unknown(command) => self.process_command(
-                Some(format!(
-                    "Unknown command: {}. Type help for more information.",
-                    command
-                )),
-                None,
-            ),
+            Command::Unknown(command) => CommandLineOutput {
+                output: format!("Unknown command: {} 💥💥💥. Type help more information 😚😚😚.", command),
+                script: "".to_string(),
+            },
         }
     }
 }

@@ -37,7 +37,7 @@ pub async fn create_folder(
 
     let folder = Folder::create_folder(
         user_id,
-        "New Folder",
+        "New Folder".to_owned(),
         FolderType::Normal,
         Some(folder_id),
         desktop_position,
@@ -45,7 +45,7 @@ pub async fn create_folder(
     )
     .await?;
 
-    Ok(render_folder(folder.id.unwrap(), None, None))
+    Ok(render_folder(folder.id.unwrap(), folder.folder_name, None))
 }
 
 pub async fn update_folder_desktop_position(

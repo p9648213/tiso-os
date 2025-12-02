@@ -169,7 +169,7 @@ impl Folder {
 
     pub async fn create_folder(
         user_id: i32,
-        folder_name: &str,
+        mut folder_name: String,
         folder_type: FolderType,
         parent_folder_id: Option<i32>,
         desktop_position: Option<String>,
@@ -179,9 +179,27 @@ impl Folder {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
 
+        if let Some(parent_folder_id) = parent_folder_id {
+            let sql = "
+                SELECT * FROM (
+                    SELECT id from folder WHERE parent_folder_id = $1 AND folder_name = $2
+                    UNION
+                    SELECT id from file WHERE folder_id = $1 AND file_name = $2
+                ) AS combined
+            ";
+
+            let mut row = client.query(sql, &[&parent_folder_id, &folder_name]).await?;
+
+            while !row.is_empty() {
+                let random_numb = rand::random_range(0..1000);
+                folder_name = format!("New Folder {}", random_numb);
+                row = client.query(sql, &[&parent_folder_id, &folder_name]).await?;
+            }
+        }
+
         let row = client.query_one(
             "INSERT INTO folder (user_id, folder_name, folder_type, parent_folder_id, desktop_position) 
-                    VALUES ($1, $2, $3, $4, $5) RETURNING id",
+                    VALUES ($1, $2, $3, $4, $5) RETURNING id, folder_name",
             &[&user_id, &folder_name, &folder_type, &parent_folder_id, &desktop_position],
         )
         .await?;
