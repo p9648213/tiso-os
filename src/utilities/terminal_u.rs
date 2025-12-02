@@ -1,6 +1,11 @@
+use deadpool_postgres::Pool;
 use serde::Serialize;
 
-use crate::views::terminal_v::render_terminal_help;
+use crate::{
+    models::state::SessionMap,
+    utilities::{terminal_cd::Cd, terminal_ls::Ls},
+    views::terminal_v::render_terminal_help,
+};
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
@@ -8,6 +13,9 @@ pub enum Command {
     Clear,
     Help,
     Empty,
+    Pwd,
+    Cd,
+    Ls,
     Unknown(String),
 }
 
@@ -17,6 +25,9 @@ impl From<String> for Command {
             "echo" => Command::Echo,
             "clear" | "cls" => Command::Clear,
             "help" => Command::Help,
+            "pwd" => Command::Pwd,
+            "cd" => Command::Cd,
+            "ls" => Command::Ls,
             "" => Command::Empty,
             _ => Command::Unknown(text),
         }
@@ -39,25 +50,30 @@ impl Default for CommandLineOutput {
 }
 
 #[derive(Debug)]
-pub struct CommandLine {
+pub struct CommandLine<'a> {
     pub command: Command,
     pub args: Vec<String>,
+    pub session_map: &'a SessionMap,
+    pub user_id: i32,
+    pub pool: &'a Pool,
 }
 
-impl Default for CommandLine {
-    fn default() -> Self {
-        Self {
-            command: Command::Unknown(String::new()),
-            args: Vec::new(),
-        }
-    }
-}
-
-impl From<&str> for CommandLine {
-    fn from(text: &str) -> Self {
+impl<'a> CommandLine<'a> {
+    pub fn setup_command(
+        text: &str,
+        user_id: i32,
+        session_map: &'a SessionMap,
+        pool: &'a Pool,
+    ) -> Self {
         let split_parts: Vec<String> = text.split_whitespace().map(|v| v.to_string()).collect();
 
-        let mut command_line = CommandLine::default();
+        let mut command_line = CommandLine {
+            command: Command::Unknown(String::new()),
+            args: Vec::new(),
+            user_id,
+            session_map,
+            pool,
+        };
 
         if text.trim() == "" {
             command_line.command = Command::Empty;
@@ -73,25 +89,57 @@ impl From<&str> for CommandLine {
 
         command_line
     }
-}
 
-impl CommandLine {
-    pub fn execute(&self) -> CommandLineOutput {
+    pub fn process_command(
+        &self,
+        output: Option<String>,
+        script: Option<String>,
+    ) -> CommandLineOutput {
+        CommandLineOutput {
+            output: output.unwrap_or_default(),
+            script: script.unwrap_or_default(),
+        }
+    }
+
+    pub async fn execute(&self) -> CommandLineOutput {
         match &self.command {
-            Command::Echo => CommandLineOutput {
-                output: self.args.join(" ").to_string(),
-                script: "".to_string(),
-            },
+            Command::Echo => self.process_command(Some(self.args.join(" ").to_string()), None),
+            Command::Help => self.process_command(Some(render_terminal_help()), None),
+            Command::Pwd => {
+                let session_map = self.session_map.pin_owned();
+                let path = session_map
+                    .get(&format!("pwd-{}", self.user_id))
+                    .map(|v| v.to_string())
+                    .unwrap_or_default();
+                self.process_command(Some(path), None)
+            }
+            Command::Cd => {
+                let session_map = self.session_map.pin_owned();
+                let path = session_map
+                    .get(&format!("pwd-{}", self.user_id))
+                    .map(|v| v.to_string())
+                    .unwrap_or_default();
+                let cd = Cd::new(&path);
+                CommandLineOutput::default()
+            }
+            Command::Ls => {
+                let session_map = self.session_map.pin_owned();
+                let path = session_map
+                    .get(&format!("pwd-{}", self.user_id))
+                    .map(|v| v.to_string())
+                    .unwrap_or_default();
+                let ls = Ls::new(&path, &self.pool);
+                CommandLineOutput::default()
+            }
             Command::Clear => CommandLineOutput::default(),
-            Command::Help => CommandLineOutput {
-                output: render_terminal_help(),
-                script: "".to_string(),
-            },
             Command::Empty => CommandLineOutput::default(),
-            Command::Unknown(command) => CommandLineOutput {
-                output: format!("Unknown command: {}. Type help for more information.", command),
-                script: "".to_string(),
-            },
+            Command::Unknown(command) => self.process_command(
+                Some(format!(
+                    "Unknown command: {}. Type help for more information.",
+                    command
+                )),
+                None,
+            ),
         }
     }
 }
