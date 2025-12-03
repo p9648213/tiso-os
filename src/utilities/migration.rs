@@ -42,6 +42,7 @@ pub async fn init_database(pool: &Pool) {
       folder_type FolderType NOT NULL,
       sort_type FolderSortType NOT NULL DEFAULT 'DateCreated',
       desktop_position VARCHAR(32),
+      path VARCHAR(255) NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
       FOREIGN KEY (parent_folder_id) REFERENCES folder(id) ON DELETE CASCADE
@@ -66,6 +67,7 @@ pub async fn init_database(pool: &Pool) {
       file_name VARCHAR(255) NOT NULL,
       file_type FileType NOT NULL,
       desktop_position VARCHAR(32),
+      path VARCHAR(255) NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
       FOREIGN KEY (folder_id) REFERENCES folder(id) ON DELETE CASCADE

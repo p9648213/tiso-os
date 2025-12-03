@@ -1,14 +1,14 @@
 use deadpool_postgres::Pool;
 
 pub struct Ls<'a> {
-    pub current_path: String,
+    pub current_dir: String,
     pub pool: &'a Pool
 }
 
 impl<'a> Ls<'a> {
-    pub fn new(current_path: &str, pool: &'a Pool) -> Self {
+    pub fn new(current_dir: &str, pool: &'a Pool) -> Self {
         Ls {
-            current_path: current_path.to_string(),
+            current_dir: current_dir.to_string(),
             pool,
         }
     }

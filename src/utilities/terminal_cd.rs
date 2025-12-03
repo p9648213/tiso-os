@@ -1,11 +1,11 @@
 pub struct Cd {
-    pub current_path: String,
+    pub current_dir: String,
 }
 
 impl Cd {
-    pub fn new(current_path: &str) -> Self {
+    pub fn new(current_dir: &str) -> Self {
         Cd {
-            current_path: current_path.to_string(),
+            current_dir: current_dir.to_string(),
         }
     }
 }

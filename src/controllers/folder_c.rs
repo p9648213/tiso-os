@@ -22,10 +22,16 @@ pub struct FolderRenameForm {
     pub folder_name: String,
 }
 
+#[derive(Deserialize)]
+pub struct CreateFolderForm {
+    pub path: String,
+}
+
 pub async fn create_folder(
     Path((folder_id, position_id)): Path<(i32, String)>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
+    Form(form): Form<CreateFolderForm>,
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
@@ -41,6 +47,7 @@ pub async fn create_folder(
         FolderType::Normal,
         Some(folder_id),
         desktop_position,
+        form.path,
         &pool,
     )
     .await?;

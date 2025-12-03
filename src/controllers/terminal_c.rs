@@ -28,7 +28,7 @@ pub async fn get_terminal_window(
         let username = user.username.unwrap();
 
         let session_map = session_map.pin_owned();
-        session_map.insert(format!("pwd-{}", user_id), "/".to_string());
+        session_map.insert(format!("current-dir-{}", user_id), "/".to_string());
 
         Ok((
             [(

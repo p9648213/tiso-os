@@ -205,6 +205,9 @@ export function setupScreenContextMenu() {
             if (targetId) {
               htmx.ajax("POST", `/create/txt/${desktopId}/${targetId}`, {
                 target: `#${targetId}`,
+                values: {
+                  path: "/Desktop"
+                }
               });
             }
             document.body.removeChild(contextMenu);
@@ -215,6 +218,9 @@ export function setupScreenContextMenu() {
             if (targetId) {
               htmx.ajax("POST", `/create/folder/${desktopId}/${targetId}`, {
                 target: `#${targetId}`,
+                values: {
+                  path: "/Desktop"
+                }
               });
             }
             document.body.removeChild(contextMenu);

@@ -22,7 +22,7 @@ pub enum FileType {
     ThisPC,
     Music,
     WebBuilder,
-    Terminal
+    Terminal,
 }
 
 #[derive(Debug)]
@@ -32,6 +32,7 @@ pub struct File {
     pub folder_id: Option<i32>,
     pub file_name: Option<String>,
     pub file_type: Option<FileType>,
+    pub path: Option<String>,
     pub desktop_position: Option<String>,
     pub created_at: Option<OffsetDateTime>,
 }
@@ -56,6 +57,9 @@ impl File {
         let desktop_position: Option<String> = row
             .try_get(format!("{prefix}desktop_position").as_str())
             .unwrap_or(None);
+        let path: Option<String> = row
+            .try_get(format!("{prefix}path").as_str())
+            .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
             .try_get(format!("{prefix}created_at").as_str())
             .unwrap_or(None);
@@ -67,6 +71,7 @@ impl File {
             file_name,
             file_type,
             desktop_position,
+            path,
             created_at,
         }
     }
@@ -84,7 +89,10 @@ impl File {
         pool: &Pool,
     ) -> Result<File, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let columns = columns.join(",");
@@ -105,7 +113,10 @@ impl File {
         pool: &Pool,
     ) -> Result<Vec<File>, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let taskbar_folder = Folder::get_taskbar_folder(user_id, vec!["id"], pool).await?;
@@ -125,25 +136,51 @@ impl File {
     pub async fn create_file(
         user_id: i32,
         folder_id: i32,
-        file_name: &str,
+        mut file_name: String,
         file_type: FileType,
         desktop_position: Option<String>,
+        mut path: String,
         pool: &Pool,
     ) -> Result<File, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
+
+        let initial_file_name = file_name.clone();
+
+        let sql = "
+                SELECT * FROM (
+                    SELECT id from folder WHERE parent_folder_id = $1 AND folder_name = $2
+                    UNION
+                    SELECT id from file WHERE folder_id = $1 AND file_name = $2
+                ) AS combined
+            ";
+
+        let mut row = client.query(sql, &[&folder_id, &file_name]).await?;
+
+        while !row.is_empty() {
+            let random_numb = rand::random_range(0..1000);
+            file_name = format!("{} {}", initial_file_name, random_numb);
+            println!("{}", file_name);
+            row = client.query(sql, &[&folder_id, &file_name]).await?;
+        }
+
+        path = format!("{}/{}", path, file_name);
 
         let row = client
             .query_one(
-                "INSERT INTO file (user_id, folder_id, file_name, file_type, desktop_position) 
-                    VALUES ($1, $2, $3, $4, $5) RETURNING id",
+                "INSERT INTO file (user_id, folder_id, file_name, file_type, desktop_position, path) 
+                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, file_name",
                 &[
                     &user_id,
                     &folder_id,
                     &file_name,
                     &file_type,
                     &desktop_position,
+                    &path
                 ],
             )
             .await?;
@@ -160,7 +197,10 @@ impl File {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let rows = client
@@ -203,7 +243,10 @@ impl File {
 
     pub async fn delete_file(id: i32, user_id: i32, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let rows = client
@@ -230,7 +273,10 @@ impl File {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let row = client

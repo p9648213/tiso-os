@@ -117,18 +117,21 @@ impl User {
         let user_id = user.id.unwrap();
 
         txn.execute(
-            "INSERT INTO folder (user_id, folder_name, folder_type) VALUES 
-                ($1, $2, $3), 
-                ($1, $4, $5),
-                ($1, $6, $7)",
+            "INSERT INTO folder (user_id, folder_name, folder_type, path) VALUES 
+                ($1, $2, $3, $8), 
+                ($1, $4, $5, $9),
+                ($1, $6, $7, $10)",
             &[
                 &user_id,
                 &"Desktop",
                 &FolderType::Desktop,
-                &"This PC",
+                &"Root",
                 &FolderType::Root,
                 &"Taskbar",
                 &FolderType::Taskbar,
+                &"/Desktop",
+                &"/Root",
+                &"/Taskbar",
             ],
         )
         .await?;
@@ -143,20 +146,26 @@ impl User {
         let taskbar_folder = Folder::try_from(&row, None);
 
         txn.execute(
-            "INSERT INTO file (user_id, folder_id, file_name, file_type) VALUES 
-                ($1, $2, 'Calculator', 'Calculator'),
-                ($1, $2, 'Snake', 'Snake'),
-                ($1, $2, 'FlappyBird', 'FlappyBird'),
-                ($1, $2, 'Music Player', 'Music')",
-                
-            &[&user_id, &taskbar_folder.id.unwrap()],
+            "INSERT INTO file (user_id, folder_id, file_name, file_type, path) VALUES 
+                ($1, $2, 'Calculator', 'Calculator', $3),
+                ($1, $2, 'Snake', 'Snake', $4),
+                ($1, $2, 'FlappyBird', 'FlappyBird', $5),
+                ($1, $2, 'Music Player', 'Music', $6)",
+            &[
+                &user_id,
+                &taskbar_folder.id.unwrap(),
+                &"/Taskbar/Calculator",
+                &"/Taskbar/Snake",
+                &"/Taskbar/FlappyBird",
+                &"/Taskbar/Music",
+            ],
         )
         .await?;
 
         let row = txn
             .query_one(
-                r#"INSERT INTO "file" (user_id, folder_id, file_name, file_type) VALUES ($1, $2, 'Web Builder', 'WebBuilder') RETURNING id"#,
-                &[&user_id, &taskbar_folder.id.unwrap()],
+                r#"INSERT INTO "file" (user_id, folder_id, file_name, file_type, path) VALUES ($1, $2, 'Web Builder', 'WebBuilder', $3) RETURNING id"#,
+                &[&user_id, &taskbar_folder.id.unwrap(), &"/Taskbar/Web Builder"],
             )
             .await?;
 
@@ -183,8 +192,8 @@ impl User {
         .await?;
 
         let row = txn.query_one(r#"
-            INSERT INTO "file" (user_id, folder_id, file_name, file_type) VALUES ($1, $2, 'Terminal', 'Terminal') RETURNING id
-        "#, &[&user_id, &taskbar_folder.id.unwrap()]).await?;
+            INSERT INTO "file" (user_id, folder_id, file_name, file_type, path) VALUES ($1, $2, 'Terminal', 'Terminal', $3) RETURNING id
+        "#, &[&user_id, &taskbar_folder.id.unwrap(), &"/Taskbar/Terminal"]).await?;
 
         let terminal_file = File::try_from(&row, None);
 
@@ -210,9 +219,9 @@ impl User {
         let desktop_folder = Folder::try_from(&row, None);
 
         txn.execute(
-            "INSERT INTO file (user_id, folder_id, file_name, file_type) VALUES 
-                ($1, $2, 'This PC', 'ThisPC')",
-            &[&user_id, &desktop_folder.id.unwrap()],
+            "INSERT INTO file (user_id, folder_id, file_name, file_type, desktop_position, path) VALUES 
+                ($1, $2, 'This PC', 'ThisPC', $3, $4)",
+            &[&user_id, &desktop_folder.id.unwrap(), &"item-0-0", &"/Desktop/This PC"],
         )
         .await?;
 

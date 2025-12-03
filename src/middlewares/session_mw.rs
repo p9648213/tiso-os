@@ -16,9 +16,9 @@ pub async fn session_middleware(
 ) -> Result<impl IntoResponse, AppError> {
     let session_map = session_map.pin_owned();
 
-    let jar = CookieJar::from_headers(request.headers());
+    let cookie_jar = CookieJar::from_headers(request.headers());
 
-    let session = jar
+    let session = cookie_jar
         .get("session")
         .map(|cookie| cookie.value())
         .unwrap_or_default();

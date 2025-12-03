@@ -107,28 +107,28 @@ impl<'a> CommandLine<'a> {
             Command::Help => self.process_command(Some(render_terminal_help()), None),
             Command::Pwd => {
                 let session_map = self.session_map.pin_owned();
-                let path = session_map
-                    .get(&format!("pwd-{}", self.user_id))
+                let current_dir = session_map
+                    .get(&format!("current-dir-{}", self.user_id))
                     .map(|v| v.to_string())
                     .unwrap_or_default();
-                self.process_command(Some(path), None)
+                self.process_command(Some(current_dir), None)
             }
             Command::Cd => {
                 let session_map = self.session_map.pin_owned();
-                let path = session_map
-                    .get(&format!("pwd-{}", self.user_id))
+                let current_dir = session_map
+                    .get(&format!("current-dir-{}", self.user_id))
                     .map(|v| v.to_string())
                     .unwrap_or_default();
-                let cd = Cd::new(&path);
+                let cd = Cd::new(&current_dir);
                 CommandLineOutput::default()
             }
             Command::Ls => {
                 let session_map = self.session_map.pin_owned();
-                let path = session_map
-                    .get(&format!("pwd-{}", self.user_id))
+                let current_dir = session_map
+                    .get(&format!("current-dir-{}", self.user_id))
                     .map(|v| v.to_string())
                     .unwrap_or_default();
-                let ls = Ls::new(&path, &self.pool);
+                let ls = Ls::new(&current_dir, self.pool);
                 CommandLineOutput::default()
             }
             Command::Clear => CommandLineOutput::default(),

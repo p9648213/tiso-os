@@ -34,6 +34,7 @@ pub struct Folder {
     pub sort_type: Option<FolderSortType>,
     pub desktop_position: Option<String>,
     pub parent_folder_id: Option<i32>,
+    pub path: Option<String>,
     pub created_at: Option<OffsetDateTime>,
 }
 
@@ -60,6 +61,9 @@ impl Folder {
         let parent_folder_id: Option<i32> = row
             .try_get(format!("{prefix}parent_folder_id").as_str())
             .unwrap_or(None);
+        let path: Option<String> = row
+            .try_get(format!("{prefix}path").as_str())
+            .unwrap_or(None);
         let created_at: Option<OffsetDateTime> = row
             .try_get(format!("{prefix}created_at").as_str())
             .unwrap_or(None);
@@ -72,6 +76,7 @@ impl Folder {
             sort_type,
             desktop_position,
             parent_folder_id,
+            path,
             created_at,
         }
     }
@@ -173,11 +178,14 @@ impl Folder {
         folder_type: FolderType,
         parent_folder_id: Option<i32>,
         desktop_position: Option<String>,
+        mut path: String,
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
         })?;
+
+        let initial_folder_name = folder_name.clone();
 
         if let Some(parent_folder_id) = parent_folder_id {
             let sql = "
@@ -192,15 +200,17 @@ impl Folder {
 
             while !row.is_empty() {
                 let random_numb = rand::random_range(0..1000);
-                folder_name = format!("New Folder {}", random_numb);
+                folder_name = format!("{} {}", initial_folder_name, random_numb);
                 row = client.query(sql, &[&parent_folder_id, &folder_name]).await?;
             }
         }
 
+        path = format!("{}/{}", path, folder_name);
+
         let row = client.query_one(
-            "INSERT INTO folder (user_id, folder_name, folder_type, parent_folder_id, desktop_position) 
-                    VALUES ($1, $2, $3, $4, $5) RETURNING id, folder_name",
-            &[&user_id, &folder_name, &folder_type, &parent_folder_id, &desktop_position],
+            "INSERT INTO folder (user_id, folder_name, folder_type, parent_folder_id, desktop_position, path) 
+                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, folder_name",
+            &[&user_id, &folder_name, &folder_type, &parent_folder_id, &desktop_position, &path],
         )
         .await?;
 

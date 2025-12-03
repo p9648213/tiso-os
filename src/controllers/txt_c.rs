@@ -1,9 +1,13 @@
 use axum::{
-    Extension,
-    extract::{Path, State},
-    response::IntoResponse,
+    Extension, Form, extract::{Path, State}, response::IntoResponse
 };
 use deadpool_postgres::Pool;
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct CreateTxtForm {
+    pub path: String,
+}
 
 use crate::{
     middlewares::session_mw::UserId,
@@ -21,6 +25,7 @@ pub async fn create_txt(
     Path((folder_id, position_id)): Path<(i32, String)>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
+    Form(form): Form<CreateTxtForm>,
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
@@ -33,9 +38,10 @@ pub async fn create_txt(
     let file = File::create_file(
         user_id,
         folder_id,
-        "New Text",
+        "New Text".to_string(),
         FileType::Txt,
         desktop_position,
+        form.path,
         &pool,
     )
     .await?;
@@ -44,7 +50,7 @@ pub async fn create_txt(
 
     Txt::create_txt(file_id, &pool).await?;
 
-    Ok(render_txt_file(file_id, None, None))
+    Ok(render_txt_file(file_id, file.file_name, None))
 }
 
 pub async fn get_txt_input(
