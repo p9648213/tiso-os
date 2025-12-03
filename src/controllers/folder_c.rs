@@ -123,7 +123,23 @@ pub async fn rename_folder(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    Folder::rename_folder(folder_id, user_id, &form.folder_name, &pool).await?;
+    let rename_result = Folder::rename_folder(folder_id, user_id, &form.folder_name, &pool).await;
 
-    Ok(render_folder(folder_id, Some(form.folder_name), None))
+    if rename_result.is_err() {
+        let folder =
+            Folder::get_folder(folder_id, user_id, vec!["id", "folder_name"], &pool).await?;
+
+        return Ok((
+            [(
+                "HX-Trigger",
+                r#"{"message_box":{"type":"error", "title": "Error", "message": "Duplicate name"}}"#,
+            )],
+            render_folder(folder.id.unwrap(), folder.folder_name, None),
+        ));
+    }
+
+    Ok((
+        [("HX-Trigger", "")],
+        render_folder(folder_id, Some(form.folder_name), None),
+    ))
 }

@@ -94,7 +94,10 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let columns = columns.join(",");
@@ -115,7 +118,10 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let columns = columns.join(",");
@@ -136,7 +142,10 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let columns = columns.join(",");
@@ -157,7 +166,10 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let columns = columns.join(",");
@@ -182,7 +194,10 @@ impl Folder {
         pool: &Pool,
     ) -> Result<Folder, AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let initial_folder_name = folder_name.clone();
@@ -196,12 +211,16 @@ impl Folder {
                 ) AS combined
             ";
 
-            let mut row = client.query(sql, &[&parent_folder_id, &folder_name]).await?;
+            let mut row = client
+                .query(sql, &[&parent_folder_id, &folder_name])
+                .await?;
 
             while !row.is_empty() {
                 let random_numb = rand::random_range(0..1000);
                 folder_name = format!("{} {}", initial_folder_name, random_numb);
-                row = client.query(sql, &[&parent_folder_id, &folder_name]).await?;
+                row = client
+                    .query(sql, &[&parent_folder_id, &folder_name])
+                    .await?;
             }
         }
 
@@ -226,7 +245,10 @@ impl Folder {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let rows = client
@@ -269,7 +291,10 @@ impl Folder {
 
     pub async fn delete_folder(id: i32, user_id: i32, pool: &Pool) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
 
         let rows = client
@@ -296,8 +321,27 @@ impl Folder {
         pool: &Pool,
     ) -> Result<(), AppError> {
         let client = pool.get().await.map_err(|error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, &format!("Couldn't get postgres client: {:?}", error))
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
         })?;
+
+        let sql = "
+            WITH parent AS (
+                SELECT parent_folder_id FROM folder WHERE id = $1
+            ) SELECT * FROM (
+                SELECT id FROM folder WHERE parent_folder_id = (SELECT parent_folder_id FROM parent) AND folder_name = $2
+                UNION
+                SELECT id FROM file WHERE folder_id = (SELECT parent_folder_id FROM parent) AND file_name = $2
+            ) AS combined;
+        ";
+
+        let row = client.query(sql, &[&id, &folder_name]).await?;
+
+        if !row.is_empty() {
+            return Err(AppError::new(StatusCode::BAD_REQUEST, "Duplicate name"));
+        }
 
         let row = client
             .execute(
