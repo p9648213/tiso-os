@@ -1,6 +1,6 @@
 <div
-  id="folder-<%= id %>"
-  data-folder-type="Root"
+  id="file-<%= id %>"
+  data-file-type="ThisPC"
   class="absolute inset-0 flex justify-center py-2"
 >
   <div
