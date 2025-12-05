@@ -43,3 +43,13 @@ pub struct TerminalHelp {}
 pub fn render_terminal_help() -> String {
     TerminalHelp {}.render_once().unwrap()
 }
+
+#[derive(TemplateSimple)]
+#[template(path = "terminal_ls.stpl")]
+pub struct TerminaLS {
+    item_names: Vec<String>
+}
+
+pub fn render_terminal_ls(item_names: Vec<String>) -> String {
+    TerminaLS { item_names }.render_once().unwrap()
+}

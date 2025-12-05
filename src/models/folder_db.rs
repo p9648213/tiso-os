@@ -112,6 +112,55 @@ impl Folder {
         Ok(Self::try_from(&row, None))
     }
 
+    pub async fn get_folder_by_path(
+        path: &str,
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Folder, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
+        })?;
+
+        let columns = columns.join(",");
+
+        let row = client
+            .query_one(
+                &format!("SELECT {columns} FROM folder WHERE path = $1 AND user_id = $2"),
+                &[&path, &user_id],
+            )
+            .await?;
+
+        Ok(Self::try_from(&row, None))
+    }
+
+    pub async fn get_folders_with_no_parent(
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<Vec<Folder>, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
+        })?;
+
+        let columns = columns.join(",");
+
+        let rows = client
+            .query(
+                &format!("SELECT {columns} FROM folder WHERE parent_folder_id IS NULL AND user_id = $1"),
+                &[&user_id],
+            )
+            .await?;
+
+        Ok(Self::try_from_vec(rows, None))
+    }
+
     pub async fn get_desktop_folder(
         user_id: i32,
         columns: Vec<&str>,
@@ -326,7 +375,7 @@ impl Folder {
                 &format!("Couldn't get postgres client: {:?}", error),
             )
         })?;
-
+        
         let sql = "
             WITH parent AS (
                 SELECT parent_folder_id FROM folder WHERE id = $1

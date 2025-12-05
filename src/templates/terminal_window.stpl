@@ -51,7 +51,7 @@
   </div>
   <div id="terminal-display" class="p-2 overflow-auto">
     <div id="terminal-input" class="flex gap-1">
-      <span class="text-green-600 whitespace-nowrap"><%= username %>@tiso-os:~$</span>
+      <span class="text-green-600 whitespace-nowrap"><%= username %>@tiso-os: <span class="terminal-path">/</span></span>
       <textarea
         id="terminal-text-area"
         autofocus

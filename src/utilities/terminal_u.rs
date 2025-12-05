@@ -119,8 +119,28 @@ impl<'a> CommandLine<'a> {
                     .get(&format!("current-dir-{}", self.user_id))
                     .map(|v| v.to_string())
                     .unwrap_or_default();
-                let cd = Cd::new(&current_dir);
-                CommandLineOutput::default()
+                let cd = Cd::new(&current_dir, &self.args, self.user_id, self.pool);
+                let result = cd.go_to_path().await;
+
+                match result {
+                    Ok(path) => {
+                        session_map.insert(format!("current-dir-{}", self.user_id), path.clone());
+
+                        self.process_command(
+                            Some("".into()),
+                            Some(format!(
+                                r#"
+                                    <script type="module">
+                                        import {{ replacePath }} from "/assets/js/terminal.js";
+                                        replacePath("{}");
+                                    </script>
+                                "#,
+                                path
+                            )),
+                        )
+                    }
+                    Err(error) => self.process_command(Some(error), None),
+                }
             }
             Command::Ls => {
                 let session_map = self.session_map.pin_owned();
@@ -128,13 +148,18 @@ impl<'a> CommandLine<'a> {
                     .get(&format!("current-dir-{}", self.user_id))
                     .map(|v| v.to_string())
                     .unwrap_or_default();
-                let ls = Ls::new(&current_dir, self.pool);
-                CommandLineOutput::default()
+
+                let ls = Ls::new(&current_dir, self.user_id, self.pool);
+                let output = ls.list_file().await;
+                self.process_command(Some(output), None)
             }
             Command::Clear => CommandLineOutput::default(),
             Command::Empty => CommandLineOutput::default(),
             Command::Unknown(command) => CommandLineOutput {
-                output: format!("Unknown command: {} 💥💥💥. Type help more information 😚😚😚.", command),
+                output: format!(
+                    "Unknown command: {} 💥💥💥. Type help more information 😚😚😚.",
+                    command
+                ),
                 script: "".to_string(),
             },
         }

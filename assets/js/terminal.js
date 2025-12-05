@@ -101,7 +101,9 @@ export function setupTerminalWebSocket() {
   terminalSocket.addEventListener("message", function (event) {
     const message = JSON.parse(event.data);
 
-    if (message.output == "") return;
+    if (message.output == "" && message.script == "") {
+      return;
+    }
 
     const terminalDisplay = document.getElementById(`terminal-display`);
     const terminalInput = document.getElementById(`terminal-input`);
@@ -140,4 +142,10 @@ export function setupTerminalWebSocket() {
   terminalSocket.addEventListener("error", function () {
     console.log("WebSocket connection error");
   });
+}
+
+export function replacePath(path) {
+  const terminalPath = document.querySelectorAll(".terminal-path");
+  const lastPath = terminalPath[terminalPath.length - 1];
+  lastPath.textContent = path;
 }

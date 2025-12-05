@@ -14,3 +14,9 @@ impl IntoResponse for AppError {
         (self.0, self.1).into_response()
     }
 }
+
+impl std::fmt::Display for AppError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.1)
+    }
+}
