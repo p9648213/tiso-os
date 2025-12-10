@@ -119,13 +119,11 @@ impl<'a> CommandLine<'a> {
                     .get(&format!("current-dir-{}", self.user_id))
                     .map(|v| v.to_string())
                     .unwrap_or_default();
-                let cd = Cd::new(&current_dir, &self.args, self.user_id, self.pool);
+                let cd = Cd::new(&current_dir, &self.args, self.session_map, self.user_id, self.pool);
                 let result = cd.go_to_path().await;
 
                 match result {
                     Ok(path) => {
-                        session_map.insert(format!("current-dir-{}", self.user_id), path.clone());
-
                         self.process_command(
                             Some("".into()),
                             Some(format!(
