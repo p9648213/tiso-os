@@ -4,6 +4,7 @@ pub mod migration;
 pub mod postgres;
 pub mod terminal_cd;
 pub mod terminal_ls;
+pub mod terminal_mkdir;
 pub mod terminal_u;
 pub mod tracing;
 pub mod web_builder_u;

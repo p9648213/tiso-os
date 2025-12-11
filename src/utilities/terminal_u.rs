@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::{
     models::state::SessionMap,
-    utilities::{terminal_cd::Cd, terminal_ls::Ls},
+    utilities::{common::get_current_dir, terminal_cd::Cd, terminal_ls::Ls, terminal_mkdir::Mkdir},
     views::terminal_v::render_terminal_help,
 };
 
@@ -16,6 +16,7 @@ pub enum Command {
     Pwd,
     Cd,
     Ls,
+    Mkdir,
     Unknown(String),
 }
 
@@ -28,6 +29,7 @@ impl From<String> for Command {
             "pwd" => Command::Pwd,
             "cd" => Command::Cd,
             "ls" => Command::Ls,
+            "mkdir" => Command::Mkdir,
             "" => Command::Empty,
             _ => Command::Unknown(text),
         }
@@ -106,51 +108,48 @@ impl<'a> CommandLine<'a> {
             Command::Echo => self.process_command(Some(self.args.join(" ").to_string()), None),
             Command::Help => self.process_command(Some(render_terminal_help()), None),
             Command::Pwd => {
-                let session_map = self.session_map.pin_owned();
-                let current_dir = session_map
-                    .get(&format!("current-dir-{}", self.user_id))
-                    .map(|v| v.to_string())
-                    .unwrap_or_default();
+                let current_dir = get_current_dir(self.session_map, self.user_id);
                 self.process_command(Some(current_dir), None)
             }
             Command::Cd => {
-                let session_map = self.session_map.pin_owned();
-                let current_dir = session_map
-                    .get(&format!("current-dir-{}", self.user_id))
-                    .map(|v| v.to_string())
-                    .unwrap_or_default();
-                let cd = Cd::new(&current_dir, &self.args, self.session_map, self.user_id, self.pool);
+                let current_dir = get_current_dir(self.session_map, self.user_id);
+                let cd = Cd::new(
+                    &current_dir,
+                    &self.args,
+                    self.session_map,
+                    self.user_id,
+                    self.pool,
+                );
                 let result = cd.go_to_path().await;
 
                 match result {
-                    Ok(path) => {
-                        self.process_command(
-                            Some("".into()),
-                            Some(format!(
-                                r#"
+                    Ok(path) => self.process_command(
+                        Some("".into()),
+                        Some(format!(
+                            r#"
                                     <script type="module">
                                         import {{ replacePath }} from "/assets/js/terminal.js";
                                         replacePath("{}");
                                     </script>
                                 "#,
-                                path
-                            )),
-                        )
-                    }
+                            path
+                        )),
+                    ),
                     Err(error) => self.process_command(Some(error), None),
                 }
             }
             Command::Ls => {
-                let session_map = self.session_map.pin_owned();
-                let current_dir = session_map
-                    .get(&format!("current-dir-{}", self.user_id))
-                    .map(|v| v.to_string())
-                    .unwrap_or_default();
-
+                let current_dir = get_current_dir(self.session_map, self.user_id);
                 let ls = Ls::new(&current_dir, self.user_id, self.pool);
                 let output = ls.list_file().await;
                 self.process_command(Some(output), None)
             }
+            Command::Mkdir => {
+                let current_dir = get_current_dir(self.session_map, self.user_id);
+                let mkdir = Mkdir::new(&current_dir, &self.args, self.user_id, self.pool);
+                let output = mkdir.create_folder().await;
+                self.process_command(Some(output), None)
+            },
             Command::Clear => CommandLineOutput::default(),
             Command::Empty => CommandLineOutput::default(),
             Command::Unknown(command) => CommandLineOutput {

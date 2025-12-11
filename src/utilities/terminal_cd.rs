@@ -39,6 +39,31 @@ impl<'a> Cd<'a> {
                     session_map.insert(format!("current-dir-{}", self.user_id), "/".to_string());
                     Ok("/".to_string())
                 }
+                ".." => {
+                    let path = self.current_dir.split('/').collect::<Vec<&str>>();
+                    let path = path[..path.len() - 1].join("/");
+
+                    if path.is_empty() {
+                        let session_map = self.session_map.pin_owned();
+                        session_map
+                            .insert(format!("current-dir-{}", self.user_id), "/".to_string());
+                        Ok("/".to_string())
+                    } else {
+                        let result =
+                            Folder::get_folder_by_path(&path, self.user_id, vec!["id"], self.pool)
+                                .await;
+
+                        match result {
+                            Ok(_) => {
+                                let session_map = self.session_map.pin_owned();
+                                session_map
+                                    .insert(format!("current-dir-{}", self.user_id), path.clone());
+                                Ok(path)
+                            }
+                            Err(err) => Err(format!("{}{}", "Path not found: ", err)),
+                        }
+                    }
+                }
                 _ => {
                     let path = format!("{}{}", self.current_dir, args);
 
