@@ -18,6 +18,10 @@
       <% } %>
     <% } else if *file_type == FileType::Terminal { %> 
       <% include!("terminal_file.stpl"); %> 
+    <% } else if *file_type == FileType::Resume { %> 
+      <% let id = file.id.unwrap(); %> 
+      <% let name = file.file_name.as_ref().unwrap(); %>
+      <% include!("resume_file.stpl"); %>
     <% } %>
   <% } %>
 <% } %>

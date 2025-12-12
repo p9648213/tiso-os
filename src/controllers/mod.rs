@@ -12,3 +12,4 @@ pub mod taskbar_c;
 pub mod terminal_c;
 pub mod txt_c;
 pub mod web_builder_c;
+pub mod resume_c;

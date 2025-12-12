@@ -4,7 +4,7 @@
   class="absolute inset-0 flex justify-center py-2"
 >
   <div
-    class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 group-hover/item:bg-blue-900 p-1.5 rounded-xs w-24 min-w-[70px] h-fit"
+    class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 group-hover/item:bg-blue-900 p-1.5 rounded-xs w-24 min-w-17.5 h-fit"
   >
     <img
       class="w-9 h-9"
@@ -12,7 +12,7 @@
       draggable="false"
     />
     <div
-      class="max-w-[75px] overflow-ellipsis text-white text-sm text-center line-clamp-2"
+      class="max-w-18.75 overflow-ellipsis text-white text-sm text-center line-clamp-2"
     >
       <%= name %>
     </div>

@@ -1,0 +1,8 @@
+
+<div
+  id="resume-window"
+  class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
+  style="top: <%= top %>px; left: <%= left %>px; width: <%= window_width %>px; height: <%= window_height %>px;"
+>
+  Resume
+</div>

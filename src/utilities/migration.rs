@@ -53,7 +53,7 @@ pub async fn init_database(pool: &Pool) {
     let sql = "DO $$
       BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'filetype') THEN
-          CREATE TYPE FileType AS ENUM ('Txt', 'Calculator', 'Snake', 'FlappyBird', 'ThisPC', 'Music', 'WebBuilder', 'Terminal');
+          CREATE TYPE FileType AS ENUM ('Txt', 'Calculator', 'Snake', 'FlappyBird', 'ThisPC', 'Music', 'WebBuilder', 'Terminal', 'Resume');
         END IF;
       END
     $$;";

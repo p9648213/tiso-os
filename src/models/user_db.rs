@@ -1,6 +1,6 @@
 use crate::{
     models::{
-        file_db::File,
+        file_db::{File, FileType},
         folder_db::{Folder, FolderType},
     },
     utilities::postgres::DbExecutor,
@@ -117,10 +117,10 @@ impl User {
         let user_id = user.id.unwrap();
 
         txn.execute(
-            "INSERT INTO folder (user_id, folder_name, folder_type, path) VALUES 
-                ($1, $2, $3, $8), 
-                ($1, $4, $5, $9),
-                ($1, $6, $7, $10)",
+            "INSERT INTO folder (user_id, folder_name, folder_type, sort_type, path) VALUES 
+                ($1, $2, $3, 'Custom', $8), 
+                ($1, $4, $5, 'DateCreated', $9),
+                ($1, $6, $7, 'DateCreated', $10)",
             &[
                 &user_id,
                 &"Desktop",
@@ -164,8 +164,8 @@ impl User {
 
         let row = txn
             .query_one(
-                r#"INSERT INTO "file" (user_id, folder_id, file_name, file_type, path) VALUES ($1, $2, 'Web Builder', 'WebBuilder', $3) RETURNING id"#,
-                &[&user_id, &taskbar_folder.id.unwrap(), &"/Taskbar/Web Builder"],
+                r#"INSERT INTO "file" (user_id, folder_id, file_name, file_type, path) VALUES ($1, $2, $3, $4, $5) RETURNING id"#,
+                &[&user_id, &taskbar_folder.id.unwrap(), &"Web Builder", &FileType::WebBuilder, &"/Taskbar/Web Builder"],
             )
             .await?;
 
@@ -192,8 +192,8 @@ impl User {
         .await?;
 
         let row = txn.query_one(r#"
-            INSERT INTO "file" (user_id, folder_id, file_name, file_type, path) VALUES ($1, $2, 'Terminal', 'Terminal', $3) RETURNING id
-        "#, &[&user_id, &taskbar_folder.id.unwrap(), &"/Taskbar/Terminal"]).await?;
+            INSERT INTO "file" (user_id, folder_id, file_name, file_type, path) VALUES ($1, $2, $3, $4, $5) RETURNING id
+        "#, &[&user_id, &taskbar_folder.id.unwrap(), &"Terminal", &FileType::Terminal, &"/Taskbar/Terminal"]).await?;
 
         let terminal_file = File::try_from(&row, None);
 
@@ -220,8 +220,35 @@ impl User {
 
         txn.execute(
             "INSERT INTO file (user_id, folder_id, file_name, file_type, desktop_position, path) VALUES 
-                ($1, $2, 'This PC', 'ThisPC', $3, $4)",
-            &[&user_id, &desktop_folder.id.unwrap(), &"item-0-0", &"/Desktop/This PC"],
+                ($1, $2, $3, $4, $5, $6)",
+            &[&user_id, &desktop_folder.id.unwrap(), &"This PC", &FileType::ThisPC, &"item-0-0", &"/Desktop/This PC"],
+        )
+        .await?;
+
+        let row = txn.query_one(
+            "INSERT INTO folder (user_id, parent_folder_id, folder_name, folder_type, desktop_position, path) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+            &[
+                &user_id,
+                &desktop_folder.id.unwrap(),
+                &"My Profile",
+                &FolderType::Normal,
+                &"item-1-0",
+                &"/Desktop/My Profile",
+            ],
+        ).await?;
+
+        let profile_folder = Folder::try_from(&row, None);
+
+        txn.execute(
+            "INSERT INTO file (user_id, folder_id, file_name, file_type, path) VALUES 
+                ($1, $2, $3, $4, $5)",
+            &[
+                &user_id,
+                &profile_folder.id.unwrap(),
+                &"resume",
+                &FileType::Resume,
+                &"/Desktop/My Profile/Resume",
+            ],
         )
         .await?;
 

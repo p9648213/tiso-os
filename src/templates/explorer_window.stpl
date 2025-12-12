@@ -278,7 +278,13 @@
               <div class="relative w-22 h-20">
                 <% include!("txt_file.stpl"); %>
               </div>
-            <% } %>  
+            <% } %>
+            <% if item.file_type.is_some() && *item.file_type.as_ref().unwrap() == FileType::Resume { %>
+              <% let id = format!("explorer-file-{}", item.id.unwrap()); %>
+              <div class="relative w-22 h-20">
+                <% include!("resume_file.stpl"); %>
+              </div>
+            <% } %>    
           <% } %>
           <% if item.item_type.is_some() && *item.item_type.as_ref().unwrap() == ItemType::Folder { %>
             <% let id = format!("explorer-folder-{}", item.id.unwrap()); %>

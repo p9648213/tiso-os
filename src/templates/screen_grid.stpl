@@ -32,7 +32,11 @@
               <% include!("music_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::WebBuilder { %> 
               <% include!("web_builder_file.stpl"); %> 
-            <% } %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Terminal { %> 
+              <% include!("terminal_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Resume { %> 
+              <% include!("resume_file.stpl"); %>
+            <% } %>  
           <% } else if *item.item_type.as_ref().unwrap() == ItemType::Folder { %> 
             <% let id = format!("folder-{}", id); %>
             <% include!("folder.stpl"); %> 
@@ -69,7 +73,11 @@
               <% include!("music_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::WebBuilder { %> 
               <% include!("web_builder_file.stpl"); %> 
-            <% } %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Terminal { %> 
+              <% include!("terminal_file.stpl"); %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Resume { %> 
+              <% include!("resume_file.stpl"); %> 
+            <% } %>
           <% } else if *item.item_type.as_ref().unwrap() == ItemType::Folder { %> 
             <% let id = format!("folder-{}", id); %>
             <% include!("folder.stpl"); %> 

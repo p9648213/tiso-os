@@ -23,6 +23,7 @@ pub enum FileType {
     Music,
     WebBuilder,
     Terminal,
+    Resume
 }
 
 #[derive(Debug)]

@@ -11,3 +11,4 @@ pub mod thispc_v;
 pub mod txt_v;
 pub mod web_builder_v;
 pub mod terminal_v;
+pub mod resume_v;
