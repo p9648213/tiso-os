@@ -52,7 +52,7 @@ pub async fn create_folder(
     )
     .await?;
 
-    Ok(render_folder(folder.id.unwrap(), folder.folder_name, None))
+    Ok(render_folder(Some(folder.id.unwrap().to_string()), folder.folder_name, None))
 }
 
 pub async fn update_folder_desktop_position(
@@ -134,12 +134,12 @@ pub async fn rename_folder(
                 "HX-Trigger",
                 r#"{"message_box":{"type":"error", "title": "Error", "message": "Duplicate name"}}"#,
             )],
-            render_folder(folder.id.unwrap(), folder.folder_name, None),
+            render_folder(Some(folder.id.unwrap().to_string()), folder.folder_name, None),
         ));
     }
 
     Ok((
         [("HX-Trigger", "")],
-        render_folder(folder_id, Some(form.folder_name), None),
+        render_folder(Some(folder_id.to_string()), Some(form.folder_name), None),
     ))
 }

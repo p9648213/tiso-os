@@ -1,5 +1,5 @@
 <div
-  id="file-<%= id %>"
+  <% if let Some(id) = id { %> id="<%= id %>" <% } %>
   data-file-type="web_builder"
   class="flex flex-col justify-center items-center gap-1.5 hover:bg-blue-900 group-hover/item:bg-blue-900 p-1.5 rounded-xs w-24 h-fit file"
 >

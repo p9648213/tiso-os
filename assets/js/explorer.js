@@ -99,3 +99,41 @@ export function setupExplorerToolBar(folderId) {
     );
   });
 }
+
+export function setupExplorerSingleSelect(folderId) {
+  const explorerItems = document.getElementById(`explorer-items-${folderId}`);
+
+  explorerItems.addEventListener("click", (event) => {
+    const checkExplorerItem = event.target.closest(
+      '[id^="explorer-file-"], [id^="explorer-folder-"]'
+    );
+
+    if (checkExplorerItem) {
+      if (
+        window.selectedItem &&
+        window.selectedItem.id == checkExplorerItem.id
+      ) {
+        return;
+      }
+
+      if (window.selectedItem) {
+        removeSelectedItem();
+      }
+
+      if (window.editMode === false) {
+        window.selectedItem = checkExplorerItem;
+        checkExplorerItem.classList.add("bg-blue-900");
+      }
+    } else {
+      removeSelectedItem();
+    }
+  });
+}
+
+function removeSelectedItem() {
+  if (window.selectedItem) {
+    window.selectedItem.classList.remove("bg-blue-900");
+    window.selectedItem = null;
+  }
+}
+

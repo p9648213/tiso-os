@@ -3,20 +3,27 @@ use sailfish::TemplateSimple;
 #[derive(TemplateSimple)]
 #[template(path = "folder.stpl")]
 pub struct Folder<'a> {
-    pub id: &'a str,
+    pub id: Option<String>,
     pub name: &'a str,
 }
 
-pub fn render_folder(id: i32, name: Option<String>, id_prefix: Option<String>) -> String {
+pub fn render_folder(
+    id: Option<String>,
+    name: Option<String>,
+    id_prefix: Option<String>,
+) -> String {
     let folder_name = name.as_deref().unwrap_or("New Folder");
 
-    let id = match id_prefix {
-        Some(prefix) => format!("{prefix}-folder-{id}"),
-        None => format!("folder-{id}"),
+    let id = match id {
+        Some(id) => match id_prefix {
+            Some(prefix) => Some(format!("{prefix}-folder-{id}")),
+            None => Some(format!("folder-{id}")),
+        },
+        None => None,
     };
 
     Folder {
-        id: &id,
+        id,
         name: folder_name,
     }
     .render_once()

@@ -13,13 +13,12 @@
     <% } else if *file_type == FileType::Music { %> 
       <% include!("music_file.stpl"); %> 
     <% } else if *file_type == FileType::WebBuilder { %> 
-      <% if let Some(id) = file.id { %> 
+        <% let id = Some(file.id.unwrap().to_string()); %>
         <% include!("web_builder_file.stpl"); %> 
-      <% } %>
     <% } else if *file_type == FileType::Terminal { %> 
       <% include!("terminal_file.stpl"); %> 
     <% } else if *file_type == FileType::Resume { %> 
-      <% let id = file.id.unwrap(); %> 
+      <% let id = Some(file.id.unwrap().to_string()); %> 
       <% let name = file.file_name.as_ref().unwrap(); %>
       <% include!("resume_file.stpl"); %>
     <% } %>

@@ -1,5 +1,5 @@
 <div
-  id="<%= id %>"
+  <% if let Some(id) = id { %> id="<%= id %>" <% } %>
   data-file-type="txt"
   class="absolute inset-0 flex justify-center py-2"
 >

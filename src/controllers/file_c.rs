@@ -78,7 +78,7 @@ pub async fn rename_file(
     File::rename_file(file_id, user_id, &form.file_name, &pool).await?;
 
     match file_type.as_str() {
-        "txt" => Ok(render_txt_file(file_id, Some(form.file_name), None)),
+        "txt" => Ok(render_txt_file(Some(file_id.to_string()), Some(form.file_name), None)),
         _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
     }
 }

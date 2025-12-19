@@ -3,10 +3,12 @@
     setupExplorerWindow,
     setupExplorerToolBar,
     setupExplorerWindowGrab,
+    setupExplorerSingleSelect,
   } from "/assets/js/explorer.js";
   setupExplorerWindow("<%= folder_id %>");
   setupExplorerToolBar("<%= folder_id %>");
   setupExplorerWindowGrab("<%= folder_id %>");
+  setupExplorerSingleSelect("<%= folder_id %>");
 </script>
 <div
   id="explorer-window-<%= folder_id %>"
@@ -269,26 +271,26 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-5 gap-4 p-4 border-zinc-700 border-l">
+      <div id="explorer-items-<%= folder_id %>" class="flex flex-5 gap-4 p-4 border-zinc-700 border-l">
         <% for item in folder_items { %>
           <% let name = item.name.as_ref().unwrap(); %>
           <% if item.item_type.is_some() && *item.item_type.as_ref().unwrap() == ItemType::File { %>
             <% if item.file_type.is_some() && *item.file_type.as_ref().unwrap() == FileType::Txt { %>
-              <% let id = format!("explorer-file-{}", item.id.unwrap()); %>
-              <div class="relative w-22 h-20">
+              <% let id: Option<String> = None; %>
+              <div id="<% format!("explorer-file-{}", item.id.unwrap()); %>" class="relative w-22 h-20">
                 <% include!("txt_file.stpl"); %>
               </div>
             <% } %>
             <% if item.file_type.is_some() && *item.file_type.as_ref().unwrap() == FileType::Resume { %>
-              <% let id = format!("explorer-file-{}", item.id.unwrap()); %>
-              <div class="relative w-22 h-20">
+              <% let id: Option<String> = None; %>
+              <div id="<% format!("explorer-file-{}", item.id.unwrap()); %>" class="relative w-22 h-20">
                 <% include!("resume_file.stpl"); %>
               </div>
             <% } %>    
           <% } %>
           <% if item.item_type.is_some() && *item.item_type.as_ref().unwrap() == ItemType::Folder { %>
-            <% let id = format!("explorer-folder-{}", item.id.unwrap()); %>
-            <div class="relative w-22 h-20">
+            <% let id: Option<String> = None; %>
+            <div id="<% format!("folder-{}", item.id.unwrap().to_string()); %>" class="relative w-22 h-20">
               <% include!("folder.stpl"); %>
             </div>
           <% } %>    

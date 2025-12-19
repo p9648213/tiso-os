@@ -50,7 +50,7 @@ pub async fn create_txt(
 
     Txt::create_txt(file_id, &pool).await?;
 
-    Ok(render_txt_file(file_id, file.file_name, None))
+    Ok(render_txt_file(Some(file_id.to_string()), file.file_name, None))
 }
 
 pub async fn get_txt_input(

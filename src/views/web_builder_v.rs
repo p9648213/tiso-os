@@ -23,10 +23,10 @@ pub struct EditableElement {
 #[derive(TemplateSimple)]
 #[template(path = "web_builder_file.stpl")]
 struct WebBuilderFile {
-    pub id: i32,
+    pub id: Option<String>,
 }
 
-pub fn render_web_builder_file(file_id: i32) -> String {
+pub fn render_web_builder_file(file_id: Option<String>) -> String {
     WebBuilderFile { id: file_id }.render_once().unwrap()
 }
 

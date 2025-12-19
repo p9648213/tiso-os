@@ -14,7 +14,6 @@
         draggable="true"
       >
         <% if let Some(item) = item_map.get(&(row, col)) { %> 
-          <% let id = item.id.unwrap(); %> 
           <% let name = item.name.as_ref().unwrap(); %>
           <% if *item.item_type.as_ref().unwrap() == ItemType::File { %> 
             <% if *item.file_type.as_ref().unwrap() == FileType::Calculator { %> 
@@ -24,21 +23,24 @@
             <% } else if *item.file_type.as_ref().unwrap() == FileType::FlappyBird { %> 
               <% include!("flappy_bird_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Txt { %> 
-               <% let id = format!("file-{}", id); %>
+              <% let id = Some(format!("file-{}", item.id.unwrap().to_string())); %>
               <% include!("txt_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::ThisPC { %> 
+              <% let id = Some(item.id.unwrap().to_string()); %> 
               <% include!("thispc_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Music { %> 
               <% include!("music_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::WebBuilder { %> 
+              <% let id = Some(item.id.unwrap().to_string()); %>
               <% include!("web_builder_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Terminal { %> 
               <% include!("terminal_file.stpl"); %> 
-            <% } else if *item.file_type.as_ref().unwrap() == FileType::Resume { %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::Resume { %>
+              <% let id = Some(item.id.unwrap().to_string()); %> 
               <% include!("resume_file.stpl"); %>
             <% } %>  
           <% } else if *item.item_type.as_ref().unwrap() == ItemType::Folder { %> 
-            <% let id = format!("folder-{}", id); %>
+            <% let id = Some(format!("folder-{}", item.id.unwrap().to_string())); %>
             <% include!("folder.stpl"); %> 
           <% } %> 
         <% } %>
@@ -55,7 +57,6 @@
         draggable="true"
       >
         <% if let Some(item) = items.get((col * rows + row) as usize) { %> 
-          <% let id = item.id.unwrap(); %> 
           <% let name = item.name.as_ref().unwrap(); %> 
           <% if *item.item_type.as_ref().unwrap() == ItemType::File { %> 
             <% if *item.file_type.as_ref().unwrap() == FileType::Calculator { %> 
@@ -65,21 +66,24 @@
             <% } else if *item.file_type.as_ref().unwrap() == FileType::FlappyBird { %> 
               <% include!("flappy_bird_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Txt { %> 
-               <% let id = format!("file-{}", id); %>
+               <% let id = Some(format!("file-{}", item.id.unwrap().to_string())); %>
               <% include!("txt_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::ThisPC { %> 
+              <% let id = Some(item.id.unwrap().to_string()); %> 
               <% include!("thispc_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Music { %> 
               <% include!("music_file.stpl"); %> 
-            <% } else if *item.file_type.as_ref().unwrap() == FileType::WebBuilder { %> 
+            <% } else if *item.file_type.as_ref().unwrap() == FileType::WebBuilder { %>
+              <% let id = Some(item.id.unwrap().to_string()); %>  
               <% include!("web_builder_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Terminal { %> 
               <% include!("terminal_file.stpl"); %> 
             <% } else if *item.file_type.as_ref().unwrap() == FileType::Resume { %> 
+              <% let id = Some(item.id.unwrap().to_string()); %> 
               <% include!("resume_file.stpl"); %> 
             <% } %>
           <% } else if *item.item_type.as_ref().unwrap() == ItemType::Folder { %> 
-            <% let id = format!("folder-{}", id); %>
+            <% let id = Some(format!("folder-{}", item.id.unwrap().to_string())); %>
             <% include!("folder.stpl"); %> 
           <% } %> 
         <% } %>

@@ -3,22 +3,27 @@ use sailfish::TemplateSimple;
 #[derive(TemplateSimple)]
 #[template(path = "resume_file.stpl")]
 struct ResumeFile<'a> {
-    pub id: &'a str,
+    pub id: Option<String>,
     pub name: &'a str,
 }
 
 pub fn render_resume_file(
-    file_id: i32,
+    file_id: Option<String>,
     file_name: Option<String>,
     id_prefix: Option<String>,
 ) -> String {
     let file_name = file_name.clone().unwrap_or_else(|| "resume".into());
-    let id = match id_prefix {
-        Some(prefix) => format!("{prefix}-file-{file_id}"),
-        None => format!("file-{file_id}"),
+
+    let id = match file_id {
+        Some(id) => match id_prefix {
+            Some(prefix) => Some(format!("{prefix}-file-{id}")),
+            None => Some(format!("file-{id}")),
+        },
+        None => None,
     };
+
     ResumeFile {
-        id: &id,
+        id,
         name: &file_name,
     }
     .render_once()
