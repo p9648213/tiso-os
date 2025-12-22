@@ -17,7 +17,7 @@
       hx-on:blur="window.editMode = false"
       hx-on:keydown="if(event.key == 'Enter') { event.preventDefault(); window.editMode = false }"
       name="folder_name"
-      class="max-w-[75px] overflow-hidden text-white text-sm text-center resize-none"
+      class="max-w-18.75 overflow-hidden text-white text-sm text-center resize-none"
       autofocus
       ><%= value %></textarea
     >

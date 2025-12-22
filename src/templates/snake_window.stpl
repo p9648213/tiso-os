@@ -6,7 +6,7 @@
 <div
   id="snake-canvas-container"
   class="absolute"
-  style="top: <%= top %>px; left: <%= left %>px;"
+  style="top: <%= top %>px; left: <%= left %>px; box-shadow: rgba(255, 255, 255, 0.08) 0px 0px 0px 1px;"
 >
   <div
     id="snake-toolbar"

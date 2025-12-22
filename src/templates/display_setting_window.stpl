@@ -15,7 +15,7 @@
 <div
   id="display-setting-window"
   class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
-  style="top:<%= top %>px; left:<%= left %>px; width:<%= width %>px; height:<%= height %>px;"
+  style="top:<%= top %>px; left:<%= left %>px; width:<%= width %>px; height:<%= height %>px; box-shadow: rgba(255, 255, 255, 0.08) 0px 0px 0px 1px;"
 >
   <div id="display-setting-header" class="flex justify-between items-center bg-zinc-900 px-3 h-12">
     <div class="flex items-center gap-2">

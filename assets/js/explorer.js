@@ -122,7 +122,7 @@ export function setupExplorerSingleSelect(folderId) {
 
       if (window.editMode === false) {
         window.selectedItem = checkExplorerItem;
-        checkExplorerItem.classList.add("bg-blue-900");
+        checkExplorerItem.children[0].classList.add("bg-blue-900");
       }
     } else {
       removeSelectedItem();
@@ -130,10 +130,45 @@ export function setupExplorerSingleSelect(folderId) {
   });
 }
 
+export function setupExplorerItemOpen(folderId) {
+  const explorerItems = document.getElementById(`explorer-items-${folderId}`);
+  const main = document.querySelector("main");
+
+  explorerItems.addEventListener("dblclick", () => {
+    if (window.selectedItem) {
+      const splitId = window.selectedItem.id.split("-");
+      const itemType = splitId[1];
+      const itemId = splitId[2];
+
+      if (itemType === "file") {
+        const fileType = window.selectedItem.children[0].getAttribute("data-file-type");
+        const fileScope = window.selectedItem.getAttribute("data-file-scope");
+
+        htmx
+          .ajax(
+            "GET",
+            `/read/file/${fileType}${fileScope === "user-local" ? `/${itemId}` : ""}/${main.clientHeight}/${main.clientWidth}`,
+            {
+              target: "body",
+              swap: "beforeend",
+            }
+          )
+          .then(() => {
+            removeSelectedItem();
+          });
+      }
+
+      if (itemType === "folder") {
+        const folderType = window.selectedItem.getAttribute("data-folder-type");
+        console.log(folderType);
+      }
+    }
+  });
+}
+
 function removeSelectedItem() {
   if (window.selectedItem) {
-    window.selectedItem.classList.remove("bg-blue-900");
+    window.selectedItem.children[0].classList.remove("bg-blue-900");
     window.selectedItem = null;
   }
 }
-

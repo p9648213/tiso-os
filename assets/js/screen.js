@@ -143,7 +143,7 @@ export function setupScreenContextMenu() {
 
             menuForm.addEventListener("mouseup", () => {
               htmx
-                .ajax("GET", `/read/${fileType}/input/${itemId}`, {
+                .ajax("GET", `/read/file/${fileType}/input/${itemId}`, {
                   target: `#${desktopItem.id}`,
                   swap: "outerHTML",
                 })
@@ -362,6 +362,7 @@ export function setupScreenItemOpen() {
 
       if (itemType === "file") {
         const fileType = window.selectedItem.getAttribute("data-file-type");
+        const fileScope = window.selectedItem.getAttribute("data-file-scope");
 
         if (fileType === "ThisPC") {
           htmx
@@ -380,7 +381,7 @@ export function setupScreenItemOpen() {
           htmx
             .ajax(
               "GET",
-              `/read/${fileType}/${itemId}/${main.clientHeight}/${main.clientWidth}`,
+              `/read/file/${fileType}${fileScope === "user-local" ? `/${itemId}` : ""}/${main.clientHeight}/${main.clientWidth}`,
               {
                 target: "body",
                 swap: "beforeend",

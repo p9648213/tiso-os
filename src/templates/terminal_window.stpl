@@ -19,6 +19,7 @@
     left: <%= left %>px;
     width: <%= window_width %>px;
     height: <%= window_height %>px;
+    box-shadow: rgba(255, 255, 255, 0.08) 0px 0px 0px 1px;
   "
 >
   <div

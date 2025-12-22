@@ -4,16 +4,18 @@
     setupExplorerToolBar,
     setupExplorerWindowGrab,
     setupExplorerSingleSelect,
+    setupExplorerItemOpen,
   } from "/assets/js/explorer.js";
   setupExplorerWindow("<%= folder_id %>");
   setupExplorerToolBar("<%= folder_id %>");
   setupExplorerWindowGrab("<%= folder_id %>");
   setupExplorerSingleSelect("<%= folder_id %>");
+  setupExplorerItemOpen("<%= folder_id %>");
 </script>
 <div
   id="explorer-window-<%= folder_id %>"
   class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
-  style="top:<%= top %>px; left:<%= left %>px; width:<%= window_width %>px; height:<%= window_height %>px;"
+  style="top:<%= top %>px; left:<%= left %>px; width:<%= window_width %>px; height:<%= window_height %>px; box-shadow: rgba(255, 255, 255, 0.08) 0px 0px 0px 1px;"
 >
   <div
     id="explorer-toolbar-<%= folder_id %>"
@@ -277,20 +279,22 @@
           <% if item.item_type.is_some() && *item.item_type.as_ref().unwrap() == ItemType::File { %>
             <% if item.file_type.is_some() && *item.file_type.as_ref().unwrap() == FileType::Txt { %>
               <% let id: Option<String> = None; %>
-              <div id="<% format!("explorer-file-{}", item.id.unwrap()); %>" class="relative w-22 h-20">
+              <% let wrapper_id = format!("explorer-file-{}", item.id.unwrap()); %>
+              <div id="<%= wrapper_id %>" class="relative w-22 h-20">
                 <% include!("txt_file.stpl"); %>
               </div>
             <% } %>
             <% if item.file_type.is_some() && *item.file_type.as_ref().unwrap() == FileType::Resume { %>
               <% let id: Option<String> = None; %>
-              <div id="<% format!("explorer-file-{}", item.id.unwrap()); %>" class="relative w-22 h-20">
+              <% let wrapper_id = format!("explorer-file-{}", item.id.unwrap()); %>
+              <div id="<%= wrapper_id %>" class="relative w-22 h-20">
                 <% include!("resume_file.stpl"); %>
               </div>
             <% } %>    
           <% } %>
           <% if item.item_type.is_some() && *item.item_type.as_ref().unwrap() == ItemType::Folder { %>
-            <% let id: Option<String> = None; %>
-            <div id="<% format!("folder-{}", item.id.unwrap().to_string()); %>" class="relative w-22 h-20">
+            <% let id = Some(format!("explorer-folder-{}", item.id.unwrap().to_string())); %>
+            <div class="relative w-22 h-20">
               <% include!("folder.stpl"); %>
             </div>
           <% } %>    

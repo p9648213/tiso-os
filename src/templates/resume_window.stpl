@@ -1,8 +1,42 @@
+<script type="module">
+  import {
+    setupResumeToolBar
+  } from "/assets/js/resume.js";
+  setupResumeToolBar();
+</script>
 
 <div
   id="resume-window"
   class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
-  style="top: <%= top %>px; left: <%= left %>px; width: <%= window_width %>px; height: <%= window_height %>px;"
+  style="top: <%= top %>px; left: <%= left %>px; width: <%= window_width %>px; height: <%= window_height %>px; box-shadow: rgba(255, 255, 255, 0.08) 0px 0px 0px 1px;"
 >
-  Resume
+  <div
+    id="resume-toolbar"
+    class="flex justify-between items-center bg-zinc-900 px-3 h-12"
+  >
+    <div class="flex items-center gap-2">
+      <img
+        class="w-5 h-5"
+        src="/assets/images/resume/resume.svg"
+        draggable="false"
+      />
+      Resume
+    </div>
+    <div class="flex items-center gap-3">
+      <img
+        class="hover:opacity-70 w-5 h-5 hide"
+        src="/assets/images/common/minus.svg"
+        draggable="false"
+      /><img
+        class="hover:opacity-70 w-4 h-4 maximize"
+        src="/assets/images/common/square.svg"
+        draggable="false"
+      /><img
+        class="hover:opacity-70 w-5 h-5 close"
+        src="/assets/images/common/x.svg"
+        draggable="false"
+      />
+    </div>
+  </div>
+  <div>content</div>
 </div>

@@ -11,7 +11,7 @@
 <div
   id="music-player-window"
   class="absolute flex flex-col bg-zinc-950 rounded-sm overflow-hidden text-white"
-  style="left: <%= left %>px; width: <%= window_width %>px; height: fit-content;"
+  style="left: <%= left %>px; width: <%= window_width %>px; height: fit-content; box-shadow: rgba(255, 255, 255, 0.08) 0px 0px 0px 1px;"
 >
   <div
     id="music-player-header"

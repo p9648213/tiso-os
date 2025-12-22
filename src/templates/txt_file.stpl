@@ -1,6 +1,7 @@
 <div
   <% if let Some(id) = id { %> id="<%= id %>" <% } %>
   data-file-type="txt"
+  data-file-scope="user-local"
   class="absolute inset-0 flex justify-center py-2"
 >
   <div
