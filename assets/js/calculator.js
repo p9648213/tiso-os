@@ -181,6 +181,7 @@ export function setupCalculatorWindowGrab() {
     event: "mousemove",
     handler: handleMouseMove,
   });
+  
   calculatorCleanUpEvent.push({
     event: "mouseup",
     handler: handleMouseUp,
