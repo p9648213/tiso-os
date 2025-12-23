@@ -278,9 +278,8 @@
           <% let name = item.name.as_ref().unwrap(); %>
           <% if item.item_type.is_some() && *item.item_type.as_ref().unwrap() == ItemType::File { %>
             <% if item.file_type.is_some() && *item.file_type.as_ref().unwrap() == FileType::Txt { %>
-              <% let id: Option<String> = None; %>
-              <% let wrapper_id = format!("explorer-file-{}", item.id.unwrap()); %>
-              <div id="<%= wrapper_id %>" class="relative w-22 h-20">
+              <% let id: Option<String> = Some(format!("explorer-file-{}", item.id.unwrap())); %>
+              <div class="relative w-22 h-20">
                 <% include!("txt_file.stpl"); %>
               </div>
             <% } %>

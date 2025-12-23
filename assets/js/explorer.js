@@ -141,13 +141,20 @@ export function setupExplorerItemOpen(folderId) {
       const itemId = splitId[2];
 
       if (itemType === "file") {
-        const fileType = window.selectedItem.children[0].getAttribute("data-file-type");
-        const fileScope = window.selectedItem.getAttribute("data-file-scope");
+        const fileType =
+          window.selectedItem.getAttribute("data-file-type") ||
+          window.selectedItem.children[0].getAttribute("data-file-type");
+
+        const fileScope =
+          window.selectedItem.getAttribute("data-file-scope") ||
+          window.selectedItem.children[0].getAttribute("data-file-scope");
 
         htmx
           .ajax(
             "GET",
-            `/read/file/${fileType}${fileScope === "user-local" ? `/${itemId}` : ""}/${main.clientHeight}/${main.clientWidth}`,
+            `/read/file/${fileType}${
+              fileScope === "user-local" ? `/${itemId}` : ""
+            }/${main.clientHeight}/${main.clientWidth}`,
             {
               target: "body",
               swap: "beforeend",

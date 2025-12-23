@@ -10,7 +10,7 @@ export function setupGlobalEvents() {
 
     const duplicateWindow = document.getElementById(windowId);
 
-    if (duplicateWindow) {
+    if (duplicateWindow && openNewTask == true) {
       duplicateWindow.remove();
     }
 

@@ -75,7 +75,7 @@ export function setupAddSectionDialog(builderId) {
     htmx
       .ajax(
         "POST",
-        `/create/web_builder/${builderId}/section/add/${sectionType}/${templateNumber}`,
+        `/create/file/web_builder/${builderId}/section/add/${sectionType}/${templateNumber}`,
         {
           target: `#builder-review`,
           swap: "outerHTML",
@@ -158,7 +158,7 @@ export function setupWebBuilderTreeActions(builderId) {
       document.body.style.cursor = "wait";
 
       const response = await fetch(
-        `/create/web_builder/${builderId}/download`,
+        `/create/file/web_builder/${builderId}/download`,
         {
           method: "POST",
           headers: {
@@ -195,7 +195,7 @@ export function setupWebBuilderTreeActions(builderId) {
 
   viewWebsiteBtn.addEventListener("click", function () {
     window.open(
-      `${window.location.origin}/read/web_builder/view_website/${builderId}`
+      `${window.location.origin}/read/file/web_builder/view_website/${builderId}`
     );
   });
 }
@@ -204,7 +204,7 @@ export function setupWebBuilderEditSelect(builderId) {
   if (currentSelectElement) {
     const nodeId = currentSelectElement.getAttribute("data-id");
 
-    htmx.ajax("GET", `/read/web_builder/${builderId}/edit_node/${nodeId}`, {
+    htmx.ajax("GET", `/read/file/web_builder/${builderId}/edit_node/${nodeId}`, {
       target: `#builder-edit`,
       swap: "outerHTML",
     });
@@ -269,7 +269,7 @@ export function setupWebBuilderEditButton(builderId) {
         htmx
           .ajax(
             "POST",
-            `/update/web_builder/${builderId}/node/edit/${nodeId}`,
+            `/update/file/web_builder/${builderId}/node/edit/${nodeId}`,
             {
               target: "#builder-review",
               swap: "outerHTML",
@@ -308,7 +308,7 @@ export function setupWebBuilderKeyboardEvent(builderId) {
           document.body.style.cursor = "wait";
 
           const response = await fetch(
-            `/delete/web_builder/${builderId}/node/delete/${nodeId}`,
+            `/delete/file/web_builder/${builderId}/node/delete/${nodeId}`,
             {
               method: "POST",
               headers: {

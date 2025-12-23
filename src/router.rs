@@ -66,19 +66,19 @@ pub async fn create_router(pool: Pool) -> Router {
     let create_routes = Router::new().nest(
         "/create",
         Router::new()
-            .route("/txt/{folder_id}/{position_id}", post(create_txt))
+            .route("/file/txt/{folder_id}/{position_id}", post(create_txt))
             .route("/folder/{folder_id}/{position_id}", post(create_folder))
             .route("/screen", post(create_screen_grid))
             .route("/account", post(create_account))
             .route(
-                "/web_builder/{builder_id}/node/insert/{parent_node_id}",
+                "/file/web_builder/{builder_id}/node/insert/{parent_node_id}",
                 post(insert_node),
             )
             .route(
-                "/web_builder/{builder_id}/section/add/{section_type}/{template_number}",
+                "/file/web_builder/{builder_id}/section/add/{section_type}/{template_number}",
                 post(add_section),
             )
-            .route("/web_builder/{builder_id}/download", post(download_website))
+            .route("/file/web_builder/{builder_id}/download", post(download_website))
             .layer(from_fn(csrf_middleware)),
     );
 
@@ -108,7 +108,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 post(upload_background_picture),
             )
             .route(
-                "/web_builder/{builder_id}/node/edit/{node_id}",
+                "/file/web_builder/{builder_id}/node/edit/{node_id}",
                 post(edit_node),
             )
             .layer(from_fn(csrf_middleware)),
@@ -120,7 +120,7 @@ pub async fn create_router(pool: Pool) -> Router {
             .route("/file/{file_id}", post(delete_file))
             .route("/folder/{folder_id}", post(delete_folder))
             .route(
-                "/web_builder/{builder_id}/node/delete/{node_id}",
+                "/file/web_builder/{builder_id}/node/delete/{node_id}",
                 post(delete_node),
             )
             .layer(from_fn(csrf_middleware)),
@@ -154,13 +154,13 @@ pub async fn create_router(pool: Pool) -> Router {
                 get(get_display_setting_window),
             )
             .route(
-                "/web_builder/{file_id}/{height}/{width}",
+                "/file/web_builder/{file_id}/{height}/{width}",
                 get(get_web_builder_window),
             )
-            .route("/web_builder/{builder_id}/edit_node/{node_id}", get(get_edit_node))
-            .route("/web_builder/section/{section_type}", get(get_selected_section))
-            .route("/web_builder/template/{section_type}/{template_index}", get(get_selected_template))
-            .route("/web_builder/view_website/{builder_id}", get(get_web_builder_review))
+            .route("/file/web_builder/{builder_id}/edit_node/{node_id}", get(get_edit_node))
+            .route("/file/web_builder/section/{section_type}", get(get_selected_section))
+            .route("/file/web_builder/template/{section_type}/{template_index}", get(get_selected_template))
+            .route("/file/web_builder/view_website/{builder_id}", get(get_web_builder_review))
     );
 
     let ws_routes = Router::new().route("/ws/terminal", any(terminal_ws_handler));

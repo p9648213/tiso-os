@@ -9,7 +9,7 @@
   </h3>
     <div class="space-y-4">
     <div
-      hx-get="read/web_builder/template/Hero Section/1"
+      hx-get="read/file/web_builder/template/Hero Section/1"
       hx-target="#builder_template"
       hx-swap="outerHTML"
       class="border-2 rounded-sm overflow-hidden 
@@ -22,7 +22,7 @@
       <% include!("web_builder_template_hero_1.stpl"); %>
     </div>
     <div
-      hx-get="read/web_builder/template/Hero Section/2"
+      hx-get="read/file/web_builder/template/Hero Section/2"
       hx-target="#builder_template"
       hx-swap="outerHTML"
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
@@ -35,7 +35,7 @@
       <% include!("web_builder_template_hero_2.stpl"); %>
     </div>
     <div
-      hx-get="read/web_builder/template/Hero Section/3"
+      hx-get="read/file/web_builder/template/Hero Section/3"
       hx-target="#builder_template"
       hx-swap="outerHTML"
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 
@@ -48,7 +48,7 @@
       <% include!("web_builder_template_hero_3.stpl"); %>
     </div>
     <div
-      hx-get="read/web_builder/template/Hero Section/4"
+      hx-get="read/file/web_builder/template/Hero Section/4"
       hx-target="#builder_template"
       hx-swap="outerHTML"
       class="border-2 hover:border-blue-500 rounded-sm overflow-hidden 

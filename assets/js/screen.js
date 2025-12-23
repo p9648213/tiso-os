@@ -203,7 +203,7 @@ export function setupScreenContextMenu() {
             let targetId = checkEmptySpace();
 
             if (targetId) {
-              htmx.ajax("POST", `/create/txt/${desktopId}/${targetId}`, {
+              htmx.ajax("POST", `/create/file/txt/${desktopId}/${targetId}`, {
                 target: `#${targetId}`,
                 values: {
                   path: "/Desktop",
