@@ -167,7 +167,15 @@ export function setupExplorerItemOpen(folderId) {
 
       if (itemType === "folder") {
         const folderType = window.selectedItem.getAttribute("data-folder-type");
-        console.log(folderType);
+
+        htmx.ajax(
+          "GET",
+          `/read/folder/explorer/${folderType}/${itemId}/${main.clientHeight}/${main.clientWidth}/false/${folderId}`,
+          {
+            target: `#explorer-window-${folderId}`,
+            swap: "outerHTML",
+          }
+        );
       }
     }
   });
