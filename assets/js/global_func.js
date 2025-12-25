@@ -127,4 +127,29 @@ export function setupGlobalFunctions() {
 
     document.body.appendChild(newScript);
   };
+
+  window.checkEmptySpace = function () {
+    const totalRows = document.getElementById("screen_rows")?.value;
+    const totalCols = document.getElementById("screen_cols")?.value;
+
+    if (totalRows && totalCols) {
+      for (let i = 0; i < totalCols; i++) {
+        for (let j = 0; j < totalRows; j++) {
+          const item = document.getElementById(`item-${j}-${i}`);
+          if (item && item.innerHTML.trim() == "") {
+            return `item-${j}-${i}`;
+          }
+        }
+      }
+    } else {
+      return null;
+    }
+  };
+
+  window.removeSelectedItem = function () {
+    if (window.selectedItem) {
+      window.selectedItem.children[0].classList.remove("bg-blue-900");
+      window.selectedItem = null;
+    }
+  };
 }

@@ -147,8 +147,12 @@ impl<'a> CommandLine<'a> {
             Command::Mkdir => {
                 let current_dir = get_current_dir(self.session_map, self.user_id);
                 let mkdir = Mkdir::new(&current_dir, &self.args, self.user_id, self.pool);
-                let output = mkdir.create_folder().await;
-                self.process_command(Some(output), None)
+                let result = mkdir.create_folder().await;
+
+                match result {
+                    Ok(output) => self.process_command(Some(output), None),
+                    Err(error) => self.process_command(Some(error), None),
+                }
             },
             Command::Clear => CommandLineOutput::default(),
             Command::Empty => CommandLineOutput::default(),

@@ -117,7 +117,7 @@ export function setupExplorerSingleSelect(folderId) {
       }
 
       if (window.selectedItem) {
-        removeSelectedItem();
+        window.removeSelectedItem();
       }
 
       if (window.editMode === false) {
@@ -125,7 +125,7 @@ export function setupExplorerSingleSelect(folderId) {
         checkExplorerItem.children[0].classList.add("bg-blue-900");
       }
     } else {
-      removeSelectedItem();
+      window.removeSelectedItem();
     }
   });
 }
@@ -161,7 +161,7 @@ export function setupExplorerItemOpen(folderId) {
             }
           )
           .then(() => {
-            removeSelectedItem();
+            window.removeSelectedItem();
           });
       }
 
@@ -179,11 +179,4 @@ export function setupExplorerItemOpen(folderId) {
       }
     }
   });
-}
-
-function removeSelectedItem() {
-  if (window.selectedItem) {
-    window.selectedItem.children[0].classList.remove("bg-blue-900");
-    window.selectedItem = null;
-  }
 }

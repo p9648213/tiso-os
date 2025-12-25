@@ -55,7 +55,7 @@ export function setupScreenContextMenu() {
       switch (event.button) {
         case 0:
           document.body.removeChild(contextMenuEl);
-          removeSelectedItem();
+          window.removeSelectedItem();
           break;
         default:
           break;
@@ -66,7 +66,7 @@ export function setupScreenContextMenu() {
   main.addEventListener("contextmenu", (event) => {
     event.preventDefault();
 
-    removeSelectedItem();
+    window.removeSelectedItem();
 
     if (document.body.style.cursor == "wait") {
       return;
@@ -200,7 +200,7 @@ export function setupScreenContextMenu() {
 
         if (itemsType === "txt") {
           menuForm.addEventListener("mouseup", () => {
-            let targetId = checkEmptySpace();
+            let targetId = window.checkEmptySpace();
 
             if (targetId) {
               htmx.ajax("POST", `/create/file/txt/${desktopId}/${targetId}`, {
@@ -214,7 +214,7 @@ export function setupScreenContextMenu() {
           });
         } else if (itemsType === "folder") {
           menuForm.addEventListener("mouseup", () => {
-            let targetId = checkEmptySpace();
+            let targetId = window.checkEmptySpace();
             if (targetId) {
               htmx.ajax("POST", `/create/folder/${desktopId}/${targetId}`, {
                 target: `#${targetId}`,
@@ -274,7 +274,7 @@ export function setupScreenItemSingleSelect() {
       }
 
       if (window.selectedItem) {
-        removeSelectedItem();
+        window.removeSelectedItem();
       }
 
       if (window.editMode === false) {
@@ -282,7 +282,7 @@ export function setupScreenItemSingleSelect() {
         checkDesktopItem.children[0].classList.add("bg-blue-900");
       }
     } else {
-      removeSelectedItem();
+      window.removeSelectedItem();
     }
   });
 }
@@ -375,7 +375,7 @@ export function setupScreenItemOpen() {
               }
             )
             .then(() => {
-              removeSelectedItem();
+              window.removeSelectedItem();
             });
         } else {
           htmx
@@ -388,7 +388,7 @@ export function setupScreenItemOpen() {
               }
             )
             .then(() => {
-              removeSelectedItem();
+              window.removeSelectedItem();
             });
         }
       }
@@ -406,34 +406,9 @@ export function setupScreenItemOpen() {
             }
           )
           .then(() => {
-            removeSelectedItem();
+            window.removeSelectedItem();
           });
       }
     }
   });
-}
-
-function checkEmptySpace() {
-  const totalRows = document.getElementById("screen_rows")?.value;
-  const totalCols = document.getElementById("screen_cols")?.value;
-
-  if (totalRows && totalCols) {
-    for (let i = 0; i < totalCols; i++) {
-      for (let j = 0; j < totalRows; j++) {
-        const item = document.getElementById(`item-${j}-${i}`);
-        if (item && item.innerHTML.trim() == "") {
-          return `item-${j}-${i}`;
-        }
-      }
-    }
-  } else {
-    return null;
-  }
-}
-
-function removeSelectedItem() {
-  if (window.selectedItem) {
-    window.selectedItem.children[0].classList.remove("bg-blue-900");
-    window.selectedItem = null;
-  }
 }

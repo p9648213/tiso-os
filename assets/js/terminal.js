@@ -86,6 +86,11 @@ export function setupTerminalTextArea() {
         setupTerminalTextArea();
       }
 
+      if (value.startsWith("mkdir")) {
+        let emptySpace = window.checkEmptySpace();
+        value = value + ` -dp ${emptySpace}`;
+      }
+
       terminalSocket.send(value);
     }
   });
