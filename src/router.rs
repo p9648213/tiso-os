@@ -9,7 +9,7 @@ use crate::{
         }, explorer_c::get_explorer_window, file_c::{delete_file, rename_file, update_file_desktop_position}, flappy_bird_c::get_flappy_bird_window, folder_c::{
             create_folder, delete_folder, get_folder_input, rename_folder,
             update_folder_desktop_position,
-        }, music_c::get_music_player_window, resume_c::get_resume_window, screen_c::{create_screen_grid, get_screen}, snake_c::get_snake_window, taskbar_c::get_taskbar_menu_files, terminal_c::{get_terminal_window, terminal_ws_handler}, txt_c::{create_txt, get_txt_input, get_txt_window}, web_builder_c::{
+        }, music_c::get_music_player_window, resume_c::get_resume_window, screen_c::{create_screen_grid, get_screen}, snake_c::get_snake_window, taskbar_c::get_taskbar_menu_files, terminal_c::{get_terminal_window, terminal_ws_handler}, txt_c::{create_txt, get_txt_input, get_txt_window, update_text}, web_builder_c::{
             add_section, delete_node, download_website, edit_node, get_edit_node,
             get_selected_section, get_selected_template, get_web_builder_review,
             get_web_builder_window, insert_node,
@@ -94,6 +94,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 post(update_folder_desktop_position),
             )
             .route("/file/rename/{file_type}/{file_id}", post(rename_file))
+            .route("/file/txt/{txt_id}/text", post(update_text))
             .route("/folder/rename/{folder_id}", post(rename_folder))
             .route(
                 "/setting/display/background_type/{background_type}",

@@ -45,6 +45,7 @@ pub fn render_txt_input(file_id: i32, value: &str) -> String {
 #[template(path = "txt_window.stpl")]
 pub struct TxtWindow<'a> {
     pub file_name: &'a str,
+    pub text: &'a str,
     pub txt_id: i32,
     pub top: i32,
     pub left: i32,
@@ -54,6 +55,7 @@ pub struct TxtWindow<'a> {
 
 pub fn render_txt_window(
     file_name: &str,
+    text: &str,
     txt_id: i32,
     parent_height: i32,
     parent_width: i32,
@@ -66,6 +68,7 @@ pub fn render_txt_window(
 
     TxtWindow {
         file_name,
+        text,
         txt_id,
         top,
         left,

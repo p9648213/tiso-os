@@ -1,5 +1,7 @@
 use axum::{
-    Extension, Form, extract::{Path, State}, response::IntoResponse
+    Extension, Form,
+    extract::{Path, State},
+    response::IntoResponse,
 };
 use deadpool_postgres::Pool;
 use serde::Deserialize;
@@ -7,6 +9,11 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub struct CreateTxtForm {
     pub path: String,
+}
+
+#[derive(Deserialize)]
+pub struct UpdateTxtForm {
+    pub text: String,
 }
 
 use crate::{
@@ -50,7 +57,11 @@ pub async fn create_txt(
 
     Txt::create_txt(file_id, &pool).await?;
 
-    Ok(render_txt_file(Some(file_id.to_string()), file.file_name, None))
+    Ok(render_txt_file(
+        Some(file_id.to_string()),
+        file.file_name,
+        None,
+    ))
 }
 
 pub async fn get_txt_input(
@@ -72,9 +83,15 @@ pub async fn get_txt_window(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let txt_window =
-        TxtWindow::get_txt_window(file_id, user_id, vec!["id"], vec!["id", "file_name"], &pool)
-            .await?;
+    let txt_window = TxtWindow::get_txt_window(
+        file_id,
+        user_id,
+        vec!["id", "text"],
+        vec!["id", "file_name"],
+        &pool,
+    )
+    .await?;
+
     let txt_id = txt_window.txt.id.unwrap();
 
     Ok((
@@ -85,6 +102,23 @@ pub async fn get_txt_window(
                 txt_id
             ),
         )],
-        render_txt_window(&txt_window.file.file_name.unwrap(), txt_id, height, width),
+        render_txt_window(
+            &txt_window.file.file_name.unwrap(),
+            &txt_window.txt.text.unwrap(),
+            txt_id,
+            height,
+            width,
+        ),
     ))
+}
+
+pub async fn update_text(
+    Path(txt_id): Path<i32>,
+    State(pool): State<Pool>,
+    Extension(user_id): Extension<UserId>,
+    Form(form): Form<UpdateTxtForm>,
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = parse_user_id(user_id)?;
+
+    Txt::update_text(txt_id, user_id, &form.text, &pool).await
 }

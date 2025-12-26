@@ -78,6 +78,7 @@ pub async fn init_database(pool: &Pool) {
     let sql = "CREATE TABLE IF NOT EXISTS txt (
       id SERIAL PRIMARY KEY,
       file_id INT UNIQUE,
+      text TEXT DEFAULT '',
       FOREIGN KEY (file_id) REFERENCES file(id) ON DELETE CASCADE
     );";
 

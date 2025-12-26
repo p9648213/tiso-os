@@ -35,14 +35,14 @@ export function setupTxtWindowGrab(txtId) {
     handler: handleMouseMove,
     id: txtId,
   });
-  
+
   txtCleanUpEvent.push({ event: "mouseup", handler: handleMouseUp, id: txtId });
 
   document.addEventListener("mousemove", handleMouseMove);
   document.addEventListener("mouseup", handleMouseUp);
 }
 
-export async function setupTxtEditor(txtId) {
+export async function setupTxtEditor(txtId, text) {
   if (!quillLoaded) {
     if (!quillLoadingPromise) {
       quillLoadingPromise = new Promise((resolve, reject) => {
@@ -62,13 +62,42 @@ export async function setupTxtEditor(txtId) {
 
   const selector = `#txt-editor-${txtId}`;
   const txtEditor = document.querySelector(selector);
+
   if (!txtEditor) {
     console.error(`❌ Element ${selector} not found`);
     return;
   }
 
-  new Quill(selector, {
+  const quill = new Quill(selector, {
     theme: "snow",
+  });
+
+  quill.clipboard.dangerouslyPasteHTML(text);
+
+  quill.focus();
+
+  let controller = null;
+
+  const saveText = debounce(() => {
+    if (controller) {
+      controller.abort();
+    }
+
+    controller = new AbortController();
+
+    htmx.ajax("POST", `/update/file/txt/${txtId}/text`, {
+      swap: "none",
+      signal: controller.signal,
+      values: {
+        text: quill.getSemanticHTML(),
+      },
+    });
+  }, 100);
+
+  quill.on("text-change", (_delta, _oldDelta, source) => {
+    if (source == "user") {
+      saveText();
+    }
   });
 }
 
@@ -87,4 +116,12 @@ export function setupTxtToolBar(txt_id) {
     });
     txtCleanUpEvent = txtCleanUpEvent.filter((event) => event.id !== txt_id);
   });
+}
+
+function debounce(fn, delay = 600) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
 }
