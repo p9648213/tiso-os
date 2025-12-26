@@ -58,14 +58,12 @@ impl<'a> Mkdir<'a> {
                     }
                     _ => return Err(format!("Unknown argument: {}", arg)),
                 }
-            } else {
-                if name_end == false {
-                    mkdir_args.name = if mkdir_args.name.is_empty() {
-                        mkdir_args.name + arg
-                    } else {
-                        mkdir_args.name + " " + arg
-                    };
-                }
+            } else if !name_end {
+                mkdir_args.name = if mkdir_args.name.is_empty() {
+                    mkdir_args.name + arg
+                } else {
+                    mkdir_args.name + " " + arg
+                };
             }
         }
 
