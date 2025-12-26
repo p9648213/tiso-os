@@ -6,7 +6,7 @@
     setupTxtToolBar,
   } from "/assets/js/txt.js";
   setupTxtWindowGrab("<%= txt_id %>");
-  setupTxtEditor("<%= txt_id %>", "<%= text %>");
+  setupTxtEditor("<%= txt_id %>", `<%- text %>`);
   setupTxtToolBar("<%= txt_id %>");
 </script>
 <div

@@ -72,9 +72,9 @@ export async function setupTxtEditor(txtId, text) {
     theme: "snow",
   });
 
-  quill.clipboard.dangerouslyPasteHTML(text);
-
   quill.focus();
+
+  quill.clipboard.dangerouslyPasteHTML(text);
 
   let controller = null;
 
@@ -92,7 +92,7 @@ export async function setupTxtEditor(txtId, text) {
         text: quill.getSemanticHTML(),
       },
     });
-  }, 100);
+  }, 500);
 
   quill.on("text-change", (_delta, _oldDelta, source) => {
     if (source == "user") {
@@ -118,7 +118,7 @@ export function setupTxtToolBar(txt_id) {
   });
 }
 
-function debounce(fn, delay = 600) {
+function debounce(fn, delay = 300) {
   let timer;
   return (...args) => {
     clearTimeout(timer);
