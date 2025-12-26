@@ -37,9 +37,9 @@ impl<'a> Mkdir<'a> {
         let mut current_args: Option<MkdirArgs> = None;
 
         for (index, arg) in self.args.iter().enumerate() {
-            if let Some(ai) = args_index {
-                if index == ai {
-                    if let Some(ca) = current_args {
+            if let Some(ai) = args_index
+                && index == ai
+                    && let Some(ca) = current_args {
                         match ca {
                             MkdirArgs::Dp => {
                                 mkdir_args.desktop_position = arg.to_string();
@@ -48,8 +48,6 @@ impl<'a> Mkdir<'a> {
                             }
                         }
                     }
-                }
-            }
 
             if arg.starts_with("-") {
                 match arg.as_str() {
