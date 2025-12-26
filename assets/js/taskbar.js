@@ -31,7 +31,6 @@ export function setupTaskbarMenuFiles() {
 
       if (fileType === "web_builder") {
         let fileId = file.getAttribute("id").split("-")[1];
-        console.log(file);
         
         htmx
           .ajax(

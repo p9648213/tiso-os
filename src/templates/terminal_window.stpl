@@ -50,14 +50,13 @@
       />
     </div>
   </div>
-  <div id="terminal-display" class="p-2 overflow-auto">
+  <div id="terminal-display" class="p-2 overflow-auto select-text">
     <div id="terminal-input" class="flex gap-1">
       <span class="text-green-600 whitespace-nowrap"><%= username %>@tiso-os: <span class="terminal-path">/</span></span>
       <textarea
         id="terminal-text-area"
         autofocus
         class="pl-1 border-none outline-none w-full resize-none"
-        onblur="this.focus()"
         spellcheck="false"
       ></textarea>
     </div>
