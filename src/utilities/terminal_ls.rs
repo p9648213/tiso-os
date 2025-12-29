@@ -3,9 +3,9 @@ use deadpool_postgres::Pool;
 use crate::{
     models::{
         folder_db::{Folder, FolderSortType},
-        folder_item::FolderItem,
+        folder_item::{FolderItem, ItemType},
     },
-    views::terminal_v::render_terminal_ls,
+    views::terminal_v::{ItemDetail, render_terminal_ls},
 };
 
 pub struct Ls<'a> {
@@ -26,17 +26,21 @@ impl<'a> Ls<'a> {
     pub async fn list_file(&self) -> String {
         if self.current_dir == "/" {
             let result =
-                Folder::get_folders_with_no_parent(self.user_id, vec!["folder_name"], self.pool)
+                Folder::get_folders_with_no_parent(self.user_id, vec!["folder_name", "created_at"], self.pool)
                     .await;
 
             match result {
                 Ok(folder_names) => {
-                    let folder_name: Vec<String> = folder_names
+                    let item_details: Vec<ItemDetail> = folder_names
                         .into_iter()
-                        .map(|folder| folder.folder_name.unwrap_or_default())
+                        .map(|folder| ItemDetail {
+                            item_name: folder.folder_name.unwrap(),
+                            item_type: ItemType::Folder,
+                            created_at: folder.created_at.unwrap().to_string(),
+                        })
                         .collect();
 
-                    render_terminal_ls(folder_name)
+                    render_terminal_ls(item_details)
                 }
                 Err(err) => err.to_string(),
             }
@@ -57,13 +61,17 @@ impl<'a> Ls<'a> {
 
                     match result {
                         Ok(items) => {
-                            let item_names: Vec<String> = items
+                            let item_details: Vec<ItemDetail> = items
                                 .into_iter()
-                                .map(|item| item.name.unwrap_or_default())
+                                .map(|item| ItemDetail {
+                                    item_name: item.name.unwrap(),
+                                    item_type: item.item_type.unwrap(),
+                                    created_at: item.created_at.unwrap().to_string(),
+                                })
                                 .collect();
 
-                            render_terminal_ls(item_names)
-                        },
+                            render_terminal_ls(item_details)
+                        }
                         Err(err) => err.to_string(),
                     }
                 }

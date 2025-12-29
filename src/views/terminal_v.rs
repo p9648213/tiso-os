@@ -1,5 +1,7 @@
 use sailfish::TemplateSimple;
 
+use crate::models::folder_item::ItemType;
+
 #[derive(TemplateSimple)]
 #[template(path = "terminal_file.stpl")]
 pub struct TerminalFile;
@@ -44,12 +46,18 @@ pub fn render_terminal_help() -> String {
     TerminalHelp {}.render_once().unwrap()
 }
 
+pub struct ItemDetail {
+    pub item_name: String,
+    pub item_type: ItemType,
+    pub created_at: String,
+}
+
 #[derive(TemplateSimple)]
 #[template(path = "terminal_ls.stpl")]
 pub struct TerminaLS {
-    item_names: Vec<String>
+    item_details: Vec<ItemDetail>,
 }
 
-pub fn render_terminal_ls(item_names: Vec<String>) -> String {
-    TerminaLS { item_names }.render_once().unwrap()
+pub fn render_terminal_ls(item_details: Vec<ItemDetail>) -> String {
+    TerminaLS { item_details }.render_once().unwrap()
 }

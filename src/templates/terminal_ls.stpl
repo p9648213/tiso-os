@@ -1,5 +1,9 @@
 <div class="flex gap-5">
-  <% for item_name in item_names { %>
-    <div><%= item_name %></div>
+  <% for item_detail in item_details { %>
+    <% if item_detail.item_type == ItemType::File { %>
+      <div><%= item_detail.item_name %></div>
+    <% } else if item_detail.item_type == ItemType::Folder { %>
+      <div class="text-blue-400"><%= item_detail.item_name %></div>
+    <% } %>
   <% } %>
 </div>
