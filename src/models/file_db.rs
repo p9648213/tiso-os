@@ -269,6 +269,7 @@ impl File {
 
     pub async fn rename_file(
         id: i32,
+        folder_id: i32,
         user_id: i32,
         file_name: &str,
         pool: &Pool,
@@ -279,6 +280,18 @@ impl File {
                 &format!("Couldn't get postgres client: {:?}", error),
             )
         })?;
+
+        let sql = "
+            SELECT id FROM folder WHERE parent_folder_id = $1 AND folder_name = $2
+            UNION
+            SELECT id FROM file WHERE folder_id = $1 AND file_name = $2
+        ";
+
+        let row = client.query(sql, &[&folder_id, &file_name]).await?;
+
+        if !row.is_empty() {
+            return Err(AppError::new(StatusCode::BAD_REQUEST, "Duplicate name"));
+        }
 
         let row = client
             .execute(

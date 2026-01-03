@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::{
     models::state::SessionMap,
-    utilities::{common::get_current_dir, terminal_cd::Cd, terminal_ls::Ls, terminal_mkdir::Mkdir},
+    utilities::{common::get_current_dir, terminal_cd::Cd, terminal_ls::Ls, terminal_mkdir::Mkdir, terminal_rm::Rm},
     views::terminal_v::render_terminal_help,
 };
 
@@ -17,6 +17,7 @@ pub enum Command {
     Cd,
     Ls,
     Mkdir,
+    Rm,
     Unknown(String),
 }
 
@@ -30,6 +31,7 @@ impl From<String> for Command {
             "cd" => Command::Cd,
             "ls" => Command::Ls,
             "mkdir" => Command::Mkdir,
+            "rm" => Command::Rm,
             "" => Command::Empty,
             _ => Command::Unknown(text),
         }
@@ -154,6 +156,16 @@ impl<'a> CommandLine<'a> {
                     Err(error) => self.process_command(Some(error), None),
                 }
             },
+            Command::Rm => {
+                let current_dir = get_current_dir(self.session_map, self.user_id);
+                let mkdir = Rm::new(&current_dir, &self.args, self.user_id, self.pool);
+                let result = mkdir.remove_item().await;
+
+                match result {
+                    Ok(output) => self.process_command(Some(output), None),
+                    Err(error) => self.process_command(Some(error), None),
+                }
+            }
             Command::Clear => CommandLineOutput::default(),
             Command::Empty => CommandLineOutput::default(),
             Command::Unknown(command) => CommandLineOutput {

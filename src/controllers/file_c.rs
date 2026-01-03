@@ -75,10 +75,45 @@ pub async fn rename_file(
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    File::rename_file(file_id, user_id, &form.file_name, &pool).await?;
+    let file = File::get_file(file_id, user_id, vec!["folder_id"], &pool).await?;
 
-    match file_type.as_str() {
-        "txt" => Ok(render_txt_file(Some(file_id.to_string()), Some(form.file_name), None)),
-        _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
+    let rename_result = File::rename_file(
+        file_id,
+        file.folder_id.unwrap(),
+        user_id,
+        &form.file_name,
+        &pool,
+    )
+    .await;
+
+    if rename_result.is_err() {
+        let file = File::get_file(file_id, user_id, vec!["file_name"], &pool).await?;
+
+        Ok((
+            [(
+                "HX-Trigger",
+                r#"{"message_box":{"type":"error", "title": "Error", "message": "Duplicate name"}}"#,
+            )],
+            match file_type.as_str() {
+                "txt" => Ok(render_txt_file(
+                    Some(file_id.to_string()),
+                    Some(file.file_name.unwrap()),
+                    None,
+                )),
+                _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
+            },
+        ))
+    } else {
+        Ok((
+            [("HX-Trigger", "")],
+            match file_type.as_str() {
+                "txt" => Ok(render_txt_file(
+                    Some(file_id.to_string()),
+                    Some(form.file_name),
+                    None,
+                )),
+                _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
+            },
+        ))
     }
 }

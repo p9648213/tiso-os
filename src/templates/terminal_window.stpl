@@ -4,11 +4,13 @@
     setupTerminalToolBar,
     setupTerminalTextArea,
     setupTerminalWebSocket,
+    setupTerminalFocus
   } from "/assets/js/terminal.js";
   setupTerminalToolBar();
   setupTerminalWindowGrab();
   setupTerminalTextArea();
   setupTerminalWebSocket();
+  setupTerminalFocus();
 </script>
 
 <div

@@ -52,6 +52,7 @@ export function setupTerminalToolBar() {
   close.addEventListener("click", function () {
     document.getElementById(`terminal-window`).remove();
     document.getElementById(`taskbar-terminal-window`).remove();
+    terminalSocket.close();
     terminalCleanUpEvent.forEach((event) => {
       document.removeEventListener(event.event, event.handler);
     });
@@ -97,7 +98,15 @@ export function setupTerminalTextArea() {
 }
 
 export function setupTerminalWebSocket() {
-  terminalSocket = new WebSocket(`ws://${window.location.host}/ws/terminal`);
+  const protocol = window.location.protocol == "https:" ? "wss" : "ws";
+
+  if (terminalSocket != null) {
+    terminalSocket.close();
+  }
+
+  terminalSocket = new WebSocket(
+    `${protocol}://${window.location.host}/ws/terminal`
+  );
 
   terminalSocket.addEventListener("open", function () {
     console.log("WebSocket connection opened");
@@ -146,6 +155,22 @@ export function setupTerminalWebSocket() {
 
   terminalSocket.addEventListener("error", function () {
     console.log("WebSocket connection error");
+  });
+}
+
+export function setupTerminalFocus() {
+  function handleFocus() {
+    const terminalTextArea = document.getElementById("terminal-text-area");
+    if(terminalTextArea){
+      terminalTextArea.focus();
+    }
+  }
+
+  document.addEventListener("keyup", handleFocus);
+
+  terminalCleanUpEvent.push({
+    event: "keyup",
+    handler: handleFocus,
   });
 }
 

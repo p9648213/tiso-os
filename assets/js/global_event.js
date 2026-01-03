@@ -10,11 +10,11 @@ export function setupGlobalEvents() {
 
     const duplicateWindow = document.getElementById(windowId);
 
-    if (duplicateWindow && openNewTask == true) {
+    if (duplicateWindow && (openNewTask == true || openNewTask === undefined)) {
       duplicateWindow.remove();
     }
 
-    if (openNewTask == false) {
+    if (previousFolderId && openNewTask == false) {
       const parentTaskbar = document.getElementById(
         `taskbar-explorer-window-${previousFolderId}`
       );
