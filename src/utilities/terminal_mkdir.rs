@@ -14,7 +14,6 @@ struct MkdirArgsParse {
     pub desktop_position: String,
 }
 
-#[derive(Clone, Copy)]
 enum MkdirArgs {
     Dp,
 }

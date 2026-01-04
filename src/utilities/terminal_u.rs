@@ -3,7 +3,10 @@ use serde::Serialize;
 
 use crate::{
     models::state::SessionMap,
-    utilities::{common::get_current_dir, terminal_cd::Cd, terminal_ls::Ls, terminal_mkdir::Mkdir, terminal_rm::Rm},
+    utilities::{
+        common::get_current_dir, terminal_cat::Cat, terminal_cd::Cd, terminal_cp::Cp,
+        terminal_ls::Ls, terminal_mkdir::Mkdir, terminal_mv::Mv, terminal_rm::Rm,
+    },
     views::terminal_v::render_terminal_help,
 };
 
@@ -18,6 +21,9 @@ pub enum Command {
     Ls,
     Mkdir,
     Rm,
+    Cp,
+    Mv,
+    Cat,
     Unknown(String),
 }
 
@@ -32,6 +38,9 @@ impl From<String> for Command {
             "ls" => Command::Ls,
             "mkdir" => Command::Mkdir,
             "rm" => Command::Rm,
+            "cp" => Command::Cp,
+            "mv" => Command::Mv,
+            "cat" => Command::Cat,
             "" => Command::Empty,
             _ => Command::Unknown(text),
         }
@@ -129,11 +138,11 @@ impl<'a> CommandLine<'a> {
                         Some("".into()),
                         Some(format!(
                             r#"
-                                    <script type="module">
-                                        import {{ replacePath }} from "/assets/js/terminal.js";
-                                        replacePath("{}");
-                                    </script>
-                                "#,
+                                <script type="module">
+                                    import {{ replacePath }} from "/assets/js/terminal.js";
+                                    replacePath("{}");
+                                </script>
+                            "#,
                             path
                         )),
                     ),
@@ -155,11 +164,39 @@ impl<'a> CommandLine<'a> {
                     Ok(output) => self.process_command(Some(output), None),
                     Err(error) => self.process_command(Some(error), None),
                 }
-            },
+            }
             Command::Rm => {
                 let current_dir = get_current_dir(self.session_map, self.user_id);
                 let mkdir = Rm::new(&current_dir, &self.args, self.user_id, self.pool);
                 let result = mkdir.remove_item().await;
+
+                match result {
+                    Ok(output) => self.process_command(Some(output), None),
+                    Err(error) => self.process_command(Some(error), None),
+                }
+            }
+            Command::Cp => {
+                let cp = Cp::new(&self.args, self.user_id, self.pool);
+                let result = cp.copy().await;
+
+                match result {
+                    Ok(output) => self.process_command(Some(output), None),
+                    Err(error) => self.process_command(Some(error), None),
+                }
+            }
+            Command::Mv => {
+                let mv = Mv::new(&self.args, self.user_id, self.pool);
+                let result = mv.cut().await;
+
+                match result {
+                    Ok(output) => self.process_command(Some(output), None),
+                    Err(error) => self.process_command(Some(error), None),
+                }
+            }
+            Command::Cat => {
+                let current_dir = get_current_dir(self.session_map, self.user_id);
+                let cat = Cat::new(&current_dir, &self.args, self.user_id, self.pool);
+                let result = cat.cat().await;
 
                 match result {
                     Ok(output) => self.process_command(Some(output), None),

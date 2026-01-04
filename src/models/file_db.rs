@@ -108,6 +108,31 @@ impl File {
         Ok(Self::try_from(&row, None))
     }
 
+    pub async fn get_file_by_path(
+        path: &str,
+        user_id: i32,
+        columns: Vec<&str>,
+        pool: &Pool,
+    ) -> Result<File, AppError> {
+        let client = pool.get().await.map_err(|error| {
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &format!("Couldn't get postgres client: {:?}", error),
+            )
+        })?;
+
+        let columns = columns.join(",");
+
+        let row = client
+            .query_one(
+                &format!("SELECT {columns} FROM file WHERE path = $1 AND user_id = $2"),
+                &[&path, &user_id],
+            )
+            .await?;
+
+        Ok(Self::try_from(&row, None))
+    }
+
     pub async fn get_taskbar_menu_files(
         user_id: i32,
         columns: Vec<&str>,
