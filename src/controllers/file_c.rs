@@ -1,7 +1,6 @@
 use axum::{
     Extension, Form,
     extract::{Path, State},
-    http::StatusCode,
     response::IntoResponse,
 };
 use deadpool_postgres::Pool;
@@ -10,8 +9,7 @@ use serde::Deserialize;
 use crate::{
     middlewares::session_mw::UserId,
     models::{error::AppError, file_db::File, folder_db::FolderSortType, state::SessionMap},
-    utilities::common::parse_user_id,
-    views::txt_v::render_txt_file,
+    utilities::common::{parse_user_id, render_file},
 };
 
 #[derive(Deserialize)]
@@ -68,14 +66,14 @@ pub async fn delete_file(
 }
 
 pub async fn rename_file(
-    Path((file_type, file_id)): Path<(String, i32)>,
+    Path(file_id): Path<i32>,
     State(pool): State<Pool>,
     Extension(user_id): Extension<UserId>,
     Form(form): Form<FileRenameForm>,
 ) -> Result<impl IntoResponse, AppError> {
     let user_id = parse_user_id(user_id)?;
 
-    let file = File::get_file(file_id, user_id, vec!["folder_id"], &pool).await?;
+    let file = File::get_file(file_id, user_id, vec!["folder_id", "file_name", "file_type", "id"], &pool).await?;
 
     let rename_result = File::rename_file(
         file_id,
@@ -87,33 +85,17 @@ pub async fn rename_file(
     .await;
 
     if rename_result.is_err() {
-        let file = File::get_file(file_id, user_id, vec!["file_name"], &pool).await?;
-
         Ok((
             [(
                 "HX-Trigger",
                 r#"{"message_box":{"type":"error", "title": "Error", "message": "Duplicate name"}}"#,
             )],
-            match file_type.as_str() {
-                "txt" => Ok(render_txt_file(
-                    Some(file_id.to_string()),
-                    Some(file.file_name.unwrap()),
-                    None,
-                )),
-                _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
-            },
+            render_file(file)
         ))
     } else {
         Ok((
             [("HX-Trigger", "")],
-            match file_type.as_str() {
-                "txt" => Ok(render_txt_file(
-                    Some(file_id.to_string()),
-                    Some(form.file_name),
-                    None,
-                )),
-                _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
-            },
+            render_file(file)
         ))
     }
 }

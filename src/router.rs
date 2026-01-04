@@ -93,7 +93,7 @@ pub async fn create_router(pool: Pool) -> Router {
                 "/folder/position/{folder_id}/{desktop_id}/{position}",
                 post(update_folder_desktop_position),
             )
-            .route("/file/rename/{file_type}/{file_id}", post(rename_file))
+            .route("/file/rename/{file_id}", post(rename_file))
             .route("/file/txt/{txt_id}/text", post(update_text))
             .route("/folder/rename/{folder_id}", post(rename_folder))
             .route(

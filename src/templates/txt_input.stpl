@@ -18,14 +18,14 @@
       src="/assets/images/txt/text-editor.svg"
       draggable="false"
     /><textarea
-      hx-post="/update/file/rename/txt/<%= file_id %>"
+      hx-post="/update/file/rename/<%= file_id %>"
       hx-target="#file-<%= file_id %>"
       hx-swap="outerHTML"
       hx-trigger="blur, keyup[key=='Enter']"
       hx-on:blur="window.editMode = false"
       hx-on:keydown="if(event.key == 'Enter') { event.preventDefault(); window.editMode = false }"
       name="file_name"
-      class="max-w-[75px] overflow-hidden text-white text-sm text-center resize-none"
+      class="max-w-18.75 overflow-hidden text-white text-sm text-center resize-none"
     >
  <%= value %> </textarea
     >

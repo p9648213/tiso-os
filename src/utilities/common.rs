@@ -2,7 +2,12 @@ use axum::http::StatusCode;
 
 use crate::{
     middlewares::session_mw::UserId,
-    models::{error::AppError, state::SessionMap},
+    models::{
+        error::AppError,
+        file_db::{File, FileType},
+        state::SessionMap,
+    },
+    views::txt_v::render_txt_file,
 };
 
 pub fn parse_position(pos: &str) -> Option<(u16, u16)> {
@@ -35,4 +40,15 @@ pub fn get_current_dir(session_map: &SessionMap, user_id: i32) -> String {
         .get(&format!("current-dir-{}", user_id))
         .map(|v| v.to_string())
         .unwrap_or_default()
+}
+
+pub fn render_file(file: File) -> Result<String, AppError> {
+    match file.file_type.unwrap() {
+        FileType::Txt => Ok(render_txt_file(
+            Some(file.id.unwrap().to_string()),
+            Some(file.file_name.unwrap()),
+            None,
+        )),
+        _ => Err(AppError::new(StatusCode::BAD_REQUEST, "Bad Request")),
+    }
 }
