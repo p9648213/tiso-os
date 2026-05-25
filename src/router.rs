@@ -31,7 +31,6 @@ use axum::{
 };
 
 use deadpool_postgres::Pool;
-use memory_serve::{MemoryServe, load_assets};
 use papaya::HashMap;
 use tokio::sync::Mutex;
 use tower_http::{
@@ -46,7 +45,7 @@ async fn fallback() -> impl IntoResponse {
 }
 
 pub async fn create_router(pool: Pool) -> Router {
-    let memory_router = MemoryServe::new(load_assets!("assets")).into_router();
+    let memory_router = memory_serve::load!().into_router();
 
     let compression_layer = CompressionLayer::new()
         .quality(CompressionLevel::Fastest)

@@ -10,7 +10,7 @@ use axum_extra::extract::{
     cookie::{Cookie, SameSite},
 };
 use deadpool_postgres::Pool;
-use rand::Rng;
+use rand::RngExt;
 use serde::Deserialize;
 
 use crate::{

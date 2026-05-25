@@ -45,4 +45,6 @@ fn main() {
     );
 
     fs::write(dest_path, content).unwrap();
+
+    memory_serve::load_directory("assets");
 }
